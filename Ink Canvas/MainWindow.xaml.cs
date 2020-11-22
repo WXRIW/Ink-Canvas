@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,8 +41,26 @@ namespace Ink_Canvas
                 drawingAttributes = new DrawingAttributes();
                 inkCanvas.DefaultDrawingAttributes = drawingAttributes;
                 drawingAttributes.Color = Ink_DefaultColor;
-                drawingAttributes.Height = 3;
-                drawingAttributes.Width = 3;
+
+                if (File.Exists("Thickness.ini"))
+                {
+                    try
+                    {
+                        int d = int.Parse(File.ReadAllText("Thickness.ini"));
+                        drawingAttributes.Height = d;
+                        drawingAttributes.Width = d;
+                    }
+                    catch
+                    {
+                        drawingAttributes.Height = 3;
+                        drawingAttributes.Width = 3;
+                    }
+                }
+                else
+                {
+                    drawingAttributes.Height = 3;
+                    drawingAttributes.Width = 3;
+                }
 
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             }
@@ -55,6 +74,31 @@ namespace Ink_Canvas
         bool isInkCanvasVisible = true;
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show("Ink Canvas by WXRIW\n" +
+                "Version 1.0.0_beta\n\n" +
+                "HotKeys:\n" +
+                "Alt + 1: Clean the ink and show or hide the canvas.\n" +
+                "Alt + 2: Show or hide the canvas.\n" +
+                "Alt + 3: Switch mode (Ink & Eraser)\n" +
+                "Alt + 4: Exit.\n" +
+                "Ctrl + Z: Erase the last inking.\n" +
+                "\n" +
+                "You can put an unsigned integer in Thinkness.ini to customize the ink's thinkness.\n" +
+                "\n\n" +
+                "墨迹画板 by WXRIW\n" +
+                "版本 1.0.0_beta\n\n" +
+                "快捷键：\n" +
+                "Alt + 1: 清除墨迹并显示或隐藏画板\n" +
+                "Alt + 2: 显示或隐藏画板\n" +
+                "Alt + 3: 切换模式 (墨迹 & 橡皮擦)\n" +
+                "Alt + 4: 退出\n" +
+                "Ctrl + Z: 删除上一笔\n" +
+                "\n" +
+                "你可以新建Thinkness.ini文件，在里面放一个正整数，来自定义墨迹的粗细。\n" +
+                "\n" +
+                "GitHub: https://github.com/WXRIW/Ink-Canvas" +
+                "");
+
             string failedHotKeys = "";
 
             if (Hotkey.Regist(this, HotkeyModifiers.MOD_ALT, Key.D1, () =>
