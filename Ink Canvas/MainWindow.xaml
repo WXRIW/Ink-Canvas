@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Topmost="True" KeyDown="Window_KeyDown"
         xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019" AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize"
         mc:Ignorable="d" WindowState="Maximized" Loaded="Window_Loaded" Background="Transparent" ShowInTaskbar="False"
-        Title="MainWindow" Height="600" Width="800" FontFamily="Microsoft YaHei UI">
+        Title="MainWindow" Height="800" Width="800" FontFamily="Microsoft YaHei UI"
+        Foreground="Black">
     <!--资源中添加命令-->
     <Window.Resources>
         <RoutedUICommand x:Key="KeyExit" Text=" "/>
@@ -27,48 +28,62 @@
     </Window.CommandBindings>
     <Grid x:Name="Main_Grid" Background="#01FFFFFF" TouchDown="Main_Grid_TouchDown">
         <Grid Name="GridBackgroundCover" Background="Transparent"/>
-        <Label Name="Label" Content="0"/>
+        <Label Name="Label" Visibility="Collapsed" Content="0"/>
         <InkCanvas Name="inkCanvas" Background="Transparent"></InkCanvas>
-        <StackPanel Name="StackPanelMain" Margin="10" HorizontalAlignment="Right" VerticalAlignment="Center" Width="50">
+        <StackPanel Name="StackPanelMain" Margin="10,0,10,50"
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="50">
             <StackPanel Name="StackPanelControl">
                 <Button Name="BtnExit" Content="退出" FontFamily="Microsoft YaHei UI"
                         Margin="0,0,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnExit_Click"/>
-                <StackPanel Name="StackPanelColors" Margin="10,0,10,0">
-                    <Button Name="BtnColorBlack" Content="" FontFamily="Microsoft YaHei UI" Background="Black"
-                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                            Click="BtnColorBlack_Click"/>
-                    <Button Name="BtnColorRed" Content="" FontFamily="Microsoft YaHei UI" Background="Red"
-                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                            Click="BtnColorRed_Click"/>
-                    <Button Name="BtnColorGreen" Content="" FontFamily="Microsoft YaHei UI" Background="#1ED760"
-                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                            Click="BtnColorGreen_Click"/>
-                    <Button Name="BtnColorBlue" Content="" FontFamily="Microsoft YaHei UI" Background="#239AD6"
-                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                            Click="BtnColorBlue_Click"/>
-                    <Button Name="BtnColorYellow" Content="" FontFamily="Microsoft YaHei UI" Background="#FFDC00"
-                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                            Click="BtnColorYellow_Click"/>
-                </StackPanel>
+                        Click="BtnExit_Click" Foreground="Black" Background="#7F909090"/>
+                <TextBlock Text="老魏&#x000A;模式" Margin="0,10,0,0"
+                           FontSize="14" HorizontalAlignment="Center"
+                           Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
+                <Viewbox Height="30">
+                    <ui:ToggleSwitch Name="ToggleSwitchModeWei" Header="" Width="40.5"
+                                     FontFamily="Microsoft YaHei UI" FontSize="19"
+                                     OnContent="" OffContent="" Toggled="ToggleSwitchModeWei_Toggled"/>
+                </Viewbox>
                 <Button Name="BtnThickness" Content="粗细" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnThickness_Click"/>
+                        Click="BtnThickness_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
                 <Button Name="BtnErase" Content="橡皮" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnErase_Click"/>
+                        Click="BtnErase_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+                <Button Name="BtnSwitch" Content="背景" FontFamily="Microsoft YaHei UI"
+                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                        Click="BtnSwitch_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
                 <Button Name="BtnClear" Content="清屏" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnClear_Click"/>
-                <Button Name="BtnSwitch" Content="切换" FontFamily="Microsoft YaHei UI"
-                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnSwitch_Click"/>
-                <ui:ToggleSwitch Name="ToggleSwitchModeWei" Header="老魏  模式" FontFamily="Microsoft YaHei UI"
-                                 Margin="10,10,0,0" OnContent="" OffContent="" Toggled="ToggleSwitchModeWei_Toggled"/>
-            </StackPanel>
-            <Button x:Name="BtnHideControl" Content="隐藏" FontFamily="Microsoft YaHei UI"
+                        Click="BtnClear_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+                <StackPanel Name="StackPanelColors" Margin="10,0,10,0">
+                    <Button Name="BtnColorBlack" Content="" FontFamily="Microsoft YaHei UI" Background="Black"
+                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                            Click="BtnColorBlack_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
+                    <Button Name="BtnColorRed" Content="" FontFamily="Microsoft YaHei UI" Background="Red"
+                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                            Click="BtnColorRed_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
+                    <Button Name="BtnColorGreen" Content="" FontFamily="Microsoft YaHei UI" Background="#1ED760"
+                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                            Click="BtnColorGreen_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
+                    <Button Name="BtnColorBlue" Content="" FontFamily="Microsoft YaHei UI" Background="#239AD6"
+                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                            Click="BtnColorBlue_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
+                    <Button Name="BtnColorYellow" Content="" FontFamily="Microsoft YaHei UI" Background="#FFDC00"
+                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                            Click="BtnColorYellow_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
+                </StackPanel>
+                <Button x:Name="BtnHideInkCanvas" Content="隐藏&#x000A;画板" FontFamily="Microsoft YaHei UI"
                     Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                    Click="BtnHideControl_Click"/>
+                    Click="BtnHideInkCanvas_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+                <Button x:Name="BtnSwitchSide" Content="⇆" FontFamily="Microsoft YaHei UI"
+                    Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                    Click="BtnSwitchSide_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+            </StackPanel>
+            <Button x:Name="BtnHideControl" Content="⇅" FontFamily="Microsoft YaHei UI"
+                    Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                    Click="BtnHideControl_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+            <TextBlock Text="Developer&#x000A;  XY Wang" FontSize="9.5" HorizontalAlignment="Center" Margin="0,10,0,0"/>
         </StackPanel>
     </Grid>
 </Window>

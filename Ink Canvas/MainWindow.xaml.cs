@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModernWpf;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Office.Interop.PowerPoint;
 
 namespace Ink_Canvas
 {
@@ -211,16 +213,20 @@ namespace Ink_Canvas
 
         private void BtnThickness_Click(object sender, RoutedEventArgs e)
         {
-
+            
         }
+
+        bool forceEraser = false;
 
         private void BtnErase_Click(object sender, RoutedEventArgs e)
         {
+            forceEraser = true;
             inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
         }
 
         private void BtnClear_Click(object sender, RoutedEventArgs e)
         {
+            forceEraser = false;
             inkCanvas.Strokes.Clear();
         }
 
@@ -236,28 +242,47 @@ namespace Ink_Canvas
             }
         }
 
+        int inkColor = 0;
+
         private void BtnColorBlack_Click(object sender, RoutedEventArgs e)
         {
-            inkCanvas.DefaultDrawingAttributes.Color = Colors.Black;
+            inkColor = 0;
+            forceEraser = false;
+            if (currentMode == 2)
+            {
+                inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
+            }
+            else
+            {
+                inkCanvas.DefaultDrawingAttributes.Color = Colors.Black;
+            }
         }
 
         private void BtnColorRed_Click(object sender, RoutedEventArgs e)
         {
+            inkColor = 1;
+            forceEraser = false;
             inkCanvas.DefaultDrawingAttributes.Color = Colors.Red;
         }
 
         private void BtnColorGreen_Click(object sender, RoutedEventArgs e)
         {
+            inkColor = 2;
+            forceEraser = false;
             inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF1ED760");
         }
 
         private void BtnColorBlue_Click(object sender, RoutedEventArgs e)
         {
+            inkColor = 3;
+            forceEraser = false;
             inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF239AD6");
         }
 
         private void BtnColorYellow_Click(object sender, RoutedEventArgs e)
         {
+            inkColor = 4;
+            forceEraser = false;
             inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFFDC00");
         }
 
@@ -285,7 +310,8 @@ namespace Ink_Canvas
 
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
         {
-            Label.Content = e.GetTouchPoint(null).Bounds.Width.ToString();
+            if (forceEraser) return;
+            //Label.Content = e.GetTouchPoint(null).Bounds.Width.ToString();
             if (e.GetTouchPoint(null).Bounds.Width > BoundsWidth)
             {
                 inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
@@ -303,20 +329,29 @@ namespace Ink_Canvas
             switch ((++currentMode) % 3)
             {
                 case 0:
+                    BtnExit.Foreground = Brushes.Black;
+                    BtnColorBlack.Background = Brushes.Black;
                     GridBackgroundCover.Background = Brushes.Transparent;
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                    if (inkColor == 0)
+                    {
+                        inkCanvas.DefaultDrawingAttributes.Color = Colors.Black;
+                    }
                     break;
                 case 1:
-                    GridBackgroundCover.Background = Brushes.White;
+                    GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                     break;
                 case 2:
-                    GridBackgroundCover.Background = Brushes.Black;
+                    BtnExit.Foreground = Brushes.White;
+                    GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
+                    BtnColorBlack.Background = Brushes.White;
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                    if (inkColor == 0)
+                    {
+                        inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
+                    }
                     break;
             }
-        }
-
-        private void BtnColorYellow_Click_1(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void ToggleSwitchModeWei_Toggled(object sender, RoutedEventArgs e)
@@ -328,6 +363,34 @@ namespace Ink_Canvas
             else
             {
                 BoundsWidth = 6;
+            }
+        }
+
+        private void BtnHideInkCanvas_Click(object sender, RoutedEventArgs e)
+        {
+            if(Main_Grid.Background == Brushes.Transparent)
+            {
+                Main_Grid.Background = new SolidColorBrush(StringToColor("#01FFFFFF"));
+                inkCanvas.Visibility = Visibility.Visible;
+                BtnHideInkCanvas.Content = "隐藏\n画板";
+            }
+            else
+            {
+                Main_Grid.Background = Brushes.Transparent;
+                inkCanvas.Visibility = Visibility.Collapsed;
+                BtnHideInkCanvas.Content = "显示\n画板";
+            }
+        }
+
+        private void BtnSwitchSide_Click(object sender, RoutedEventArgs e)
+        {
+            if (StackPanelMain.HorizontalAlignment == HorizontalAlignment.Right)
+            {
+                StackPanelMain.HorizontalAlignment = HorizontalAlignment.Left;
+            }
+            else
+            {
+                StackPanelMain.HorizontalAlignment = HorizontalAlignment.Right;
             }
         }
     }
