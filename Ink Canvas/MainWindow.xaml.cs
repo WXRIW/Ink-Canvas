@@ -20,6 +20,10 @@ using Application = System.Windows.Application;
 using System.Timers;
 using System.Threading;
 using Timer = System.Timers.Timer;
+using System.Diagnostics;
+using Newtonsoft.Json;
+using IWshRuntimeLibrary;
+using File = System.IO.File;
 
 namespace Ink_Canvas
 {
@@ -31,13 +35,11 @@ namespace Ink_Canvas
         public MainWindow()
         {
             InitializeComponent();
-
-            timerCheckPPT.Elapsed += TimerCheckPPT_Elapsed;
-            timerCheckPPT.Interval = 1000;
-            timerCheckPPT.Start();
         }
 
         Timer timerCheckPPT = new Timer();
+
+        Settings Settings = new Settings();
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -179,10 +181,80 @@ namespace Ink_Canvas
             //    failedHotKeys += Environment.NewLine + "Alt + 4";
             //}
 
+            //加载设置
+            if (File.Exists(settingsFileName))
+            {
+                try
+                {
+                    string text = File.ReadAllText(settingsFileName);
+                    Settings = JsonConvert.DeserializeObject<Settings>(text);
+                }
+                catch { }
+            }
+
+            if (Settings.Startup.IsAutoEnterModeFinger)
+            {
+                ToggleSwitchModeFinger.IsOn = true;
+                ToggleSwitchAutoEnterModeFinger.IsOn = true;
+            }
+            if (Settings.Startup.IsAutoHideCanvas)
+            {
+                BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                ToggleSwitchAutoHideCanvas.IsOn = true;
+            }
+
+            if (!Settings.Appearance.IsShowEraserButton)
+            {
+                BtnErase.Visibility = Visibility.Collapsed;
+                ToggleSwitchShowButtonEraser.IsOn = false;
+            }
+            if (!Settings.Appearance.IsShowExitButton)
+            {
+                BtnExit.Visibility = Visibility.Collapsed;
+                ToggleSwitchShowButtonExit.IsOn = false;
+            }
+            if (!Settings.Appearance.IsShowHideControlButton)
+            {
+                BtnHideControl.Visibility = Visibility.Collapsed;
+                ToggleSwitchShowButtonHideControl.IsOn = false;
+            }
+            if (!Settings.Appearance.IsShowLRSwitchButton)
+            {
+                BtnSwitchSide.Visibility = Visibility.Collapsed;
+                ToggleSwitchShowButtonLRSwitch.IsOn = false;
+            }
+            if (!Settings.Appearance.IsShowModeFingerToggleSwitch)
+            {
+                StackPanelModeFinger.Visibility = Visibility.Collapsed;
+                ToggleSwitchShowButtonModeFinger.IsOn = false;
+            }
+
+            if (Settings.Behavior.PowerPointSupport)
+            {
+                timerCheckPPT.Elapsed += TimerCheckPPT_Elapsed;
+                timerCheckPPT.Interval = 1000;
+                timerCheckPPT.Start();
+            }
+            else
+            {
+                ToggleSwitchSupportPowerPoint.IsOn = false;
+            }
+            if (!Settings.Behavior.IsShowCanvasAtNewSlideShow)
+            {
+                ToggleSwitchShowCanvasAtNewSlideShow.IsOn = false;
+            }
+
+            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + "\\InkCanvas" + ".lnk"))
+            {
+                ToggleSwitchRunAtStartup.IsOn = true;
+            }
+
             loadPenCanvas();
 
-            BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+            isLoaded = true;
         }
+        string settingsFileName = "settings.json";
+        bool isLoaded = false;
 
         private void back_HotKey(object sender, ExecutedRoutedEventArgs e)
         {
@@ -222,6 +294,18 @@ namespace Ink_Canvas
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void BtnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (BorderSettings.Visibility == Visibility.Visible)
+            {
+                BorderSettings.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                BorderSettings.Visibility = Visibility.Visible;
+            }
         }
 
         private void BtnThickness_Click(object sender, RoutedEventArgs e)
@@ -425,9 +509,9 @@ namespace Ink_Canvas
             }
         }
 
-        private void ToggleSwitchModeWei_Toggled(object sender, RoutedEventArgs e)
+        private void ToggleSwitchModeFinger_Toggled(object sender, RoutedEventArgs e)
         {
-            if (ToggleSwitchModeWei.IsOn)
+            if (ToggleSwitchModeFinger.IsOn)
             {
                 BoundsWidth = 10;
             }
@@ -585,6 +669,10 @@ namespace Ink_Canvas
                 BtnPPTSlideShow.Visibility = Visibility.Collapsed;
                 BtnPPTSlideShowEnd.Visibility = Visibility.Visible;
                 StackPanelMain.Margin = new Thickness(10, 0, 10, 10);
+                if (Settings.Behavior.IsShowCanvasAtNewSlideShow && Main_Grid.Background == Brushes.Transparent)
+                {
+                    BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                }
             });
             previousSlideID = Wn.View.CurrentShowPosition;
         }
@@ -644,8 +732,10 @@ namespace Ink_Canvas
 
             try
             {
-                pptApplication.SlideShowWindows[1].View.Application.SlideShowWindows[1].Activate();
-                pptApplication.SlideShowWindows[1].View.Previous();
+                new Thread(new ThreadStart(() => {
+                    pptApplication.SlideShowWindows[1].View.Application.SlideShowWindows[1].Activate();
+                    pptApplication.SlideShowWindows[1].View.Previous();
+                })).Start();
             }
             catch
             {
@@ -664,8 +754,10 @@ namespace Ink_Canvas
 
             try
             {
-                pptApplication.SlideShowWindows[1].View.Application.SlideShowWindows[1].Activate();
-                pptApplication.SlideShowWindows[1].View.Next();
+                new Thread(new ThreadStart(() => {
+                    pptApplication.SlideShowWindows[1].View.Application.SlideShowWindows[1].Activate();
+                    pptApplication.SlideShowWindows[1].View.Next();
+                })).Start();
             }
             catch (Exception ex)
             {
@@ -689,6 +781,10 @@ namespace Ink_Canvas
                     //presentation.SlideShowSettings.EndingSlide = 1;
                     presentation.SlideShowSettings.Run();
                 })).Start();
+                if (currentMode == 1)
+                {
+                    BtnSwitch_Click(BtnSwitch, e);
+                }
             }
             catch { }
         }
@@ -703,6 +799,219 @@ namespace Ink_Canvas
                 catch { }
             })).Start();
         }
+
+
+        #region Settings
+
+        #region Behavior
+
+        private void ToggleSwitchRunAtStartup_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            if (ToggleSwitchRunAtStartup.IsOn)
+            {
+                StartAutomaticallyCreate("InkCanvas");
+            }
+            else
+            {
+                StartAutomaticallyDel("InkCanvas");
+            }
+        }
+
+        private void ToggleSwitchSupportPowerPoint_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Behavior.PowerPointSupport = ToggleSwitchSupportPowerPoint.IsOn;
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchShowCanvasAtNewSlideShow_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Behavior.IsShowCanvasAtNewSlideShow = ToggleSwitchShowCanvasAtNewSlideShow.IsOn;
+            SaveSettingsToFile();
+        }
+
+        #endregion
+
+        #region Startup
+
+        private void ToggleSwitchAutoHideCanvas_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Startup.IsAutoHideCanvas = ToggleSwitchAutoHideCanvas.IsOn;
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchAutoEnterModeFinger_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Startup.IsAutoEnterModeFinger = ToggleSwitchAutoEnterModeFinger.IsOn;
+            SaveSettingsToFile();
+        }
+
+        #endregion
+
+        #region Appearance
+
+        private void ToggleSwitchShowButtonExit_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Appearance.IsShowExitButton = ToggleSwitchShowButtonExit.IsOn;
+            SaveSettingsToFile();
+
+            if (ToggleSwitchShowButtonExit.IsOn)
+            {
+                BtnExit.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                BtnExit.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ToggleSwitchShowButtonEraser_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Appearance.IsShowEraserButton = ToggleSwitchShowButtonEraser.IsOn;
+            SaveSettingsToFile();
+
+            if (ToggleSwitchShowButtonEraser.IsOn)
+            {
+                BtnErase.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                BtnErase.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ToggleSwitchShowButtonHideControl_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Appearance.IsShowHideControlButton = ToggleSwitchShowButtonHideControl.IsOn;
+            SaveSettingsToFile();
+
+            if (ToggleSwitchShowButtonHideControl.IsOn)
+            {
+                BtnHideControl.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                BtnHideControl.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ToggleSwitchShowButtonLRSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Appearance.IsShowLRSwitchButton = ToggleSwitchShowButtonLRSwitch.IsOn;
+            SaveSettingsToFile();
+
+            if (ToggleSwitchShowButtonLRSwitch.IsOn)
+            {
+                BtnSwitchSide.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                BtnSwitchSide.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ToggleSwitchShowButtonModeFinger_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Appearance.IsShowModeFingerToggleSwitch = ToggleSwitchAutoEnterModeFinger.IsOn;
+            SaveSettingsToFile();
+
+            if (ToggleSwitchAutoEnterModeFinger.IsOn)
+            {
+                StackPanelModeFinger.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                StackPanelModeFinger.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        #endregion
+
+        private void SaveSettingsToFile()
+        {
+            string text = JsonConvert.SerializeObject(Settings, Formatting.Indented);
+            try
+            {
+                File.WriteAllText(settingsFileName, text);
+            }
+            catch { }
+        }
+
+        private void SCManipulationBoundaryFeedback(object sender, ManipulationBoundaryFeedbackEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void HyperlinkSource_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("https://github.com/WXRIW/Ink-Canvas");
+        }
+
+        #endregion
+
+        #region 开机自启
+        /// <summary>
+        /// 开机自启创建
+        /// </summary>
+        /// <param name="exeName">程序名称</param>
+        /// <returns></returns>
+        public bool StartAutomaticallyCreate(string exeName)
+        {
+            try
+            {
+                WshShell shell = new WshShell();
+                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + "\\" + exeName + ".lnk");
+                //设置快捷方式的目标所在的位置(源程序完整路径)
+                shortcut.TargetPath = System.Windows.Forms.Application.ExecutablePath;
+                //应用程序的工作目录
+                //当用户没有指定一个具体的目录时，快捷方式的目标应用程序将使用该属性所指定的目录来装载或保存文件。
+                shortcut.WorkingDirectory = System.Environment.CurrentDirectory;
+                //目标应用程序窗口类型(1.Normal window普通窗口,3.Maximized最大化窗口,7.Minimized最小化)
+                shortcut.WindowStyle = 1;
+                //快捷方式的描述
+                shortcut.Description = exeName + "_Ink";
+                //设置快捷键(如果有必要的话.)
+                //shortcut.Hotkey = "CTRL+ALT+D";
+                shortcut.Save();
+                return true;
+            }
+            catch (Exception) { }
+            return false;
+        }
+        /// <summary>
+        /// 开机自启删除
+        /// </summary>
+        /// <param name="exeName">程序名称</param>
+        /// <returns></returns>
+        public bool StartAutomaticallyDel(string exeName)
+        {
+            try
+            {
+                System.IO.File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + "\\" + exeName + ".lnk");
+                return true;
+            }
+            catch (Exception) { }
+            return false;
+        }
+        #endregion
     }
 
     enum HotkeyModifiers
