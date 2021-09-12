@@ -46,15 +46,15 @@
                 <Button Name="BtnExit" Content="退出" FontFamily="Microsoft YaHei UI"
                         Margin="0,0,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                         Click="BtnExit_Click" Foreground="Black" Background="#7F909090"/>
-                <TextBlock Text="自动&#x000A;粗细" Margin="0,10,0,0"
+                <TextBlock Text="自动&#x000A;粗细" Visibility="Collapsed" Margin="0,10,0,0"
                            FontSize="14" HorizontalAlignment="Center"
                            Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
-                <Viewbox Height="30">
-                    <ui:ToggleSwitch Name="ToggleSwitchAutoWeight" Header="" Width="40.5"
+                <Viewbox Height="30" Visibility="Collapsed">
+                    <ui:ToggleSwitch Name="ToggleSwitchAutoWeight" Header="" Width="40.5" 
                                      FontFamily="Microsoft YaHei UI" FontSize="19"
                                      OnContent="" OffContent="" Toggled="ToggleSwitchAutoWeight_Toggled"/>
                 </Viewbox>
-                <TextBlock Text="老魏&#x000A;模式" Margin="0,5,0,0"
+                <TextBlock Text="老魏&#x000A;模式" Margin="0,10,0,0"
                            FontSize="14" HorizontalAlignment="Center"
                            Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
                 <Viewbox Height="30">
@@ -65,7 +65,7 @@
                 <Button Name="BtnThickness" Content="粗细" Visibility="Collapsed" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                         Click="BtnThickness_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
-                <Button Name="BtnErase" Content="橡皮" FontFamily="Microsoft YaHei UI"
+                <Button Name="BtnErase" Content="橡皮" Visibility="Collapsed" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                         Click="BtnErase_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
                 <Button Name="BtnSwitchTheme" Content="深色" FontFamily="Microsoft YaHei UI"
@@ -100,6 +100,12 @@
                 <Button x:Name="BtnCheckPPT" Visibility="Collapsed" Content="检查" FontFamily="Microsoft YaHei UI"
                     Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                     Click="BtnCheckPPT_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+                <Button x:Name="BtnPPTSlideShow" Visibility="Collapsed" Content="从头&#x000A;放映" FontFamily="Microsoft YaHei UI"
+                    Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                    Click="BtnPPTSlideShow_Click"  Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
+                <Button x:Name="BtnPPTSlideShowEnd" Visibility="Collapsed" Content="结束&#x000A;放映" FontFamily="Microsoft YaHei UI"
+                    Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                    Click="BtnPPTSlideShowEnd_Click"  Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="#7F909090"/>
                 <StackPanel Name="StackPanelPPTControls" Visibility="Collapsed">
                     <Button x:Name="BtnPPTSlidesUp" Content="↑" FontFamily="Microsoft YaHei UI"
                     Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
