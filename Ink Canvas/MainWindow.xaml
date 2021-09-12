@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Topmost="True" KeyDown="Window_KeyDown"
         xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019" AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize"
         mc:Ignorable="d" WindowState="Maximized" Loaded="Window_Loaded" Background="Transparent" ShowInTaskbar="False"
-        Title="MainWindow" Height="800" Width="800" FontFamily="Microsoft YaHei UI"
+        Title="MainWindow" Height="1000" Width="800" FontFamily="Microsoft YaHei UI"
         Foreground="Black">
     <!--资源中添加命令-->
     <Window.Resources>
@@ -71,6 +71,7 @@
                     <GroupBox Header="外观">
                         <ui:SimpleStackPanel Spacing="12">
                             <ui:ToggleSwitch Name="ToggleSwitchShowButtonExit" Header="显示“退出”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonExit_Toggled"/>
+                            <Button Content="立即退出" Width="120" FontFamily="Microsoft YaHei UI" Click="BtnExit_Click" Margin="0,0,0,10"/>
                             <ui:ToggleSwitch Name="ToggleSwitchShowButtonEraser" Header="显示“橡皮”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonEraser_Toggled"/>
                             <ui:ToggleSwitch Name="ToggleSwitchShowButtonHideControl" Header="显示“⇅ (显示或隐藏控制按钮)”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonHideControl_Toggled"/>
                             <ui:ToggleSwitch Name="ToggleSwitchShowButtonLRSwitch" Header="显示“⇆ (左右切换)”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonLRSwitch_Toggled"/>
