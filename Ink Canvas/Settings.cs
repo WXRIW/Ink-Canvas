@@ -43,7 +43,7 @@ namespace Ink_Canvas
         public bool IsShowHideControlButton { get; set; } = true;
         [JsonProperty("isShowLRSwitchButton")]
         public bool IsShowLRSwitchButton { get; set; } = true;
-        [JsonProperty("isShowModeWeiToggleSwitch")]
+        [JsonProperty("isShowModeFingerToggleSwitch")]
         public bool IsShowModeFingerToggleSwitch { get; set; } = true;
     }
 }

@@ -930,10 +930,10 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
 
-            Settings.Appearance.IsShowModeFingerToggleSwitch = ToggleSwitchAutoEnterModeFinger.IsOn;
+            Settings.Appearance.IsShowModeFingerToggleSwitch = ToggleSwitchShowButtonModeFinger.IsOn;
             SaveSettingsToFile();
 
-            if (ToggleSwitchAutoEnterModeFinger.IsOn)
+            if (ToggleSwitchShowButtonModeFinger.IsOn)
             {
                 StackPanelModeFinger.Visibility = Visibility.Visible;
             }
