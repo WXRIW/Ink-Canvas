@@ -24,6 +24,7 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using IWshRuntimeLibrary;
 using File = System.IO.File;
+using System.Collections.ObjectModel;
 
 namespace Ink_Canvas
 {
@@ -78,8 +79,39 @@ namespace Ink_Canvas
                 }
 
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+                inkCanvas.Gesture += InkCanvas_Gesture;
             }
             catch { }
+        }
+
+        ApplicationGesture lastApplicationGesture = ApplicationGesture.AllGestures;
+        DateTime lastGestureTime = DateTime.Now;
+        private void InkCanvas_Gesture(object sender, InkCanvasGestureEventArgs e)
+        {
+            ReadOnlyCollection<GestureRecognitionResult> gestures = e.GetGestureRecognitionResults();
+
+            foreach (GestureRecognitionResult gest in gestures)
+            {
+                //Trace.WriteLine(string.Format("Gesture: {0}, Confidence: {1}", gest.ApplicationGesture, gest.RecognitionConfidence));
+                if ((DateTime.Now - lastGestureTime).TotalMilliseconds <= 1500 &&
+                    StackPanelPPTControls.Visibility == Visibility.Visible &&
+                    lastApplicationGesture == gest.ApplicationGesture)
+                {
+                    if (gest.ApplicationGesture == ApplicationGesture.Left)
+                    {
+                        BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
+                    }
+                    if (gest.ApplicationGesture == ApplicationGesture.Right)
+                    {
+                        BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
+                    }
+                }
+
+                lastApplicationGesture = gest.ApplicationGesture;
+                lastGestureTime = DateTime.Now;
+            }
+
+            inkCanvas.Strokes.Add(e.Strokes);
         }
 
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -348,6 +380,7 @@ namespace Ink_Canvas
             if (Main_Grid.Background == Brushes.Transparent)
             {
                 BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 if (currentMode == 1)
                 {
                     currentMode = 0;
