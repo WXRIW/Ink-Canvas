@@ -41,6 +41,7 @@
     <ApplicationIcon>InkCanvas.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="netstandard" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -172,6 +173,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="InkCanvas.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="logo.png" />
+    <Resource Include="text.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="textCN.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="logo2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

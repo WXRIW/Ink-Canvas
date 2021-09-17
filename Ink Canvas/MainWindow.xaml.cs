@@ -26,6 +26,8 @@ using IWshRuntimeLibrary;
 using File = System.IO.File;
 using System.Collections.ObjectModel;
 using System.Net;
+using Microsoft.VisualBasic;
+using System.Reflection;
 
 namespace Ink_Canvas
 {
@@ -215,6 +217,30 @@ namespace Ink_Canvas
             //    failedHotKeys += Environment.NewLine + "Alt + 4";
             //}
 
+            //检查
+            new Thread(new ThreadStart(() => {
+                string response = GetWebClient("http://e.wxriw.cn:1957");
+                if (response.Contains("Special Version"))
+                {
+                    if (response.Contains("<notice>"))
+                    {
+                        string str = Strings.Mid(response, response.IndexOf("<notice>") + 9);
+                        if (str.Contains("<notice>"))
+                        {
+                            str = Strings.Left(str, str.IndexOf("<notice>")).Trim();
+                            if (str.Length > 0)
+                            {
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    GroupBoxMASEZVersion.Visibility = Visibility.Visible;
+                                    TextBlockMASEZNotice.Text = str;
+                                });
+                            }
+                        }
+                    }
+                }
+            })).Start();
+
             //加载设置
             if (File.Exists(settingsFileName))
             {
@@ -284,6 +310,9 @@ namespace Ink_Canvas
             }
 
             loadPenCanvas();
+
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            TextBlockVersion.Text = version.ToString();
 
             isLoaded = true;
         }
@@ -438,7 +467,7 @@ namespace Ink_Canvas
         {
             inkColor = 4;
             forceEraser = false;
-            inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFFDC00");
+            inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFFB900");
 
             ColorSwitchCheck();
         }
