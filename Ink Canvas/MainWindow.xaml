@@ -43,8 +43,8 @@
 
         <Border Name="BorderSettings" Background="White" BorderBrush="Black"
                 BorderThickness="1" CornerRadius="10"
-                Width="400" HorizontalAlignment="Center"
-                Margin="100" Visibility="Collapsed">
+                Width="450" HorizontalAlignment="Center"
+                Margin="100" Visibility="Visible">
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           PanningMode="VerticalOnly" ui:ThemeManager.RequestedTheme="Light"
                           ManipulationBoundaryFeedback="SCManipulationBoundaryFeedback">
@@ -59,6 +59,8 @@
                             <ui:ToggleSwitch Name="ToggleSwitchRunAtStartup" Header="开机时运行" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchRunAtStartup_Toggled"/>
                             <TextBlock Text="我们并不推荐使用 WPS Office，因为其对于触摸设备的较差支持。" Foreground="#666666"/>
                             <ui:ToggleSwitch Name="ToggleSwitchSupportPowerPoint" Header="Microsoft PowerPoint 支持" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportPowerPoint_Toggled"/>
+                            <TextBlock Text="对 WPS Office 支持时会导致 WPS Office 关闭时卡顿，故本选项已禁用。" Foreground="#666666"/>
+                            <ui:ToggleSwitch Name="ToggleSwitchSupportWPS" Header="WPS Office 支持" IsOn="False" IsEnabled="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportPowerPoint_Toggled"/>
                             <ui:ToggleSwitch Name="ToggleSwitchShowCanvasAtNewSlideShow" Header="开始放映时自动显示画板" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCanvasAtNewSlideShow_Toggled"/>
                         </ui:SimpleStackPanel>
                     </GroupBox>

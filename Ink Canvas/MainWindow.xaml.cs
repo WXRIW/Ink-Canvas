@@ -25,6 +25,7 @@ using Newtonsoft.Json;
 using IWshRuntimeLibrary;
 using File = System.IO.File;
 using System.Collections.ObjectModel;
+using System.Net;
 
 namespace Ink_Canvas
 {
@@ -36,6 +37,7 @@ namespace Ink_Canvas
         public MainWindow()
         {
             InitializeComponent();
+            BorderSettings.Visibility = Visibility.Collapsed;
         }
 
         Timer timerCheckPPT = new Timer();
@@ -463,8 +465,6 @@ namespace Ink_Canvas
 
         #endregion
 
-        int BoundsWidth = 6;
-
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
         {
             if (forceEraser) return;
@@ -542,6 +542,8 @@ namespace Ink_Canvas
             }
         }
 
+
+        int BoundsWidth = 5;
         private void ToggleSwitchModeFinger_Toggled(object sender, RoutedEventArgs e)
         {
             if (ToggleSwitchModeFinger.IsOn)
@@ -550,7 +552,7 @@ namespace Ink_Canvas
             }
             else
             {
-                BoundsWidth = 6;
+                BoundsWidth = 5;
             }
         }
 
@@ -642,6 +644,11 @@ namespace Ink_Canvas
 
                 if (pptApplication != null)
                 {
+                    if (pptApplication.Name.Contains("WPS Office"))
+                    {
+                        pptApplication = null;
+                        return;
+                    }
                     timerCheckPPT.Stop();
                     //获得演示文稿对象
                     presentation = pptApplication.ActivePresentation;
@@ -999,6 +1006,37 @@ namespace Ink_Canvas
         }
 
         #endregion
+
+        public static string GetWebClient(string url)
+        {
+            HttpWebRequest myrq = (HttpWebRequest)WebRequest.Create(url);
+
+            myrq.KeepAlive = false;
+            myrq.Timeout = 30 * 1000;
+            myrq.Method = "Get";
+            myrq.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+            myrq.UserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 UBrowser/6.2.4098.3 Safari/537.36";
+
+            HttpWebResponse myrp;
+            try
+            {
+                myrp = (HttpWebResponse)myrq.GetResponse();
+            }
+            catch (WebException ex)
+            {
+                myrp = (HttpWebResponse)ex.Response;
+            }
+
+            if (myrp.StatusCode != HttpStatusCode.OK)
+            {
+                return "null";
+            }
+
+            using (StreamReader sr = new StreamReader(myrp.GetResponseStream()))
+            {
+                return sr.ReadToEnd();
+            }
+        }
 
         #region 开机自启
         /// <summary>
