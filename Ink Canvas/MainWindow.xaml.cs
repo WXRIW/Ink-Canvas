@@ -219,26 +219,30 @@ namespace Ink_Canvas
 
             //检查
             new Thread(new ThreadStart(() => {
-                string response = GetWebClient("http://e.wxriw.cn:1957");
-                if (response.Contains("Special Version"))
+                try
                 {
-                    if (response.Contains("<notice>"))
+                    string response = GetWebClient("http://e.wxriw.cn:1957");
+                    if (response.Contains("Special Version"))
                     {
-                        string str = Strings.Mid(response, response.IndexOf("<notice>") + 9);
-                        if (str.Contains("<notice>"))
+                        if (response.Contains("<notice>"))
                         {
-                            str = Strings.Left(str, str.IndexOf("<notice>")).Trim();
-                            if (str.Length > 0)
+                            string str = Strings.Mid(response, response.IndexOf("<notice>") + 9);
+                            if (str.Contains("<notice>"))
                             {
-                                Application.Current.Dispatcher.Invoke(() =>
+                                str = Strings.Left(str, str.IndexOf("<notice>")).Trim();
+                                if (str.Length > 0)
                                 {
-                                    GroupBoxMASEZVersion.Visibility = Visibility.Visible;
-                                    TextBlockMASEZNotice.Text = str;
-                                });
+                                    Application.Current.Dispatcher.Invoke(() =>
+                                    {
+                                        GroupBoxMASEZVersion.Visibility = Visibility.Visible;
+                                        TextBlockMASEZNotice.Text = str;
+                                    });
+                                }
                             }
                         }
                     }
                 }
+                catch { }
             })).Start();
 
             //加载设置
@@ -411,13 +415,13 @@ namespace Ink_Canvas
             if (Main_Grid.Background == Brushes.Transparent)
             {
                 BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
-                inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 if (currentMode == 1)
                 {
                     currentMode = 0;
                     GridBackgroundCover.Visibility = Visibility.Hidden;
                 }
             }
+            inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
         }
 
         private void BtnColorBlack_Click(object sender, RoutedEventArgs e)
@@ -1040,6 +1044,7 @@ namespace Ink_Canvas
         {
             HttpWebRequest myrq = (HttpWebRequest)WebRequest.Create(url);
 
+            myrq.Proxy = null;
             myrq.KeepAlive = false;
             myrq.Timeout = 30 * 1000;
             myrq.Method = "Get";
