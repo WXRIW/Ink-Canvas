@@ -123,6 +123,7 @@ namespace Ink_Canvas
             e.CanExecute = true;
         }
         bool isInkCanvasVisible = true;
+        bool isAutoUpdateEnabled = false;
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //MessageBox.Show("Ink Canvas by WXRIW\n" +
@@ -224,6 +225,7 @@ namespace Ink_Canvas
                     string response = GetWebClient("http://e.wxriw.cn:1957");
                     if (response.Contains("Special Version"))
                     {
+                        isAutoUpdateEnabled = true;
                         if (response.Contains("<notice>"))
                         {
                             string str = Strings.Mid(response, response.IndexOf("<notice>") + 9);
@@ -1120,6 +1122,7 @@ namespace Ink_Canvas
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            if (!isAutoUpdateEnabled) return;
             try
             {
                 if (OAUS.Core.VersionHelper.HasNewVersion(GetIp("ink.wxriw.cn"), 19570))
