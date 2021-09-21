@@ -1117,6 +1117,32 @@ namespace Ink_Canvas
             return false;
         }
         #endregion
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            try
+            {
+                if (OAUS.Core.VersionHelper.HasNewVersion(GetIp("ink.wxriw.cn"), 19570))
+                {
+                    string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
+                    System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
+                }
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// 传入域名返回对应的IP 
+        /// </summary>
+        /// <param name="domainName">域名</param>
+        /// <returns></returns>
+        public static string GetIp(string domainName)
+        {
+            domainName = domainName.Replace("http://", "").Replace("https://", "");
+            IPHostEntry hostEntry = Dns.GetHostEntry(domainName);
+            IPEndPoint ipEndPoint = new IPEndPoint(hostEntry.AddressList[0], 0);
+            return ipEndPoint.Address.ToString();
+        }
     }
 
     enum HotkeyModifiers

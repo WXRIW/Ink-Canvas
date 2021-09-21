@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019" AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize"
         mc:Ignorable="d" WindowState="Maximized" Loaded="Window_Loaded" Background="Transparent" ShowInTaskbar="False"
         Title="MainWindow" Height="1000" Width="800" FontFamily="Microsoft YaHei UI"
-        Foreground="Black">
+        Foreground="Black" Closed="Window_Closed">
     <!--资源中添加命令-->
     <Window.Resources>
         <RoutedUICommand x:Key="KeyExit" Text=" "/>
@@ -45,89 +45,95 @@
                 BorderThickness="1" CornerRadius="10"
                 Width="400" HorizontalAlignment="Center"
                 Margin="100" Visibility="Visible">
-            <ScrollViewer VerticalScrollBarVisibility="Auto"
-                          PanningMode="VerticalOnly" ui:ThemeManager.RequestedTheme="Light"
-                          ManipulationBoundaryFeedback="SCManipulationBoundaryFeedback">
-                <StackPanel Margin="20">
-                    <TextBlock Text="设置" FontSize="26" Margin="0,0,0,12"/>
-                    <!--<Viewbox Margin="0,-55,0,0" Height="60" HorizontalAlignment="Right">
+            <Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              PanningMode="VerticalOnly" ui:ThemeManager.RequestedTheme="Light"
+                              ManipulationBoundaryFeedback="SCManipulationBoundaryFeedback">
+                    <StackPanel Margin="20,70,20,20">
+                        <TextBlock FontSize="14" Margin="0,0,0,0"
+                                   Text="*设置将自动保存，再次点击“设置”按钮将关闭此页面。"/>
+                        <TextBlock FontSize="14" Margin="0,0,0,12"
+                                   Text="*部分设置可能需要重新打开后生效。"/>
+                        <GroupBox Header="行为">
+                            <ui:SimpleStackPanel Spacing="12">
+                                <ui:ToggleSwitch Name="ToggleSwitchRunAtStartup" Header="开机时运行" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchRunAtStartup_Toggled"/>
+                                <TextBlock Text="我们并不推荐使用 WPS Office，因为其对于触摸设备的较差支持。" Foreground="#666666"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchSupportPowerPoint" Header="Microsoft PowerPoint 支持" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportPowerPoint_Toggled"/>
+                                <TextBlock Text="对 WPS Office 支持时会导致 WPS Office 关闭时卡顿，故禁用。" Foreground="#666666"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchSupportWPS" Header="WPS Office 支持" IsOn="False" IsEnabled="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportPowerPoint_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowCanvasAtNewSlideShow" Header="开始放映时自动显示画板" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCanvasAtNewSlideShow_Toggled"/>
+                            </ui:SimpleStackPanel>
+                        </GroupBox>
+                        <GroupBox Header="启动">
+                            <ui:SimpleStackPanel Spacing="12">
+                                <ui:ToggleSwitch Name="ToggleSwitchAutoHideCanvas" Header="自动隐藏画板" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoHideCanvas_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchAutoEnterModeFinger" Header="自动进入手指模式" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoEnterModeFinger_Toggled"/>
+                            </ui:SimpleStackPanel>
+                        </GroupBox>
+                        <GroupBox Header="外观">
+                            <ui:SimpleStackPanel Spacing="12">
+                                <ui:ToggleSwitch Name="ToggleSwitchShowButtonExit" Header="显示“退出”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonExit_Toggled"/>
+                                <Button Content="立即退出" Width="120" FontFamily="Microsoft YaHei UI" Click="BtnExit_Click" Margin="0,0,0,10"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowButtonEraser" Header="显示“橡皮”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonEraser_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowButtonHideControl" Header="显示“⇅ (显示或隐藏控制按钮)”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonHideControl_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowButtonLRSwitch" Header="显示“⇆ (左右切换)”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonLRSwitch_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowButtonModeFinger" Header="显示“手指模式”切换按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonModeFinger_Toggled"/>
+                            </ui:SimpleStackPanel>
+                        </GroupBox>
+                        <GroupBox Header="关于">
+                            <ui:SimpleStackPanel Spacing="12">
+                                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock FontSize="14">
+                                        <Bold>当前版本:</Bold> 
+                                    </TextBlock>
+                                    <TextBlock FontSize="14" Text="" Name="TextBlockVersion"/>
+                                </ui:SimpleStackPanel>
+                                <TextBlock FontSize="14">
+                                     <Bold>开发者:</Bold> XY Wang (WXRIW)
+                                </TextBlock>
+                                <TextBlock FontSize="14">
+                                    <Bold>开源地址:</Bold>
+                                    <Hyperlink Click="HyperlinkSource_Click">
+                                           <TextBlock Text="https://github.com/WXRIW/Ink-Canvas"></TextBlock>
+                                    </Hyperlink>
+                                </TextBlock>
+                                <TextBlock FontSize="14">
+                                     <Bold>开源协议:</Bold> GNU General Public License v3.0
+                                </TextBlock>
+                            </ui:SimpleStackPanel>
+                        </GroupBox>
+                        <GroupBox Name="GroupBoxMASEZVersion" Visibility="Collapsed"
+                                  Header="马鞍山二中专版说明">
+                            <ui:SimpleStackPanel Spacing="12">
+                                <TextBlock Name="TextBlockMASEZNotice" FontSize="14" Margin="0,0,0,0"/>
+                                <Viewbox Margin="0,0,0,0" Height="70" HorizontalAlignment="Left">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="logo.png" Width="120"/>
+                                        <Image Source="text.png" Width="200"/>
+                                    </StackPanel>
+                                </Viewbox>
+                            </ui:SimpleStackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+                <Grid Background="White" Margin="10,0,10,0" Height="65" VerticalAlignment="Top">
+                    <Grid Margin="10,20,10,0">
+                        <TextBlock Text="设置" FontSize="26" Margin="0,0,0,12"/>
+                        <!--<Viewbox Margin="0,-55,0,0" Height="60" HorizontalAlignment="Right">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="logo.png" Width="120"/>
                             <Image Source="text.png" Width="200"/>
                         </StackPanel>
                     </Viewbox>-->
-                    <Viewbox Visibility="{Binding ElementName=GroupBoxMASEZVersion, Path=Visibility}" Margin="0,-58,0,0" Height="45" HorizontalAlignment="Right">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="textCN.png" Width="200"/>
-                            <TextBlock Text="专版" FontSize="32" Foreground="#C30F2C" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Viewbox>
-                    <TextBlock FontSize="14" Margin="0,0,0,0"
-                               Text="*设置将自动保存，再次点击“设置”按钮将关闭此页面。"/>
-                    <TextBlock FontSize="14" Margin="0,0,0,12"
-                               Text="*部分设置可能需要重新打开后生效。"/>
-                    <GroupBox Header="行为">
-                        <ui:SimpleStackPanel Spacing="12">
-                            <ui:ToggleSwitch Name="ToggleSwitchRunAtStartup" Header="开机时运行" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchRunAtStartup_Toggled"/>
-                            <TextBlock Text="我们并不推荐使用 WPS Office，因为其对于触摸设备的较差支持。" Foreground="#666666"/>
-                            <ui:ToggleSwitch Name="ToggleSwitchSupportPowerPoint" Header="Microsoft PowerPoint 支持" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportPowerPoint_Toggled"/>
-                            <TextBlock Text="对 WPS Office 支持时会导致 WPS Office 关闭时卡顿，故禁用。" Foreground="#666666"/>
-                            <ui:ToggleSwitch Name="ToggleSwitchSupportWPS" Header="WPS Office 支持" IsOn="False" IsEnabled="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportPowerPoint_Toggled"/>
-                            <ui:ToggleSwitch Name="ToggleSwitchShowCanvasAtNewSlideShow" Header="开始放映时自动显示画板" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCanvasAtNewSlideShow_Toggled"/>
-                        </ui:SimpleStackPanel>
-                    </GroupBox>
-                    <GroupBox Header="启动">
-                        <ui:SimpleStackPanel Spacing="12">
-                            <ui:ToggleSwitch Name="ToggleSwitchAutoHideCanvas" Header="自动隐藏画板" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoHideCanvas_Toggled"/>
-                            <ui:ToggleSwitch Name="ToggleSwitchAutoEnterModeFinger" Header="自动进入手指模式" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoEnterModeFinger_Toggled"/>
-                        </ui:SimpleStackPanel>
-                    </GroupBox>
-                    <GroupBox Header="外观">
-                        <ui:SimpleStackPanel Spacing="12">
-                            <ui:ToggleSwitch Name="ToggleSwitchShowButtonExit" Header="显示“退出”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonExit_Toggled"/>
-                            <Button Content="立即退出" Width="120" FontFamily="Microsoft YaHei UI" Click="BtnExit_Click" Margin="0,0,0,10"/>
-                            <ui:ToggleSwitch Name="ToggleSwitchShowButtonEraser" Header="显示“橡皮”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonEraser_Toggled"/>
-                            <ui:ToggleSwitch Name="ToggleSwitchShowButtonHideControl" Header="显示“⇅ (显示或隐藏控制按钮)”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonHideControl_Toggled"/>
-                            <ui:ToggleSwitch Name="ToggleSwitchShowButtonLRSwitch" Header="显示“⇆ (左右切换)”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonLRSwitch_Toggled"/>
-                            <ui:ToggleSwitch Name="ToggleSwitchShowButtonModeFinger" Header="显示“手指模式”切换按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonModeFinger_Toggled"/>
-                        </ui:SimpleStackPanel>
-                    </GroupBox>
-                    <GroupBox Header="关于">
-                        <ui:SimpleStackPanel Spacing="12">
-                            <ui:SimpleStackPanel Orientation="Horizontal" Spacing="4">
-                                <TextBlock FontSize="14">
-                                    <Bold>当前版本:</Bold> 
-                                </TextBlock>
-                                <TextBlock FontSize="14" Text="" Name="TextBlockVersion"/>
-                            </ui:SimpleStackPanel>
-                            <TextBlock FontSize="14">
-                                 <Bold>开发者:</Bold> XY Wang (WXRIW)
-                            </TextBlock>
-                            <TextBlock FontSize="14">
-                                <Bold>开源地址:</Bold>
-                                <Hyperlink Click="HyperlinkSource_Click">
-                                       <TextBlock Text="https://github.com/WXRIW/Ink-Canvas"></TextBlock>
-                                </Hyperlink>
-                            </TextBlock>
-                            <TextBlock FontSize="14">
-                                 <Bold>开源协议:</Bold> GNU General Public License v3.0
-                            </TextBlock>
-                        </ui:SimpleStackPanel>
-                    </GroupBox>
-                    <GroupBox Name="GroupBoxMASEZVersion" Visibility="Collapsed"
-                              Header="马鞍山二中专版说明">
-                        <ui:SimpleStackPanel Spacing="12">
-                            <TextBlock Name="TextBlockMASEZNotice" FontSize="14" Margin="0,0,0,0"/>
-                            <Viewbox Margin="0,0,0,0" Height="70" HorizontalAlignment="Left">
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="logo.png" Width="120"/>
-                                    <Image Source="text.png" Width="200"/>
-                                </StackPanel>
-                            </Viewbox>
-                        </ui:SimpleStackPanel>
-                    </GroupBox>
-                </StackPanel>
-            </ScrollViewer>
+                        <Viewbox Visibility="{Binding ElementName=GroupBoxMASEZVersion, Path=Visibility}" Margin="0,-58,0,0" Height="45" HorizontalAlignment="Right">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="textCN.png" Width="200"/>
+                                <TextBlock Text="专版" FontSize="32" Foreground="#C30F2C" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Viewbox>
+                    </Grid>
+                </Grid>
+            </Grid>
         </Border>
         
         <StackPanel Name="StackPanelMain" Margin="10,0,10,55"
