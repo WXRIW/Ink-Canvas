@@ -26,12 +26,16 @@
                     CanExecute="CommandBinding_CanExecute"
                     Executed="KeyExit"/>
     </Window.CommandBindings>
-    <Grid x:Name="Main_Grid" Background="#01FFFFFF" TouchDown="Main_Grid_TouchDown">
+    <Grid x:Name="Main_Grid" Background="#01FFFFFF">
         <Grid Name="GridBackgroundCoverHolder">
             <Grid Name="GridBackgroundCover" Visibility="Hidden" Background="#FFF2F2F2"/>
         </Grid>
         <Label Name="Label" Visibility="Collapsed" Content="0"/>
-        <InkCanvas Name="inkCanvas" Background="Transparent">
+        <InkCanvas Name="inkCanvas" Background="Transparent"
+                   TouchUp="Main_Grid_TouchUp" TouchDown="Main_Grid_TouchDown"
+                   ManipulationDelta="Main_Grid_ManipulationDelta"
+                   ManipulationCompleted="Main_Grid_ManipulationCompleted"
+                   IsManipulationEnabled="True">
             <!--<InkCanvas.DefaultDrawingAttributes>
                 <DrawingAttributes StylusTip="Ellipse" Height="8" Width="4" IgnorePressure="False" FitToCurve="True" >
                     <DrawingAttributes.StylusTipTransform>

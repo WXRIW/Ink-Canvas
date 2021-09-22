@@ -226,6 +226,7 @@ namespace Ink_Canvas
                     if (response.Contains("Special Version"))
                     {
                         isAutoUpdateEnabled = true;
+
                         if (response.Contains("<notice>"))
                         {
                             string str = Strings.Mid(response, response.IndexOf("<notice>") + 9);
@@ -241,6 +242,17 @@ namespace Ink_Canvas
                                     });
                                 }
                             }
+                        }
+
+                        if (OAUS.Core.VersionHelper.HasNewVersion(GetIp("ink.wxriw.cn"), 19570))
+                        {
+                            string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
+                            System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
+
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                Close();
+                            });
                         }
                     }
                 }
@@ -500,9 +512,11 @@ namespace Ink_Canvas
 
         #endregion
 
+        bool isTouchDown = false;
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
         {
             if (forceEraser) return;
+            
             //Label.Content = e.GetTouchPoint(null).Bounds.Width.ToString();
             if (ToggleSwitchAutoWeight.IsOn && e.GetTouchPoint(null).Bounds.Width != 0)
             {
@@ -520,6 +534,22 @@ namespace Ink_Canvas
                     inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 }
             }
+        }
+
+        private void Main_Grid_TouchUp(object sender, TouchEventArgs e)
+        {
+        }
+
+        private void Main_Grid_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
+        {
+            if (e.Manipulators.Count() == 0)
+            {
+                inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+            }
+        }
+        private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
+        {
+
         }
 
         int currentMode = 0;
@@ -1128,16 +1158,16 @@ namespace Ink_Canvas
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            if (!isAutoUpdateEnabled) return;
-            try
-            {
-                if (OAUS.Core.VersionHelper.HasNewVersion(GetIp("ink.wxriw.cn"), 19570))
-                {
-                    string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
-                    System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
-                }
-            }
-            catch { }
+            //if (!isAutoUpdateEnabled) return;
+            //try
+            //{
+            //    if (OAUS.Core.VersionHelper.HasNewVersion(GetIp("ink.wxriw.cn"), 19570))
+            //    {
+            //        string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
+            //        System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
+            //    }
+            //}
+            //catch { }
         }
 
         /// <summary>
