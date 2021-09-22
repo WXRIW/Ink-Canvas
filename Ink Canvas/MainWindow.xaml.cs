@@ -675,15 +675,21 @@ namespace Ink_Canvas
         {
             try
             {
+                Process[] processes = Process.GetProcessesByName("wpp");
+                if (processes.Length > 0)
+                {
+                    return;
+                }
+                //processes = Process.GetProcessesByName("wps");
+                //if (processes.Length > 0)
+                //{
+                //    return;
+                //}
+
                 pptApplication = (Microsoft.Office.Interop.PowerPoint.Application)Marshal.GetActiveObject("PowerPoint.Application");
 
                 if (pptApplication != null)
                 {
-                    if (pptApplication.Name.Contains("WPS Office"))
-                    {
-                        pptApplication = null;
-                        return;
-                    }
                     timerCheckPPT.Stop();
                     //获得演示文稿对象
                     presentation = pptApplication.ActivePresentation;
