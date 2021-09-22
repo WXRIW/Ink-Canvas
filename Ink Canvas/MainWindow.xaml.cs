@@ -544,7 +544,7 @@ namespace Ink_Canvas
         {
             if (e.Manipulators.Count() == 0)
             {
-                inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             }
         }
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
