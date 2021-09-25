@@ -13,6 +13,8 @@ namespace Ink_Canvas
         public Behavior Behavior { get; set; } = new Behavior();
         [JsonProperty("canvas")]
         public Canvas Canvas { get; set; } = new Canvas();
+        [JsonProperty("gesture")]
+        public Gesture Gesture { get; set; } = new Gesture();
         [JsonProperty("startup")]
         public Startup Startup { get; set; } = new Startup();
         [JsonProperty("appearance")]
@@ -33,6 +35,14 @@ namespace Ink_Canvas
         public double InkWidth { get; set; } = 2.5;
         [JsonProperty("isShowCursor")]
         public bool IsShowCursor { get; set; } = false;
+    }
+
+    public class Gesture
+    {
+        [JsonProperty("isEnableTwoFingerRotation")]
+        public bool IsEnableTwoFingerRotation { get; set; } = false;
+        [JsonProperty("isEnableTwoFingerGestureInPresentationMode")]
+        public bool IsEnableTwoFingerGestureInPresentationMode { get; set; } = false;
     }
 
     public class Startup

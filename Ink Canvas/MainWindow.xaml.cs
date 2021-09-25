@@ -242,6 +242,15 @@ namespace Ink_Canvas
                 ToggleSwitchShowCanvasAtNewSlideShow.IsOn = false;
             }
 
+            if (Settings.Gesture.IsEnableTwoFingerRotation)
+            {
+                ToggleSwitchEnableTwoFingerRotation.IsOn = true;
+            }
+            if (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode)
+            {
+                ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn = true;
+            }
+
             if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + "\\InkCanvas" + ".lnk"))
             {
                 ToggleSwitchRunAtStartup.IsOn = true;
@@ -537,8 +546,7 @@ namespace Ink_Canvas
         private MatrixTransform imageTransform;
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
-            //两指缩放
-            if (dec.Count == 2)
+            if (dec.Count >= 2 && (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible))
             {
                 ManipulationDelta md = e.DeltaManipulation;
                 Vector trans = md.Translation;  // 获得位移矢量
@@ -554,31 +562,20 @@ namespace Ink_Canvas
 
                 // Update matrix to reflect translation/rotation
                 m.Translate(trans.X, trans.Y);  // 移动
-                                                //m.RotateAt(rotate, center.X, center.Y);  // 旋转
+                if (Settings.Gesture.IsEnableTwoFingerRotation)
+                {
+                    m.RotateAt(rotate, center.X, center.Y);  // 旋转
+                }
                 m.ScaleAt(scale.X, scale.Y, center.X, center.Y);  // 缩放
 
                 foreach (Stroke stroke in inkCanvas.Strokes)
                 {
-                    //Matrix matrix = new Matrix();
-                    //matrix.ScaleAt(e.DeltaManipulation.Scale.X, e.DeltaManipulation.Scale.Y, centerPoint.X, centerPoint.Y);
-                    //stroke.Transform(matrix, false);
-
-
                     stroke.Transform(m, false);
+
                     stroke.DrawingAttributes.Width *= md.Scale.X;
                     stroke.DrawingAttributes.Height *= md.Scale.Y;
                 }
             }
-            ////三指滑动
-            //if (dec.Count == 3)
-            //{
-            //    foreach (Stroke stroke in inkCanvas.Strokes)
-            //    {
-            //        Matrix matrix = new Matrix();
-            //        matrix.Translate(e.DeltaManipulation.Translation.X, e.DeltaManipulation.Translation.Y);
-            //        stroke.Transform(matrix, false);
-            //    }
-            //}
         }
 
         int currentMode = 0;
@@ -677,10 +674,12 @@ namespace Ink_Canvas
             if (StackPanelMain.HorizontalAlignment == HorizontalAlignment.Right)
             {
                 StackPanelMain.HorizontalAlignment = HorizontalAlignment.Left;
+                StackPanelShapes.HorizontalAlignment = HorizontalAlignment.Right;
             }
             else
             {
                 StackPanelMain.HorizontalAlignment = HorizontalAlignment.Right;
+                StackPanelShapes.HorizontalAlignment = HorizontalAlignment.Left;
             }
         }
 
@@ -814,11 +813,12 @@ namespace Ink_Canvas
                 StackPanelPPTControls.Visibility = Visibility.Visible;
                 BtnPPTSlideShow.Visibility = Visibility.Collapsed;
                 BtnPPTSlideShowEnd.Visibility = Visibility.Visible;
-                StackPanelMain.Margin = new Thickness(10, 0, 10, 10);
+                ViewBoxStackPanelMain.Margin = new Thickness(10, 10, 10, 10);
                 if (Settings.Behavior.IsShowCanvasAtNewSlideShow && Main_Grid.Background == Brushes.Transparent)
                 {
                     BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
                 }
+                inkCanvas.Strokes.Clear();
             });
             previousSlideID = Wn.View.CurrentShowPosition;
         }
@@ -830,7 +830,7 @@ namespace Ink_Canvas
                 BtnPPTSlideShow.Visibility = Visibility.Visible;
                 BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
                 StackPanelPPTControls.Visibility = Visibility.Collapsed;
-                StackPanelMain.Margin = new Thickness(10, 0, 10, 55);
+                ViewBoxStackPanelMain.Margin = new Thickness(10, 10, 10, 55);
                 inkCanvas.Strokes.Clear();
                 if (Main_Grid.Background != Brushes.Transparent)
                 {
@@ -1312,6 +1312,14 @@ namespace Ink_Canvas
 
         int drawingShapeMode = 0;
 
+        private void BtnPen_Click(object sender, RoutedEventArgs e)
+        {
+            forceEraser = false;
+            drawingShapeMode = 0;
+            inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+            inkCanvas.IsManipulationEnabled = true;
+        }
+
         private void BtnDrawLine_Click(object sender, RoutedEventArgs e)
         {
             forceEraser = true;
@@ -1499,6 +1507,24 @@ namespace Ink_Canvas
         {
             lastTempStroke = null;
             isMouseDown = false;
+        }
+
+        private void ToggleSwitchEnableTwoFingerRotation_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsEnableTwoFingerRotation = ToggleSwitchEnableTwoFingerRotation.IsOn;
+
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchEnableTwoFingerGestureInPresentationMode_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode = ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn;
+
+            SaveSettingsToFile();
         }
     }
 

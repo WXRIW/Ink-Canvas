@@ -92,6 +92,12 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchShowCursor" Header="显示画笔光标" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCursor_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
+                        <GroupBox Header="手势">
+                            <ui:SimpleStackPanel Spacing="12">
+                                <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerRotation" Header="允许双指旋转" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerRotation_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerGestureInPresentationMode" Header="允许幻灯片模式下的双指手势" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerGestureInPresentationMode_Toggled"/>
+                            </ui:SimpleStackPanel>
+                        </GroupBox>
                         <GroupBox Header="启动">
                             <ui:SimpleStackPanel Spacing="12">
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoHideCanvas" Header="自动隐藏画板" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoHideCanvas_Toggled"/>
@@ -167,7 +173,7 @@
             </Grid>
         </Border>
 
-        <Viewbox Margin="10,10,10,55" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="46">
+        <Viewbox Name="ViewBoxStackPanelMain" Margin="10,10,10,55" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="46">
             <StackPanel Name="StackPanelMain" Width="46">
                 <StackPanel Name="StackPanelControl">
                     <Button Name="BtnExit" Content="退出" FontFamily="Microsoft YaHei UI"
@@ -194,21 +200,6 @@
                                      OnContent="" OffContent="" Toggled="ToggleSwitchModeFinger_Toggled"/>
                         </Viewbox>
                     </StackPanel>
-                    <Button Name="BtnDrawLine" Content="直线" Visibility="Visible" FontFamily="Microsoft YaHei UI"
-                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnDrawLine_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
-                    <Button Name="BtnDrawArrow" Content="箭头" Visibility="Visible" FontFamily="Microsoft YaHei UI"
-                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnDrawArrow_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
-                    <Button Name="BtnDrawRectangle" Content="矩形" Visibility="Visible" FontFamily="Microsoft YaHei UI"
-                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnDrawRectangle_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
-                    <Button Name="BtnDrawEllipse" Content="椭圆" Visibility="Visible" FontFamily="Microsoft YaHei UI"
-                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnDrawEllipse_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
-                    <Button Name="BtnSelect" Content="选择" Visibility="Visible" FontFamily="Microsoft YaHei UI"
-                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnSelect_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
                     <Button Name="BtnThickness" Content="粗细" Visibility="Collapsed" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                         Click="BtnThickness_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
@@ -255,25 +246,44 @@
                     Click="BtnPPTSlideShowEnd_Click"  Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
                     <StackPanel Name="StackPanelPPTControls" Visibility="Collapsed">
                         <Button x:Name="BtnPPTSlidesUp" Content="↑" FontFamily="Microsoft YaHei UI"
-                    Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                    Click="BtnPPTSlidesUp_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                                Click="BtnPPTSlidesUp_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
                         <Button x:Name="BtnPPTSlidesDown" Content="↓" FontFamily="Microsoft YaHei UI"
-                    Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                    Click="BtnPPTSlidesDown_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                                Click="BtnPPTSlidesDown_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
                     </StackPanel>
                     <Button x:Name="BtnSwitchSide" Content="⇆" FontFamily="Microsoft YaHei UI"
-                    Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                    Click="BtnSwitchSide_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                            Click="BtnSwitchSide_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
                 </StackPanel>
                 <Button x:Name="BtnHideControl" Content="⇅" FontFamily="Microsoft YaHei UI"
-                    Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                    Click="BtnHideControl_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
-
+                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                        Click="BtnHideControl_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
                 <TextBlock Visibility="{Binding ElementName=GroupBoxMASEZVersion, Path=Visibility}" Text="二中专版" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,0" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
                 <Image Visibility="{Binding ElementName=GroupBoxMASEZVersion, Path=Visibility}" Source="logo2.png" Margin="0,-5,0,-15"/>
                 <TextBlock Text="Developer" FontSize="8.5" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,0" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
                 <TextBlock Text="XY Wang" FontSize="9" HorizontalAlignment="Center" Margin="0,3,0,0" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
             </StackPanel>
         </Viewbox>
+        <StackPanel Name="StackPanelShapes" Margin="10,10,10,55" HorizontalAlignment="Left" VerticalAlignment="Center" Width="46" Visibility="{Binding ElementName=inkCanvas, Path=Visibility}">
+            <Button Name="BtnSelect" Content="选择&#x000A;墨迹" Visibility="Visible" FontFamily="Microsoft YaHei UI"
+                        Margin="0,0,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                        Click="BtnSelect_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+            <Button Name="BtnDrawLine" Content="直线" Visibility="Visible" FontFamily="Microsoft YaHei UI"
+                        Margin="0,25,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                        Click="BtnDrawLine_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+            <Button Name="BtnDrawArrow" Content="箭头" Visibility="Visible" FontFamily="Microsoft YaHei UI"
+                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                        Click="BtnDrawArrow_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+            <Button Name="BtnDrawRectangle" Content="矩形" Visibility="Visible" FontFamily="Microsoft YaHei UI"
+                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                        Click="BtnDrawRectangle_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+            <Button Name="BtnDrawEllipse" Content="椭圆" Visibility="Visible" FontFamily="Microsoft YaHei UI"
+                        Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                        Click="BtnDrawEllipse_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+            <Button Name="BtnPen" Content="笔" Visibility="Visible" FontFamily="Microsoft YaHei UI"
+                        Margin="0,25,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                        Click="BtnPen_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+        </StackPanel>
     </Grid>
 </Window>
