@@ -247,16 +247,38 @@ namespace Ink_Canvas
                             }
                         }
 
-                        if (OAUS.Core.VersionHelper.HasNewVersion(GetIp("ink.wxriw.cn"), 19570))
+                        try
                         {
-                            string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
-                            System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
-
-                            Application.Current.Dispatcher.Invoke(() =>
+                            if (response.Contains("<update>"))
                             {
-                                Close();
-                            });
+                                string str = Strings.Mid(response, response.IndexOf("<update>") + 9);
+                                if (str.Contains("<update>"))
+                                {
+                                    str = Strings.Left(str, str.IndexOf("<update>")).Trim();
+                                    if (str.Length > 0)
+                                    {
+                                        string updateIP;
+                                        int updatePort;
+
+                                        string[] vs = str.Split(':');
+                                        updateIP = vs[0];
+                                        updatePort = int.Parse(vs[1]);
+
+                                        if (OAUS.Core.VersionHelper.HasNewVersion(GetIp(updateIP), updatePort))
+                                        {
+                                            string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
+                                            System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
+
+                                            Application.Current.Dispatcher.Invoke(() =>
+                                            {
+                                                Close();
+                                            });
+                                        }
+                                    }
+                                }
+                            }
                         }
+                        catch { }
                     }
                 }
                 catch { }
