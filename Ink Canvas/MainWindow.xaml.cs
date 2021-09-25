@@ -62,25 +62,28 @@ namespace Ink_Canvas
                 drawingAttributes = inkCanvas.DefaultDrawingAttributes;
                 drawingAttributes.Color = Ink_DefaultColor;
 
-                if (File.Exists("Thickness.ini"))
-                {
-                    try
-                    {
-                        double d = double.Parse(File.ReadAllText("Thickness.ini"));
-                        drawingAttributes.Height = d;
-                        drawingAttributes.Width = d;
-                    }
-                    catch
-                    {
-                        drawingAttributes.Height = 2.5;
-                        drawingAttributes.Width = 2.5;
-                    }
-                }
-                else
-                {
-                    drawingAttributes.Height = 2.5;
-                    drawingAttributes.Width = 2.5;
-                }
+                drawingAttributes.Height = 2.5;
+                drawingAttributes.Width = 2.5;
+
+                //if (File.Exists("Thickness.ini"))
+                //{
+                //    try
+                //    {
+                //        double d = double.Parse(File.ReadAllText("Thickness.ini"));
+                //        drawingAttributes.Height = d;
+                //        drawingAttributes.Width = d;
+                //    }
+                //    catch
+                //    {
+                //        drawingAttributes.Height = 2.5;
+                //        drawingAttributes.Width = 2.5;
+                //    }
+                //}
+                //else
+                //{
+                //    drawingAttributes.Height = 2.5;
+                //    drawingAttributes.Width = 2.5;
+                //}
 
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 inkCanvas.Gesture += InkCanvas_Gesture;
@@ -222,7 +225,7 @@ namespace Ink_Canvas
             new Thread(new ThreadStart(() => {
                 try
                 {
-                    string response = GetWebClient("http://e.wxriw.cn:1957");
+                    string response = GetWebClient("http://ink.wxriw.cn:1957");
                     if (response.Contains("Special Version"))
                     {
                         isAutoUpdateEnabled = true;
@@ -328,6 +331,14 @@ namespace Ink_Canvas
             }
 
             loadPenCanvas();
+
+            if (Settings.Canvas != null)
+            {
+                drawingAttributes.Height = Settings.Canvas.InkWidth;
+                drawingAttributes.Width = Settings.Canvas.InkWidth;
+
+                InkWidthSlider.Value = Settings.Canvas.InkWidth * 2;
+            }
 
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             TextBlockVersion.Text = version.ToString();
@@ -804,6 +815,20 @@ namespace Ink_Canvas
             });
         }
 
+        private void Main_Grid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (StackPanelPPTControls.Visibility != Visibility.Visible) return;
+
+            if (e.Key == Key.Down || e.Key == Key.PageDown || e.Key == Key.Right)
+            {
+                BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
+            }
+            if (e.Key == Key.Up || e.Key == Key.PageUp || e.Key == Key.Left)
+            {
+                BtnPPTSlidesUp_Click(BtnPPTSlidesUp, null);
+            }
+        }
+
         int previousSlideID = 0;
         MemoryStream[] memoryStreams = new MemoryStream[50];
 
@@ -885,19 +910,18 @@ namespace Ink_Canvas
 
         private void BtnPPTSlideShow_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                new Thread(new ThreadStart(() => {
-                    //presentation.SlideShowSettings.StartingSlide = 1;// pptApplication.ActiveWindow.Selection.SlideRange.SlideNumber;
-                    //presentation.SlideShowSettings.EndingSlide = 1;
-                    presentation.SlideShowSettings.Run();
-                })).Start();
-                if (currentMode == 1)
+            new Thread(new ThreadStart(() => {
+                try
                 {
-                    BtnSwitch_Click(BtnSwitch, e);
+                    presentation.SlideShowSettings.Run();
                 }
+                catch { }
+            })).Start();
+
+            if (currentMode == 1)
+            {
+                BtnSwitch_Click(BtnSwitch, e);
             }
-            catch { }
         }
 
         private void BtnPPTSlideShowEnd_Click(object sender, RoutedEventArgs e)
@@ -1052,6 +1076,22 @@ namespace Ink_Canvas
             {
                 StackPanelModeFinger.Visibility = Visibility.Collapsed;
             }
+        }
+
+        #endregion
+
+        #region Canvas
+
+        private void InkWidthSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (!isLoaded) return;
+
+            drawingAttributes.Height = ((Slider)sender).Value / 2;
+            drawingAttributes.Width = ((Slider)sender).Value / 2;
+
+            Settings.Canvas.InkWidth = ((Slider)sender).Value / 2;
+
+            SaveSettingsToFile();
         }
 
         #endregion

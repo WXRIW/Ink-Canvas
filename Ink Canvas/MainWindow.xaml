@@ -26,7 +26,7 @@
                     CanExecute="CommandBinding_CanExecute"
                     Executed="KeyExit"/>
     </Window.CommandBindings>
-    <Grid x:Name="Main_Grid" Background="#01FFFFFF">
+    <Grid x:Name="Main_Grid" Background="#01FFFFFF" PreviewKeyDown="Main_Grid_PreviewKeyDown">
         <Grid Name="GridBackgroundCoverHolder">
             <Grid Name="GridBackgroundCover" Visibility="Hidden" Background="#FFF2F2F2"/>
         </Grid>
@@ -66,6 +66,23 @@
                                 <TextBlock Text="对 WPS Office 支持时会导致 WPS Office 关闭时卡顿，故禁用。" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchSupportWPS" Header="WPS Office 支持" IsOn="False" IsEnabled="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportPowerPoint_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowCanvasAtNewSlideShow" Header="开始放映时自动显示画板" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCanvasAtNewSlideShow_Toggled"/>
+                            </ui:SimpleStackPanel>
+                        </GroupBox>
+                        <GroupBox Header="画板">
+                            <ui:SimpleStackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal">
+                                    <Slider x:Name="InkWidthSlider"
+                                            HorizontalAlignment="Left"
+                                            Minimum="1" Maximum="20"
+                                            Width="330" FontFamily="Microsoft YaHei UI" 
+                                            ui:ControlHelper.Header="画笔粗细"
+                                            IsSnapToTickEnabled="True" Value="5"
+                                            TickFrequency="1" TickPlacement="Both"
+                                            ValueChanged="InkWidthSlider_ValueChanged"/>
+                                    <TextBlock Text="{Binding Value, ElementName=InkWidthSlider, Mode=OneWay}"
+                                               VerticalAlignment="Bottom" Margin="10,0,0,8"
+                                               FontSize="14"/>
+                                </StackPanel>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="启动">

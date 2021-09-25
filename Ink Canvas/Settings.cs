@@ -11,6 +11,8 @@ namespace Ink_Canvas
     {
         [JsonProperty("behavior")]
         public Behavior Behavior { get; set; } = new Behavior();
+        [JsonProperty("canvas")]
+        public Canvas Canvas { get; set; } = new Canvas();
         [JsonProperty("startup")]
         public Startup Startup { get; set; } = new Startup();
         [JsonProperty("appearance")]
@@ -23,6 +25,12 @@ namespace Ink_Canvas
         public bool PowerPointSupport { get; set; } = true;
         [JsonProperty("isShowCanvasAtNewSlideShow")]
         public bool IsShowCanvasAtNewSlideShow { get; set; } = true;
+    }
+
+    public class Canvas
+    {
+        [JsonProperty("inkWidth")]
+        public double InkWidth { get; set; } = 2.5;
     }
 
     public class Startup
