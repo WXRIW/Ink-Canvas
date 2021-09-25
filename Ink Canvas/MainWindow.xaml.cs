@@ -485,6 +485,7 @@ namespace Ink_Canvas
                     GridBackgroundCover.Visibility = Visibility.Hidden;
                 }
             }
+            inkCanvas.IsManipulationEnabled = true;
             inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
         }
 
@@ -1320,6 +1321,13 @@ namespace Ink_Canvas
             inkCanvas_EditingModeChanged(inkCanvas, null);
 
             SaveSettingsToFile();
+        }
+
+        private void BtnSelect_Click(object sender, RoutedEventArgs e)
+        {
+            forceEraser = true;
+            inkCanvas.EditingMode = InkCanvasEditingMode.Select;
+            inkCanvas.IsManipulationEnabled = false;
         }
     }
 
