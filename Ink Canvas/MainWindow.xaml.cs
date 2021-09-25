@@ -67,26 +67,6 @@ namespace Ink_Canvas
                 drawingAttributes.Height = 2.5;
                 drawingAttributes.Width = 2.5;
 
-                //if (File.Exists("Thickness.ini"))
-                //{
-                //    try
-                //    {
-                //        double d = double.Parse(File.ReadAllText("Thickness.ini"));
-                //        drawingAttributes.Height = d;
-                //        drawingAttributes.Width = d;
-                //    }
-                //    catch
-                //    {
-                //        drawingAttributes.Height = 2.5;
-                //        drawingAttributes.Width = 2.5;
-                //    }
-                //}
-                //else
-                //{
-                //    drawingAttributes.Height = 2.5;
-                //    drawingAttributes.Width = 2.5;
-                //}
-
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 inkCanvas.Gesture += InkCanvas_Gesture;
             }
@@ -131,100 +111,9 @@ namespace Ink_Canvas
         bool isAutoUpdateEnabled = false;
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("Ink Canvas by WXRIW\n" +
-            //    "Version 1.0.0_beta\n\n" +
-            //    "HotKeys:\n" +
-            //    "Alt + 1: Clean the ink and show or hide the canvas.\n" +
-            //    "Alt + 2: Show or hide the canvas.\n" +
-            //    "Alt + 3: Switch mode (Ink & Eraser)\n" +
-            //    "Alt + 4: Exit.\n" +
-            //    "Ctrl + Z: Erase the last inking.\n" +
-            //    "\n" +
-            //    "You can put an unsigned integer in Thinkness.ini to customize the ink's thinkness.\n" +
-            //    "\n\n" +
-            //    "墨迹画板 by WXRIW\n" +
-            //    "版本 1.0.0_beta\n\n" +
-            //    "快捷键：\n" +
-            //    "Alt + 1: 清除墨迹并显示或隐藏画板\n" +
-            //    "Alt + 2: 显示或隐藏画板\n" +
-            //    "Alt + 3: 切换模式 (墨迹 & 橡皮擦)\n" +
-            //    "Alt + 4: 退出\n" +
-            //    "Ctrl + Z: 删除上一笔\n" +
-            //    "\n" +
-            //    "你可以新建Thinkness.ini文件，在里面放一个正整数，来自定义墨迹的粗细。\n" +
-            //    "\n" +
-            //    "GitHub: https://github.com/WXRIW/Ink-Canvas" +
-            //    "");
-
-            //string failedHotKeys = "";
-
-            //if (Hotkey.Regist(this, HotkeyModifiers.MOD_ALT, Key.D1, () =>
-            //{
-            //    if (isInkCanvasVisible)
-            //    {
-            //        Main_Grid.Visibility = Visibility.Hidden;
-            //        isInkCanvasVisible = false;
-            //        //inkCanvas.Strokes.Clear();
-            //        WindowState = WindowState.Minimized;
-            //    }
-            //    else
-            //    {
-            //        Main_Grid.Visibility = Visibility.Visible;
-            //        isInkCanvasVisible = true;
-            //        inkCanvas.Strokes.Clear();
-            //        WindowState = WindowState.Maximized;
-            //    }
-            //}) == false)
-            //{
-            //    failedHotKeys += Environment.NewLine + "Alt + 1";
-            //}
-
-            //if (Hotkey.Regist(this, HotkeyModifiers.MOD_ALT, Key.D2, () =>
-            //{
-            //    if (isInkCanvasVisible)
-            //    {
-            //        Main_Grid.Visibility = Visibility.Hidden;
-            //        isInkCanvasVisible = false;
-            //        //inkCanvas.Strokes.Clear();
-            //        WindowState = WindowState.Minimized;
-            //    }
-            //    else
-            //    {
-            //        Main_Grid.Visibility = Visibility.Visible;
-            //        isInkCanvasVisible = true;
-            //        //inkCanvas.Strokes.Clear();
-            //        WindowState = WindowState.Maximized;
-            //    }
-            //}) == false)
-            //{
-            //    failedHotKeys += Environment.NewLine + "Alt + 2";
-            //}
-
-            //if (Hotkey.Regist(this, HotkeyModifiers.MOD_ALT, Key.D3, () =>
-            //{
-            //    if (inkCanvas.EditingMode != InkCanvasEditingMode.Ink)
-            //    {
-            //        inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
-            //    }
-            //    else
-            //    {
-            //        inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
-            //    }
-            //}) == false)
-            //{
-            //    failedHotKeys += Environment.NewLine + "Alt + 3";
-            //}
-
-            //if (Hotkey.Regist(this, HotkeyModifiers.MOD_ALT, Key.D4, () =>
-            //{
-            //    Close();
-            //}) == false)
-            //{
-            //    failedHotKeys += Environment.NewLine + "Alt + 4";
-            //}
-
             //检查
-            new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() =>
+            {
                 try
                 {
                     string response = GetWebClient("http://ink.wxriw.cn:1957");
@@ -397,7 +286,7 @@ namespace Ink_Canvas
             }
             catch { }
         }
-        
+
         private void KeyExit(object sender, ExecutedRoutedEventArgs e)
         {
             //if (isInkCanvasVisible)
@@ -415,10 +304,10 @@ namespace Ink_Canvas
             //    WindowState = WindowState.Maximized;
             //}
         }
-        
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.Escape)
+            if (e.Key == Key.Escape)
             {
                 KeyExit(null, null);
             }
@@ -443,7 +332,7 @@ namespace Ink_Canvas
 
         private void BtnThickness_Click(object sender, RoutedEventArgs e)
         {
-            
+
         }
 
         bool forceEraser = false;
@@ -452,6 +341,8 @@ namespace Ink_Canvas
         {
             forceEraser = true;
             inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+            drawingShapeMode = 0;
+            inkCanvas_EditingModeChanged(inkCanvas, null);
         }
 
         private void BtnClear_Click(object sender, RoutedEventArgs e)
@@ -488,6 +379,7 @@ namespace Ink_Canvas
                 }
             }
             inkCanvas.IsManipulationEnabled = true;
+            drawingShapeMode = 0;
             inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
         }
 
@@ -565,11 +457,12 @@ namespace Ink_Canvas
 
         #endregion
 
-        bool isTouchDown = false;
+        bool isTouchDown = false; Point iniP = new Point(0, 0);
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
         {
+            iniP = e.GetTouchPoint(inkCanvas).Position;
             if (forceEraser) return;
-            
+
             //Label.Content = e.GetTouchPoint(null).Bounds.Width.ToString();
             if (ToggleSwitchAutoWeight.IsOn && e.GetTouchPoint(null).Bounds.Width != 0)
             {
@@ -589,14 +482,11 @@ namespace Ink_Canvas
             }
         }
 
-        private void Main_Grid_TouchUp(object sender, TouchEventArgs e)
-        {
-        } 
-        
         //记录触摸设备ID
         private List<int> dec = new List<int>();
         //中心点
         System.Windows.Point centerPoint;
+        InkCanvasEditingMode lastInkCanvasEditingMode = InkCanvasEditingMode.Ink;
 
         private void inkCanvas_PreviewTouchDown(object sender, TouchEventArgs e)
         {
@@ -612,6 +502,7 @@ namespace Ink_Canvas
             {
                 if (inkCanvas.EditingMode != InkCanvasEditingMode.None)
                 {
+                    lastInkCanvasEditingMode = inkCanvas.EditingMode;
                     inkCanvas.EditingMode = InkCanvasEditingMode.None;
                 }
             }
@@ -624,7 +515,7 @@ namespace Ink_Canvas
             {
                 if (inkCanvas.EditingMode == InkCanvasEditingMode.None)
                 {
-                    inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+                    inkCanvas.EditingMode = lastInkCanvasEditingMode;
                 }
             }
             dec.Remove(e.TouchDevice.Id);
@@ -763,7 +654,7 @@ namespace Ink_Canvas
 
         private void BtnHideInkCanvas_Click(object sender, RoutedEventArgs e)
         {
-            if(Main_Grid.Background == Brushes.Transparent)
+            if (Main_Grid.Background == Brushes.Transparent)
             {
                 Main_Grid.Background = new SolidColorBrush(StringToColor("#01FFFFFF"));
                 inkCanvas.Visibility = Visibility.Visible;
@@ -971,7 +862,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Save(ms);
                     ms.Position = 0;
                     memoryStreams[previousSlideID] = ms;
-                    
+
                     inkCanvas.Strokes.Clear();
                     try
                     {
@@ -997,7 +888,8 @@ namespace Ink_Canvas
 
             try
             {
-                new Thread(new ThreadStart(() => {
+                new Thread(new ThreadStart(() =>
+                {
                     pptApplication.SlideShowWindows[1].View.Application.SlideShowWindows[1].Activate();
                     pptApplication.SlideShowWindows[1].View.Previous();
                 })).Start();
@@ -1019,7 +911,8 @@ namespace Ink_Canvas
 
             try
             {
-                new Thread(new ThreadStart(() => {
+                new Thread(new ThreadStart(() =>
+                {
                     pptApplication.SlideShowWindows[1].View.Application.SlideShowWindows[1].Activate();
                     pptApplication.SlideShowWindows[1].View.Next();
                 })).Start();
@@ -1039,7 +932,8 @@ namespace Ink_Canvas
 
         private void BtnPPTSlideShow_Click(object sender, RoutedEventArgs e)
         {
-            new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() =>
+            {
                 try
                 {
                     presentation.SlideShowSettings.Run();
@@ -1055,7 +949,8 @@ namespace Ink_Canvas
 
         private void BtnPPTSlideShowEnd_Click(object sender, RoutedEventArgs e)
         {
-            new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() =>
+            {
                 try
                 {
                     pptApplication.SlideShowWindows[1].View.Exit();
@@ -1356,7 +1251,7 @@ namespace Ink_Canvas
         {
             if (Settings.Canvas.IsShowCursor)
             {
-                if(((InkCanvas)sender).EditingMode == InkCanvasEditingMode.Ink)
+                if (((InkCanvas)sender).EditingMode == InkCanvasEditingMode.Ink || drawingShapeMode != 0)
                 {
                     ((InkCanvas)sender).ForceCursor = true;
                 }
@@ -1410,8 +1305,200 @@ namespace Ink_Canvas
         private void BtnSelect_Click(object sender, RoutedEventArgs e)
         {
             forceEraser = true;
+            drawingShapeMode = 0;
             inkCanvas.EditingMode = InkCanvasEditingMode.Select;
             inkCanvas.IsManipulationEnabled = false;
+        }
+
+        int drawingShapeMode = 0;
+
+        private void BtnDrawLine_Click(object sender, RoutedEventArgs e)
+        {
+            forceEraser = true;
+            drawingShapeMode = 1;
+            inkCanvas.EditingMode = InkCanvasEditingMode.None;
+            inkCanvas.IsManipulationEnabled = true;
+        }
+
+        private void BtnDrawArrow_Click(object sender, RoutedEventArgs e)
+        {
+            forceEraser = true;
+            drawingShapeMode = 2;
+            inkCanvas.EditingMode = InkCanvasEditingMode.None;
+            inkCanvas.IsManipulationEnabled = true;
+        }
+
+        private void BtnDrawRectangle_Click(object sender, RoutedEventArgs e)
+        {
+            forceEraser = true;
+            drawingShapeMode = 3;
+            inkCanvas.EditingMode = InkCanvasEditingMode.None;
+            inkCanvas.IsManipulationEnabled = true;
+        }
+
+        private void BtnDrawEllipse_Click(object sender, RoutedEventArgs e)
+        {
+            forceEraser = true;
+            drawingShapeMode = 4;
+            inkCanvas.EditingMode = InkCanvasEditingMode.None;
+            inkCanvas.IsManipulationEnabled = true;
+        }
+
+        private void inkCanvas_TouchMove(object sender, TouchEventArgs e)
+        {
+            if (drawingShapeMode != 0)
+            {
+                if (isWaitUntilNextTouchDown) return;
+                if (dec.Count > 1)
+                {
+                    isWaitUntilNextTouchDown = true;
+                    try
+                    {
+                        inkCanvas.Strokes.Remove(lastTempStroke);
+                    }
+                    catch { }
+                    return;
+                }
+                if (inkCanvas.EditingMode != InkCanvasEditingMode.None)
+                {
+                    inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                }
+            }
+            MouseTouchMove(e.GetTouchPoint(inkCanvas).Position);
+        }
+
+        private void MouseTouchMove(Point endP)
+        {
+            //System.Windows.Point endP = e.GetTouchPoint(inkCanvas).Position;
+            List<System.Windows.Point> pointList;
+            StylusPointCollection point;
+            Stroke stroke;
+            switch (drawingShapeMode)
+            {
+                case 1:
+                    pointList = new List<System.Windows.Point>{
+                        new System.Windows.Point(iniP.X, iniP.Y),
+                        new System.Windows.Point(endP.X, endP.Y)
+                    };
+                    point = new StylusPointCollection(pointList);
+                    stroke = new Stroke(point)
+                    {
+                        DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                    };
+                    try
+                    {
+                        inkCanvas.Strokes.Remove(lastTempStroke);
+                    }
+                    catch { }
+                    lastTempStroke = stroke;
+                    inkCanvas.Strokes.Add(stroke);
+                    break;
+                case 2:
+                    double w = 30, h = 10;
+                    double theta = Math.Atan2(iniP.Y - endP.Y, iniP.X - endP.X);
+                    double sint = Math.Sin(theta);
+                    double cost = Math.Cos(theta);
+
+                    pointList = new List<Point>
+                    {
+                        new Point(iniP.X, iniP.Y),
+                        new Point(endP.X , endP.Y),
+                        new Point(endP.X + (w*cost - h*sint), endP.Y + (w*sint + h*cost)),
+                        new Point(endP.X,endP.Y),
+                        new Point(endP.X + (w*cost + h*sint), endP.Y - (h*cost - w*sint))
+                    };
+                    point = new StylusPointCollection(pointList);
+                    stroke = new Stroke(point)
+                    {
+                        DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                    };
+                    try
+                    {
+                        inkCanvas.Strokes.Remove(lastTempStroke);
+                    }
+                    catch { }
+                    lastTempStroke = stroke;
+                    inkCanvas.Strokes.Add(stroke);
+                    break;
+                case 3:
+                    pointList = new List<System.Windows.Point>{
+                        new System.Windows.Point(iniP.X, iniP.Y),
+                        new System.Windows.Point(iniP.X, endP.Y),
+                        new System.Windows.Point(endP.X, endP.Y),
+                        new System.Windows.Point(endP.X, iniP.Y),
+                        new System.Windows.Point(iniP.X, iniP.Y)
+                    };
+                    point = new StylusPointCollection(pointList);
+                    stroke = new Stroke(point)
+                    {
+                        DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                    };
+                    try
+                    {
+                        inkCanvas.Strokes.Remove(lastTempStroke);
+                    }
+                    catch { }
+                    lastTempStroke = stroke;
+                    inkCanvas.Strokes.Add(stroke);
+                    break;
+                case 4:
+                    pointList = GenerateEclipseGeometry(iniP, endP);
+                    point = new StylusPointCollection(pointList);
+                    stroke = new Stroke(point)
+                    {
+                        DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                    };
+                    try
+                    {
+                        inkCanvas.Strokes.Remove(lastTempStroke);
+                    }
+                    catch { }
+                    lastTempStroke = stroke;
+                    inkCanvas.Strokes.Add(stroke);
+                    break;
+            }
+        }
+
+        private void Main_Grid_TouchUp(object sender, TouchEventArgs e)
+        {
+            lastTempStroke = null;
+            if (dec.Count == 0)
+            {
+                isWaitUntilNextTouchDown = false;
+            }
+        }
+        Stroke lastTempStroke = null; bool isWaitUntilNextTouchDown = false;
+        private List<System.Windows.Point> GenerateEclipseGeometry(System.Windows.Point st, System.Windows.Point ed)
+        {
+            double a = 0.5 * (ed.X - st.X);
+            double b = 0.5 * (ed.Y - st.Y);
+            List<System.Windows.Point> pointList = new List<System.Windows.Point>();
+            for (double r = 0; r <= 2 * Math.PI; r = r + 0.01)
+            {
+                pointList.Add(new System.Windows.Point(0.5 * (st.X + ed.X) + a * Math.Cos(r), 0.5 * (st.Y + ed.Y) + b * Math.Sin(r)));
+            }
+            return pointList;
+        }
+
+        bool isMouseDown = false;
+        private void inkCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            iniP = e.GetPosition(inkCanvas);
+            isMouseDown = true;
+        }
+
+        private void inkCanvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isMouseDown)
+            {
+                MouseTouchMove(e.GetPosition(inkCanvas));
+            }
+        }
+
+        private void inkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            lastTempStroke = null;
+            isMouseDown = false;
         }
     }
 
