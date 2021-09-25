@@ -35,7 +35,10 @@
                    TouchUp="Main_Grid_TouchUp" TouchDown="Main_Grid_TouchDown"
                    ManipulationDelta="Main_Grid_ManipulationDelta"
                    ManipulationCompleted="Main_Grid_ManipulationCompleted"
-                   IsManipulationEnabled="True" EditingModeChanged="inkCanvas_EditingModeChanged">
+                   IsManipulationEnabled="True" EditingModeChanged="inkCanvas_EditingModeChanged"
+                   PreviewTouchDown="inkCanvas_PreviewTouchDown"
+                   PreviewTouchUp="inkCanvas_PreviewTouchUp"
+                   ManipulationStarting="inkCanvas_ManipulationStarting">
             <!--<InkCanvas.DefaultDrawingAttributes>
                 <DrawingAttributes StylusTip="Ellipse" Height="8" Width="4" IgnorePressure="False" FitToCurve="True" >
                     <DrawingAttributes.StylusTipTransform>

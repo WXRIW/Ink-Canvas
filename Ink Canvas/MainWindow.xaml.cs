@@ -28,6 +28,8 @@ using System.Collections.ObjectModel;
 using System.Net;
 using Microsoft.VisualBasic;
 using System.Reflection;
+using System.Collections.Generic;
+using Point = System.Windows.Point;
 
 namespace Ink_Canvas
 {
@@ -589,6 +591,48 @@ namespace Ink_Canvas
 
         private void Main_Grid_TouchUp(object sender, TouchEventArgs e)
         {
+        } 
+        
+        //记录触摸设备ID
+        private List<int> dec = new List<int>();
+        //中心点
+        System.Windows.Point centerPoint;
+
+        private void inkCanvas_PreviewTouchDown(object sender, TouchEventArgs e)
+        {
+            dec.Add(e.TouchDevice.Id);
+            //设备1个的时候，记录中心点
+            if (dec.Count == 1)
+            {
+                TouchPoint touchPoint = e.GetTouchPoint(inkCanvas);
+                centerPoint = touchPoint.Position;
+            }
+            //设备两个及两个以上，将画笔功能关闭
+            if (dec.Count > 1)
+            {
+                if (inkCanvas.EditingMode != InkCanvasEditingMode.None)
+                {
+                    inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                }
+            }
+        }
+
+        private void inkCanvas_PreviewTouchUp(object sender, TouchEventArgs e)
+        {
+            //手势完成后切回之前的状态
+            if (dec.Count > 1)
+            {
+                if (inkCanvas.EditingMode == InkCanvasEditingMode.None)
+                {
+                    inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+                }
+            }
+            dec.Remove(e.TouchDevice.Id);
+        }
+
+        private void inkCanvas_ManipulationStarting(object sender, ManipulationStartingEventArgs e)
+        {
+            e.Mode = ManipulationModes.All;
         }
 
         private void Main_Grid_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
@@ -599,9 +643,49 @@ namespace Ink_Canvas
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             }
         }
+        private MatrixTransform imageTransform;
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
+            //两指缩放
+            if (dec.Count == 2)
+            {
+                ManipulationDelta md = e.DeltaManipulation;
+                Vector trans = md.Translation;  // 获得位移矢量
+                double rotate = md.Rotation;  // 获得旋转角度
+                Vector scale = md.Scale;  // 获得缩放倍数
 
+                Matrix m = new Matrix();
+
+                // Find center of element and then transform to get current location of center
+                FrameworkElement fe = e.Source as FrameworkElement;
+                Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+                center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+                // Update matrix to reflect translation/rotation
+                m.Translate(trans.X, trans.Y);  // 移动
+                                                //m.RotateAt(rotate, center.X, center.Y);  // 旋转
+                m.ScaleAt(scale.X, scale.Y, center.X, center.Y);  // 缩放
+
+                foreach (Stroke stroke in inkCanvas.Strokes)
+                {
+                    //Matrix matrix = new Matrix();
+                    //matrix.ScaleAt(e.DeltaManipulation.Scale.X, e.DeltaManipulation.Scale.Y, centerPoint.X, centerPoint.Y);
+                    //stroke.Transform(matrix, false);
+
+
+                    stroke.Transform(m, false);
+                }
+            }
+            ////三指滑动
+            //if (dec.Count == 3)
+            //{
+            //    foreach (Stroke stroke in inkCanvas.Strokes)
+            //    {
+            //        Matrix matrix = new Matrix();
+            //        matrix.Translate(e.DeltaManipulation.Translation.X, e.DeltaManipulation.Translation.Y);
+            //        stroke.Transform(matrix, false);
+            //    }
+            //}
         }
 
         int currentMode = 0;
