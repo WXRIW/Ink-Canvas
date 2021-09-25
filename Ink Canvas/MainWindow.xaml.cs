@@ -309,6 +309,10 @@ namespace Ink_Canvas
                 StackPanelModeFinger.Visibility = Visibility.Collapsed;
                 ToggleSwitchShowButtonModeFinger.IsOn = false;
             }
+            if (!Settings.Appearance.IsTransparentButtonBackground)
+            {
+                BtnExit.Background = new SolidColorBrush(StringToColor("#FFCCCCCC"));
+            }
 
             if (Settings.Behavior.PowerPointSupport)
             {
@@ -338,10 +342,23 @@ namespace Ink_Canvas
                 drawingAttributes.Width = Settings.Canvas.InkWidth;
 
                 InkWidthSlider.Value = Settings.Canvas.InkWidth * 2;
+
+                if (Settings.Canvas.IsShowCursor)
+                {
+                    ToggleSwitchShowCursor.IsOn = true;
+                    inkCanvas.ForceCursor = true;
+                }
+            }
+            else
+            {
+                Settings.Canvas = new Canvas();
             }
 
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             TextBlockVersion.Text = version.ToString();
+
+            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
 
             isLoaded = true;
         }
@@ -555,6 +572,7 @@ namespace Ink_Canvas
         {
             if (e.Manipulators.Count() == 0)
             {
+                if (forceEraser) return;
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             }
         }
@@ -615,6 +633,10 @@ namespace Ink_Canvas
                 {
                     inkCanvas.DefaultDrawingAttributes.Color = Colors.Black;
                 }
+            }
+            if (!Settings.Appearance.IsTransparentButtonBackground)
+            {
+                ToggleSwitchTransparentButtonBackground_Toggled(ToggleSwitchTransparentButtonBackground, null);
             }
         }
 
@@ -1221,6 +1243,61 @@ namespace Ink_Canvas
             IPHostEntry hostEntry = Dns.GetHostEntry(domainName);
             IPEndPoint ipEndPoint = new IPEndPoint(hostEntry.AddressList[0], 0);
             return ipEndPoint.Address.ToString();
+        }
+
+        private void inkCanvas_EditingModeChanged(object sender, RoutedEventArgs e)
+        {
+            if (Settings.Canvas.IsShowCursor)
+            {
+                if(((InkCanvas)sender).EditingMode == InkCanvasEditingMode.Ink)
+                {
+                    ((InkCanvas)sender).ForceCursor = true;
+                }
+                else
+                {
+                    ((InkCanvas)sender).ForceCursor = false;
+                }
+            }
+            else
+            {
+                ((InkCanvas)sender).ForceCursor = false;
+            }
+        }
+
+        private void ToggleSwitchTransparentButtonBackground_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Appearance.IsTransparentButtonBackground = ToggleSwitchTransparentButtonBackground.IsOn;
+            if (Settings.Appearance.IsTransparentButtonBackground)
+            {
+                BtnExit.Background = new SolidColorBrush(StringToColor("#7F909090"));
+            }
+            else
+            {
+                if (BtnSwitchTheme.Content.ToString() == "深色")
+                {
+                    //Light
+                    BtnExit.Background = new SolidColorBrush(StringToColor("#FFCCCCCC"));
+                }
+                else
+                {
+                    //Dark
+                    BtnExit.Background = new SolidColorBrush(StringToColor("#FF555555"));
+                }
+            }
+
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchShowCursor_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Canvas.IsShowCursor = ToggleSwitchShowCursor.IsOn;
+            inkCanvas_EditingModeChanged(inkCanvas, null);
+
+            SaveSettingsToFile();
         }
     }
 

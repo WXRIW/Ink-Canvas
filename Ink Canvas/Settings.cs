@@ -31,6 +31,8 @@ namespace Ink_Canvas
     {
         [JsonProperty("inkWidth")]
         public double InkWidth { get; set; } = 2.5;
+        [JsonProperty("isShowCursor")]
+        public bool IsShowCursor { get; set; } = false;
     }
 
     public class Startup
@@ -43,6 +45,8 @@ namespace Ink_Canvas
 
     public class Appearance
     {
+        [JsonProperty("isTransparentButtonBackground")]
+        public bool IsTransparentButtonBackground { get; set; } = true;
         [JsonProperty("isShowExitButton")]
         public bool IsShowExitButton { get; set; } = true;
         [JsonProperty("isShowEraserButton")]
