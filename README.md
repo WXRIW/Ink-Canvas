@@ -1,4 +1,6 @@
 # Ink-Canvas
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FWXRIW%2FInk-Canvas.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FWXRIW%2FInk-Canvas?ref=badge_shield)
+
 A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 
 学校从传统投影仪换成了希沃白板，由于自带的“希沃白板”软件太难用，也没有同类好用的画板软件，所以开发了该画板。
@@ -9,3 +11,7 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 当然，用手直接擦也是可以的（跟希沃白板一样）  
 支持 Active Pen (支持压感)  
 对于其他红外线屏也可以提供相似功能，欢迎大家测试！  
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FWXRIW%2FInk-Canvas.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FWXRIW%2FInk-Canvas?ref=badge_large)
