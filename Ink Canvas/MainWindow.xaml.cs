@@ -464,7 +464,7 @@ namespace Ink_Canvas
             if (forceEraser) return;
 
             //Label.Content = e.GetTouchPoint(null).Bounds.Width.ToString();
-            if (ToggleSwitchAutoWeight.IsOn && e.GetTouchPoint(null).Bounds.Width != 0)
+            if (e.GetTouchPoint(null).Bounds.Width != 0)
             {
                 inkCanvas.DefaultDrawingAttributes.Width = e.GetTouchPoint(null).Bounds.Width / 2 + 1;
                 inkCanvas.DefaultDrawingAttributes.Height = inkCanvas.DefaultDrawingAttributes.Width;
@@ -565,6 +565,8 @@ namespace Ink_Canvas
 
 
                     stroke.Transform(m, false);
+                    stroke.DrawingAttributes.Width *= md.Scale.X;
+                    stroke.DrawingAttributes.Height *= md.Scale.Y;
                 }
             }
             ////三指滑动
@@ -681,6 +683,8 @@ namespace Ink_Canvas
                 StackPanelMain.HorizontalAlignment = HorizontalAlignment.Right;
             }
         }
+
+        #region PowerPoint
 
         Microsoft.Office.Interop.PowerPoint.Application pptApplication = null;
         Microsoft.Office.Interop.PowerPoint.Presentation presentation = null;
@@ -925,11 +929,6 @@ namespace Ink_Canvas
             }
         }
 
-        private void ToggleSwitchAutoWeight_Toggled(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void BtnPPTSlideShow_Click(object sender, RoutedEventArgs e)
         {
             new Thread(new ThreadStart(() =>
@@ -959,6 +958,7 @@ namespace Ink_Canvas
             })).Start();
         }
 
+        #endregion
 
         #region Settings
 

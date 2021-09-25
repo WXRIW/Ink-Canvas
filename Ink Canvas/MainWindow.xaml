@@ -179,11 +179,11 @@
                     <TextBlock Text="自动&#x000A;粗细" Visibility="Collapsed" Margin="0,10,0,0"
                            FontSize="14" HorizontalAlignment="Center"
                            Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
-                    <Viewbox Height="30" Visibility="Collapsed">
+                    <!--<Viewbox Height="30" Visibility="Collapsed">
                         <ui:ToggleSwitch Name="ToggleSwitchAutoWeight" Header="" Width="40.5" 
                                      FontFamily="Microsoft YaHei UI" FontSize="19"
                                      OnContent="" OffContent="" Toggled="ToggleSwitchAutoWeight_Toggled"/>
-                    </Viewbox>
+                    </Viewbox>-->
                     <StackPanel Name="StackPanelModeFinger" Background="#01000000">
                         <TextBlock Text="手指&#x000A;模式" Margin="0,10,0,0"
                            FontSize="14" HorizontalAlignment="Center"
