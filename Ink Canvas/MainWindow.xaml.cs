@@ -162,7 +162,7 @@ namespace Ink_Canvas
 
                                             Application.Current.Dispatcher.Invoke(() =>
                                             {
-                                                Close();
+                                                Application.Current.Shutdown();
                                             });
                                         }
                                     }
@@ -175,7 +175,34 @@ namespace Ink_Canvas
                 catch { }
             })).Start();
 
+            loadPenCanvas();
+
             //加载设置
+            LoadSettings();
+
+            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            TextBlockVersion.Text = version.ToString();
+
+            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+
+            string lastVersion = "";
+            try
+            {
+                lastVersion = File.ReadAllText("versions.ini");
+            }
+            catch { }
+            if (!lastVersion.Contains(version.ToString()))
+            {
+                new ChangeLogWindow().ShowDialog();
+                lastVersion += "\n" + version.ToString();
+                File.WriteAllText("versions.ini", lastVersion.Trim());
+            }
+
+            isLoaded = true;
+        }
+
+        private void LoadSettings(bool isStartup = true)
+        {
             if (File.Exists(settingsFileName))
             {
                 try
@@ -191,40 +218,87 @@ namespace Ink_Canvas
                 ToggleSwitchModeFinger.IsOn = true;
                 ToggleSwitchAutoEnterModeFinger.IsOn = true;
             }
+            else
+            {
+                ToggleSwitchAutoEnterModeFinger.IsOn = false;
+            }
             if (Settings.Startup.IsAutoHideCanvas)
             {
-                BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                if (isStartup)
+                {
+                    BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                }
                 ToggleSwitchAutoHideCanvas.IsOn = true;
             }
+            else
+            {
+                ToggleSwitchAutoHideCanvas.IsOn = false;
+            }
 
-            if (!Settings.Appearance.IsShowEraserButton)
+            if (Settings.Appearance.IsShowEraserButton)
+            {
+                BtnErase.Visibility = Visibility.Visible;
+                ToggleSwitchShowButtonEraser.IsOn = true;
+            }
+            else
             {
                 BtnErase.Visibility = Visibility.Collapsed;
                 ToggleSwitchShowButtonEraser.IsOn = false;
             }
-            if (!Settings.Appearance.IsShowExitButton)
+            if (Settings.Appearance.IsShowExitButton)
+            {
+                BtnExit.Visibility = Visibility.Visible;
+                ToggleSwitchShowButtonExit.IsOn = true;
+            }
+            else
             {
                 BtnExit.Visibility = Visibility.Collapsed;
                 ToggleSwitchShowButtonExit.IsOn = false;
             }
-            if (!Settings.Appearance.IsShowHideControlButton)
+            if (Settings.Appearance.IsShowHideControlButton)
+            {
+                BtnHideControl.Visibility = Visibility.Visible;
+                ToggleSwitchShowButtonHideControl.IsOn = true;
+            }
+            else
             {
                 BtnHideControl.Visibility = Visibility.Collapsed;
-                ToggleSwitchShowButtonHideControl.IsOn = false;
             }
-            if (!Settings.Appearance.IsShowLRSwitchButton)
+            if (Settings.Appearance.IsShowLRSwitchButton)
+            {
+                BtnSwitchSide.Visibility = Visibility.Visible;
+                ToggleSwitchShowButtonLRSwitch.IsOn = true;
+            }
+            else
             {
                 BtnSwitchSide.Visibility = Visibility.Collapsed;
-                ToggleSwitchShowButtonLRSwitch.IsOn = false;
             }
-            if (!Settings.Appearance.IsShowModeFingerToggleSwitch)
+            if (Settings.Appearance.IsShowModeFingerToggleSwitch)
+            {
+                StackPanelModeFinger.Visibility = Visibility.Visible;
+                ToggleSwitchShowButtonModeFinger.IsOn = true;
+            }
+            else
             {
                 StackPanelModeFinger.Visibility = Visibility.Collapsed;
                 ToggleSwitchShowButtonModeFinger.IsOn = false;
             }
-            if (!Settings.Appearance.IsTransparentButtonBackground)
+            if (Settings.Appearance.IsTransparentButtonBackground)
             {
-                BtnExit.Background = new SolidColorBrush(StringToColor("#FFCCCCCC"));
+                BtnExit.Background = new SolidColorBrush(StringToColor("#7F909090"));
+            }
+            else
+            {
+                if (BtnSwitchTheme.Content.ToString() == "深色")
+                {
+                    //Light
+                    BtnExit.Background = new SolidColorBrush(StringToColor("#FFCCCCCC"));
+                }
+                else
+                {
+                    //Dark
+                    BtnExit.Background = new SolidColorBrush(StringToColor("#FF555555"));
+                }
             }
 
             if (Settings.Behavior.PowerPointSupport)
@@ -236,27 +310,42 @@ namespace Ink_Canvas
             else
             {
                 ToggleSwitchSupportPowerPoint.IsOn = false;
+                timerCheckPPT.Stop();
             }
-            if (!Settings.Behavior.IsShowCanvasAtNewSlideShow)
+            if (Settings.Behavior.IsShowCanvasAtNewSlideShow)
+            {
+                ToggleSwitchShowCanvasAtNewSlideShow.IsOn = true;
+            }
+            else
             {
                 ToggleSwitchShowCanvasAtNewSlideShow.IsOn = false;
             }
 
+            if (Settings.Gesture == null)
+            {
+                Settings.Gesture = new Gesture();
+            }
             if (Settings.Gesture.IsEnableTwoFingerRotation)
             {
                 ToggleSwitchEnableTwoFingerRotation.IsOn = true;
             }
+            else
+            {
+                ToggleSwitchEnableTwoFingerRotation.IsOn = false;
+            }
             if (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode)
             {
                 ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn = true;
+            }
+            else
+            {
+                ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn = false;
             }
 
             if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + "\\InkCanvas" + ".lnk"))
             {
                 ToggleSwitchRunAtStartup.IsOn = true;
             }
-
-            loadPenCanvas();
 
             if (Settings.Canvas != null)
             {
@@ -270,20 +359,18 @@ namespace Ink_Canvas
                     ToggleSwitchShowCursor.IsOn = true;
                     inkCanvas.ForceCursor = true;
                 }
+                else
+                {
+                    ToggleSwitchShowCursor.IsOn = false;
+                    inkCanvas.ForceCursor = false;
+                }
             }
             else
             {
                 Settings.Canvas = new Canvas();
             }
-
-            Version version = Assembly.GetExecutingAssembly().GetName().Version;
-            TextBlockVersion.Text = version.ToString();
-
-            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-
-            isLoaded = true;
         }
+
         string settingsFileName = "settings.json";
         bool isLoaded = false;
 
@@ -374,7 +461,7 @@ namespace Ink_Canvas
 
         #region Buttons - Color
 
-        int inkColor = 0;
+        int inkColor = 1;
 
         private void ColorSwitchCheck()
         {
@@ -665,14 +752,14 @@ namespace Ink_Canvas
 
         private void BtnSwitchSide_Click(object sender, RoutedEventArgs e)
         {
-            if (StackPanelMain.HorizontalAlignment == HorizontalAlignment.Right)
+            if (ViewBoxStackPanelMain.HorizontalAlignment == HorizontalAlignment.Right)
             {
-                StackPanelMain.HorizontalAlignment = HorizontalAlignment.Left;
+                ViewBoxStackPanelMain.HorizontalAlignment = HorizontalAlignment.Left;
                 StackPanelShapes.HorizontalAlignment = HorizontalAlignment.Right;
             }
             else
             {
-                StackPanelMain.HorizontalAlignment = HorizontalAlignment.Right;
+                ViewBoxStackPanelMain.HorizontalAlignment = HorizontalAlignment.Right;
                 StackPanelShapes.HorizontalAlignment = HorizontalAlignment.Left;
             }
         }
@@ -1524,6 +1611,56 @@ namespace Ink_Canvas
             Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode = ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn;
 
             SaveSettingsToFile();
+        }
+
+        private void BtnResetToSuggestion_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                isLoaded = false;
+                Settings = new Settings();
+                Settings.Appearance.IsShowEraserButton = false;
+                Settings.Appearance.IsShowExitButton = false;
+                Settings.Startup.IsAutoHideCanvas = true;
+                SaveSettingsToFile();
+                LoadSettings(false);
+                isLoaded = true;
+
+                if (ToggleSwitchRunAtStartup.IsOn == false)
+                {
+                    ToggleSwitchRunAtStartup.IsOn = true;
+                }
+            }
+            catch { }
+            SymbolIconResetSuggestionComplete.Visibility = Visibility.Visible;
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(5000);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    SymbolIconResetSuggestionComplete.Visibility = Visibility.Collapsed;
+                });
+            })).Start();
+        }
+
+        private void BtnResetToDefault_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                isLoaded = false;
+                File.Delete("settings.json");
+                Settings = new Settings();
+                LoadSettings(false);
+                isLoaded = true;
+            }
+            catch { }
+            SymbolIconResetDefaultComplete.Visibility = Visibility.Visible;
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(5000);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    SymbolIconResetDefaultComplete.Visibility = Visibility.Collapsed;
+                });
+            })).Start();
         }
     }
 
