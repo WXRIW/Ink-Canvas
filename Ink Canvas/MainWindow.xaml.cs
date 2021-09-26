@@ -467,27 +467,21 @@ namespace Ink_Canvas
         #endregion
 
         bool isTouchDown = false; Point iniP = new Point(0, 0);
+        bool isLastTouchEraser = false;
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
         {
             iniP = e.GetTouchPoint(inkCanvas).Position;
-            if (forceEraser) return;
 
-            //Label.Content = e.GetTouchPoint(null).Bounds.Width.ToString();
-            if (e.GetTouchPoint(null).Bounds.Width != 0)
+            if (e.GetTouchPoint(null).Bounds.Width > BoundsWidth)
             {
-                inkCanvas.DefaultDrawingAttributes.Width = e.GetTouchPoint(null).Bounds.Width / 2 + 1;
-                inkCanvas.DefaultDrawingAttributes.Height = inkCanvas.DefaultDrawingAttributes.Width;
+                isLastTouchEraser = true;
+                inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
             }
             else
             {
-                if (e.GetTouchPoint(null).Bounds.Width > BoundsWidth)
-                {
-                    inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
-                }
-                else
-                {
-                    inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
-                }
+                isLastTouchEraser = false;
+                if (forceEraser) return;
+                inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             }
         }
 
@@ -1356,6 +1350,11 @@ namespace Ink_Canvas
         {
             if (drawingShapeMode != 0)
             {
+                if (isLastTouchEraser)
+                {
+                    inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                    return;
+                }
                 if (isWaitUntilNextTouchDown) return;
                 if (dec.Count > 1)
                 {
