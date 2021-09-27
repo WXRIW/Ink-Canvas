@@ -562,6 +562,7 @@ namespace Ink_Canvas
             if (e.GetTouchPoint(null).Bounds.Width > BoundsWidth)
             {
                 isLastTouchEraser = true;
+                if (drawingShapeMode == 0 && forceEraser) return;
                 inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
             }
             else
