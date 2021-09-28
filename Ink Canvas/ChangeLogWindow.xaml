@@ -6,20 +6,21 @@
         xmlns:local="clr-namespace:Ink_Canvas" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False"
         xmlns:ui="http://schemas.modernwpf.com/2019" FontFamily="Microsoft YaHei UI" Topmost="True"
         mc:Ignorable="d" ui:WindowHelper.UseModernWindowStyle="True" Loaded="Window_Loaded" Closed="Window_Closed"
-        Title="" Height="350" Width="600">
+        Title="" Height="350" Width="700">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-        <Label Content="已升级到最新版本！" FontFamily="Microsoft YaHei UI" FontSize="26" Margin="20,0"/>
+        <Label Content="世界上最好用的 Ink Canvas 画板已升级到最新版本！" FontFamily="Microsoft YaHei UI" FontSize="26" Margin="20,0"/>
         <StackPanel Grid.Row="1">
             <TextBlock Name="TextBlockChangeLogTitle" Text="更新日志" FontSize="18" FontWeight="Bold" Margin="35,10,35,0"/>
             <TextBlock Name="TextBlockChangeLog" Text="" FontSize="14" Margin="55,5"/>
             <TextBlock Name="TextBlockSuggestionTitle" Text="建议" FontSize="18" FontWeight="Bold" Margin="35,10,35,0"/>
             <TextBlock Name="TextBlockSuggestion" Text="" FontSize="14" Margin="55,5"/>
         </StackPanel>
+        <Label Name="LabelVersion" Grid.Row="2" VerticalContentAlignment="Center" FontSize="12" Margin="20,0"/>
         <Button Content="确定" Grid.Row="2" HorizontalAlignment="Right" Margin="10" Width="100" FontFamily="Microsoft YaHei UI" Click="Button_Click"/>
     </Grid>
 </Window>

@@ -37,11 +37,13 @@
                    TouchMove="inkCanvas_TouchMove"
                    ManipulationDelta="Main_Grid_ManipulationDelta"
                    ManipulationCompleted="Main_Grid_ManipulationCompleted"
+                   ManipulationInertiaStarting="inkCanvas_ManipulationInertiaStarting"
                    IsManipulationEnabled="True" EditingModeChanged="inkCanvas_EditingModeChanged"
                    PreviewTouchDown="inkCanvas_PreviewTouchDown"
                    PreviewTouchUp="inkCanvas_PreviewTouchUp"
                    MouseDown="inkCanvas_MouseDown" MouseMove="inkCanvas_MouseMove" MouseUp="inkCanvas_MouseUp"
-                   ManipulationStarting="inkCanvas_ManipulationStarting">
+                   ManipulationStarting="inkCanvas_ManipulationStarting"
+                   SelectionChanged="inkCanvas_SelectionChanged">
             <!--<InkCanvas.DefaultDrawingAttributes>
                 <DrawingAttributes StylusTip="Ellipse" Height="8" Width="4" IgnorePressure="False" FitToCurve="True" >
                     <DrawingAttributes.StylusTipTransform>
@@ -50,6 +52,15 @@
                 </DrawingAttributes>
             </InkCanvas.DefaultDrawingAttributes>-->
         </InkCanvas>
+        <Grid Name="GridInkCanvasSelectionCover" IsManipulationEnabled="True"
+              ManipulationStarting="GridInkCanvasSelectionCover_ManipulationStarting"
+              ManipulationCompleted="GridInkCanvasSelectionCover_ManipulationCompleted"
+              ManipulationDelta="GridInkCanvasSelectionCover_ManipulationDelta"
+              PreviewTouchDown="GridInkCanvasSelectionCover_PreviewTouchDown"
+              PreviewTouchUp="GridInkCanvasSelectionCover_PreviewTouchUp"
+              TouchDown="GridInkCanvasSelectionCover_TouchDown"
+              TouchUp="GridInkCanvasSelectionCover_TouchUp"
+              Background="#01FFFFFF" Opacity="0.01" Visibility="Collapsed"/>
 
         <Border Name="BorderSettings" Background="White" BorderBrush="Black"
                 BorderThickness="1" CornerRadius="10"

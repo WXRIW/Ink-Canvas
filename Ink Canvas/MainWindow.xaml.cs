@@ -591,7 +591,7 @@ namespace Ink_Canvas
             //设备两个及两个以上，将画笔功能关闭
             if (dec.Count > 1)
             {
-                if (inkCanvas.EditingMode != InkCanvasEditingMode.None)
+                if (inkCanvas.EditingMode != InkCanvasEditingMode.None && inkCanvas.EditingMode != InkCanvasEditingMode.Select)
                 {
                     lastInkCanvasEditingMode = inkCanvas.EditingMode;
                     inkCanvas.EditingMode = InkCanvasEditingMode.None;
@@ -615,6 +615,11 @@ namespace Ink_Canvas
         private void inkCanvas_ManipulationStarting(object sender, ManipulationStartingEventArgs e)
         {
             e.Mode = ManipulationModes.All;
+        }
+
+        private void inkCanvas_ManipulationInertiaStarting(object sender, ManipulationInertiaStartingEventArgs e)
+        {
+
         }
 
         private void Main_Grid_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
@@ -650,12 +655,26 @@ namespace Ink_Canvas
                 }
                 m.ScaleAt(scale.X, scale.Y, center.X, center.Y);  // 缩放
 
-                foreach (Stroke stroke in inkCanvas.Strokes)
+                StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+                if (strokes.Count != 0)
                 {
-                    stroke.Transform(m, false);
+                    foreach (Stroke stroke in strokes)
+                    {
+                        stroke.Transform(m, false);
 
-                    stroke.DrawingAttributes.Width *= md.Scale.X;
-                    stroke.DrawingAttributes.Height *= md.Scale.Y;
+                        stroke.DrawingAttributes.Width *= md.Scale.X;
+                        stroke.DrawingAttributes.Height *= md.Scale.Y;
+                    }
+                }
+                else
+                {
+                    foreach (Stroke stroke in inkCanvas.Strokes)
+                    {
+                        stroke.Transform(m, false);
+
+                        stroke.DrawingAttributes.Width *= md.Scale.X;
+                        stroke.DrawingAttributes.Height *= md.Scale.Y;
+                    }
                 }
             }
         }
@@ -883,6 +902,7 @@ namespace Ink_Canvas
 
         private void PptApplication_PresentationClose(Presentation Pres)
         {
+            pptApplication = null;
             timerCheckPPT.Start();
             BtnPPTSlideShow.Visibility = Visibility.Collapsed;
             BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
@@ -892,6 +912,9 @@ namespace Ink_Canvas
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
+                slidescount = Wn.Presentation.Slides.Count;
+                memoryStreams = new MemoryStream[slidescount + 2];
+
                 StackPanelPPTControls.Visibility = Visibility.Visible;
                 BtnPPTSlideShow.Visibility = Visibility.Collapsed;
                 BtnPPTSlideShowEnd.Visibility = Visibility.Visible;
@@ -899,6 +922,11 @@ namespace Ink_Canvas
                 if (Settings.Behavior.IsShowCanvasAtNewSlideShow && Main_Grid.Background == Brushes.Transparent)
                 {
                     BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                }
+                if (GridBackgroundCover.Visibility == Visibility.Visible)
+                {
+                    currentMode = 0;
+                    GridBackgroundCover.Visibility = Visibility.Hidden;
                 }
                 inkCanvas.Strokes.Clear();
             });
@@ -1021,11 +1049,6 @@ namespace Ink_Canvas
                 }
                 catch { }
             })).Start();
-
-            if (currentMode == 1)
-            {
-                BtnSwitch_Click(BtnSwitch, e);
-            }
         }
 
         private void BtnPPTSlideShowEnd_Click(object sender, RoutedEventArgs e)
@@ -1384,14 +1407,6 @@ namespace Ink_Canvas
             SaveSettingsToFile();
         }
 
-        private void BtnSelect_Click(object sender, RoutedEventArgs e)
-        {
-            forceEraser = true;
-            drawingShapeMode = 0;
-            inkCanvas.EditingMode = InkCanvasEditingMode.Select;
-            inkCanvas.IsManipulationEnabled = false;
-        }
-
         int drawingShapeMode = 0;
 
         private void BtnPen_Click(object sender, RoutedEventArgs e)
@@ -1440,7 +1455,10 @@ namespace Ink_Canvas
             {
                 if (isLastTouchEraser)
                 {
-                    inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                    if (inkCanvas.EditingMode != InkCanvasEditingMode.EraseByStroke)
+                    {
+                        inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                    }
                     return;
                 }
                 if (isWaitUntilNextTouchDown) return;
@@ -1662,6 +1680,128 @@ namespace Ink_Canvas
                     SymbolIconResetDefaultComplete.Visibility = Visibility.Collapsed;
                 });
             })).Start();
+        }
+
+        private void BtnSelect_Click(object sender, RoutedEventArgs e)
+        {
+            forceEraser = true;
+            drawingShapeMode = 0;
+            inkCanvas.EditingMode = InkCanvasEditingMode.Select;
+            inkCanvas.IsManipulationEnabled = false;
+        }
+
+        private void inkCanvas_SelectionChanged(object sender, EventArgs e)
+        {
+            if (inkCanvas.GetSelectedStrokes().Count == 0)
+            {
+                GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+
+            }
+            else
+            {
+                GridInkCanvasSelectionCover.Visibility = Visibility.Visible;
+                //GridInkCanvasSelectionCover.Height = inkCanvas.GetSelectionBounds().Height;
+                //GridInkCanvasSelectionCover.Width = inkCanvas.GetSelectionBounds().Width;
+                //GridInkCanvasSelectionCover.Margin = new Thickness(inkCanvas.GetSelectionBounds().Left, inkCanvas.GetSelectionBounds().Top, 0, 0);
+            }
+        }
+
+        private void GridInkCanvasSelectionCover_ManipulationStarting(object sender, ManipulationStartingEventArgs e)
+        {
+            e.Mode = ManipulationModes.All;
+        }
+
+        private void GridInkCanvasSelectionCover_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
+        {
+
+        }
+
+        private void GridInkCanvasSelectionCover_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
+        {
+            if (dec.Count >= 1)
+            {
+                ManipulationDelta md = e.DeltaManipulation;
+                Vector trans = md.Translation;  // 获得位移矢量
+                double rotate = md.Rotation;  // 获得旋转角度
+                Vector scale = md.Scale;  // 获得缩放倍数
+
+                Matrix m = new Matrix();
+
+                // Find center of element and then transform to get current location of center
+                FrameworkElement fe = e.Source as FrameworkElement;
+                Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+                center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+                // Update matrix to reflect translation/rotation
+                m.Translate(trans.X, trans.Y);  // 移动
+                if (Settings.Gesture.IsEnableTwoFingerRotation)
+                {
+                    m.RotateAt(rotate, center.X, center.Y);  // 旋转
+                }
+                m.ScaleAt(scale.X, scale.Y, center.X, center.Y);  // 缩放
+
+                StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+                foreach (Stroke stroke in strokes)
+                {
+                    stroke.Transform(m, false);
+
+                    stroke.DrawingAttributes.Width *= md.Scale.X;
+                    stroke.DrawingAttributes.Height *= md.Scale.Y;
+                }
+            }
+        }
+
+        private void GridInkCanvasSelectionCover_TouchDown(object sender, TouchEventArgs e)
+        {
+        }
+
+        private void GridInkCanvasSelectionCover_TouchUp(object sender, TouchEventArgs e)
+        {
+        }
+
+        Point lastTouchPointOnGridInkCanvasCover = new Point(0, 0);
+        private void GridInkCanvasSelectionCover_PreviewTouchDown(object sender, TouchEventArgs e)
+        {
+            dec.Add(e.TouchDevice.Id);
+            //设备1个的时候，记录中心点
+            if (dec.Count == 1)
+            {
+                TouchPoint touchPoint = e.GetTouchPoint(null);
+                centerPoint = touchPoint.Position;
+                lastTouchPointOnGridInkCanvasCover = touchPoint.Position;
+            }
+            ////设备两个及两个以上，将画笔功能关闭
+            //if (dec.Count > 1)
+            //{
+            //    if (inkCanvas.EditingMode != InkCanvasEditingMode.None && inkCanvas.EditingMode != InkCanvasEditingMode.Select)
+            //    {
+            //        lastInkCanvasEditingMode = inkCanvas.EditingMode;
+            //        inkCanvas.EditingMode = InkCanvasEditingMode.None;
+            //    }
+            //}
+        }
+
+        private void GridInkCanvasSelectionCover_PreviewTouchUp(object sender, TouchEventArgs e)
+        {
+            if (lastTouchPointOnGridInkCanvasCover == e.GetTouchPoint(null).Position)
+            {
+                if (lastTouchPointOnGridInkCanvasCover.X < inkCanvas.GetSelectionBounds().Left ||
+                    lastTouchPointOnGridInkCanvasCover.Y < inkCanvas.GetSelectionBounds().Top ||
+                    lastTouchPointOnGridInkCanvasCover.X > inkCanvas.GetSelectionBounds().Right||
+                    lastTouchPointOnGridInkCanvasCover.Y > inkCanvas.GetSelectionBounds().Bottom)
+                {
+                    inkCanvas.Select(new StrokeCollection());
+                }
+            }
+            ////手势完成后切回之前的状态
+            //if (dec.Count > 1)
+            //{
+            //    if (inkCanvas.EditingMode == InkCanvasEditingMode.None)
+            //    {
+            //        inkCanvas.EditingMode = lastInkCanvasEditingMode;
+            //    }
+            //}
+            dec.Remove(e.TouchDevice.Id);
         }
     }
 
