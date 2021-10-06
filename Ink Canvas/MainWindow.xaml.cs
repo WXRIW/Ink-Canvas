@@ -138,6 +138,27 @@ namespace Ink_Canvas
                             }
                         }
 
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            Version version = Assembly.GetExecutingAssembly().GetName().Version;
+                            TextBlockVersion.Text = version.ToString();
+
+                            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+
+                            string lastVersion = "";
+                            try
+                            {
+                                lastVersion = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "versions.ini");
+                            }
+                            catch { }
+                            if (!lastVersion.Contains(version.ToString()))
+                            {
+                                new ChangeLogWindow().ShowDialog();
+                                lastVersion += "\n" + version.ToString();
+                                File.WriteAllText("versions.ini", lastVersion.Trim());
+                            }
+                        });
+
                         try
                         {
                             if (response.Contains("<update>"))
@@ -180,30 +201,14 @@ namespace Ink_Canvas
             //加载设置
             LoadSettings();
 
-            Version version = Assembly.GetExecutingAssembly().GetName().Version;
-            TextBlockVersion.Text = version.ToString();
-
-            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-
-            string lastVersion = "";
-            try
-            {
-                lastVersion = File.ReadAllText("versions.ini");
-            }
-            catch { }
-            if (!lastVersion.Contains(version.ToString()))
-            {
-                new ChangeLogWindow().ShowDialog();
-                lastVersion += "\n" + version.ToString();
-                File.WriteAllText("versions.ini", lastVersion.Trim());
-            }
+            TextBlockVersion.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             isLoaded = true;
         }
 
         private void LoadSettings(bool isStartup = true)
         {
-            if (File.Exists(settingsFileName))
+            if (File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + settingsFileName))
             {
                 try
                 {
@@ -412,6 +417,13 @@ namespace Ink_Canvas
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void BtnRestart_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(System.Windows.Forms.Application.ExecutablePath);
+
+            Application.Current.Shutdown();
         }
 
         private void BtnSettings_Click(object sender, RoutedEventArgs e)
@@ -662,8 +674,12 @@ namespace Ink_Canvas
                     {
                         stroke.Transform(m, false);
 
-                        stroke.DrawingAttributes.Width *= md.Scale.X;
-                        stroke.DrawingAttributes.Height *= md.Scale.Y;
+                        try
+                        {
+                            stroke.DrawingAttributes.Width *= md.Scale.X;
+                            stroke.DrawingAttributes.Height *= md.Scale.Y;
+                        }
+                        catch { }
                     }
                 }
                 else
@@ -672,8 +688,12 @@ namespace Ink_Canvas
                     {
                         stroke.Transform(m, false);
 
-                        stroke.DrawingAttributes.Width *= md.Scale.X;
-                        stroke.DrawingAttributes.Height *= md.Scale.Y;
+                        try
+                        {
+                            stroke.DrawingAttributes.Width *= md.Scale.X;
+                            stroke.DrawingAttributes.Height *= md.Scale.Y;
+                        }
+                        catch { }
                     }
                 }
             }
@@ -759,6 +779,7 @@ namespace Ink_Canvas
                 Main_Grid.Background = new SolidColorBrush(StringToColor("#01FFFFFF"));
                 inkCanvas.Visibility = Visibility.Visible;
                 GridBackgroundCoverHolder.Visibility = Visibility.Visible;
+                GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
                 BtnHideInkCanvas.Content = "隐藏\n画板";
             }
             else
@@ -838,6 +859,7 @@ namespace Ink_Canvas
 
         private void TimerCheckPPT_Elapsed(object sender, ElapsedEventArgs e)
         {
+            timerCheckPPT.Stop();
             try
             {
                 Process[] processes = Process.GetProcessesByName("wpp");
@@ -845,11 +867,12 @@ namespace Ink_Canvas
                 {
                     return;
                 }
-                //processes = Process.GetProcessesByName("wps");
-                //if (processes.Length > 0)
-                //{
-                //    return;
-                //}
+
+                //pptApplication = (Microsoft.Office.Interop.PowerPoint.Application)Activator.CreateInstance(Marshal.GetTypeFromCLSID(new Guid("91493441-5A91-11CF-8700-00AA0060263B")));
+                //new ComAwareEventInfo(typeof(EApplication_Event), "SlideShowBegin").AddEventHandler(pptApplication, new EApplication_SlideShowBeginEventHandler(this.PptApplication_SlideShowBegin));
+                //new ComAwareEventInfo(typeof(EApplication_Event), "SlideShowEnd").AddEventHandler(pptApplication, new EApplication_SlideShowEndEventHandler(this.PptApplication_SlideShowEnd));
+                //new ComAwareEventInfo(typeof(EApplication_Event), "SlideShowNextSlide").AddEventHandler(pptApplication, new EApplication_SlideShowNextSlideEventHandler(this.PptApplication_SlideShowNextSlide));
+                //ConfigHelper.Instance.IsInitApplicationSuccessful = true;
 
                 pptApplication = (Microsoft.Office.Interop.PowerPoint.Application)Marshal.GetActiveObject("PowerPoint.Application");
 
@@ -878,6 +901,12 @@ namespace Ink_Canvas
                     {
                         // 在阅读模式下出现异常时，通过下面的方式来获得当前选中的幻灯片对象
                         slide = pptApplication.SlideShowWindows[1].View.Slide;
+                    }
+
+                    //如果检测到已经开始放映，则立即进入画板模式
+                    if (pptApplication.SlideShowWindows.Count >= 1)
+                    {
+                        PptApplication_SlideShowBegin(pptApplication.SlideShowWindows[1]);
                     }
                 }
 
@@ -1730,6 +1759,8 @@ namespace Ink_Canvas
                 // Find center of element and then transform to get current location of center
                 FrameworkElement fe = e.Source as FrameworkElement;
                 Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+                center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+                    inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
                 center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
 
                 // Update matrix to reflect translation/rotation
@@ -1745,8 +1776,12 @@ namespace Ink_Canvas
                 {
                     stroke.Transform(m, false);
 
-                    stroke.DrawingAttributes.Width *= md.Scale.X;
-                    stroke.DrawingAttributes.Height *= md.Scale.Y;
+                    try
+                    {
+                        stroke.DrawingAttributes.Width *= md.Scale.X;
+                        stroke.DrawingAttributes.Height *= md.Scale.Y;
+                    }
+                    catch { }
                 }
             }
         }

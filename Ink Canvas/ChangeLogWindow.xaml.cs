@@ -37,12 +37,19 @@ namespace Ink_Canvas
             //TextBlockSuggestion.Text = "打开设置，点击“重置”中的“重置设置为推荐设置”，以提升教学体验！";
 
             //Version 2.1.1-release
+            //TextBlockChangeLog.Text = "" +
+            //    "1. 修复部分情况下幻灯片放映翻页时墨迹保留的问题\n" +
+            //    "2. 支持选中后的缩放和拖动\n" +
+            //    "3. 修复部分模式下自动橡皮失效的问题\n" +
+            //    "4. 修复幻灯片放映时的部分问题";
+            //TextBlockSuggestion.Text = "打开设置，点击“重置”中的“重置设置为推荐设置”，以提升教学体验！";
+
+            //Version 2.1.2-release
             TextBlockChangeLog.Text = "" +
-                "1. 修复部分情况下幻灯片放映翻页时墨迹保留的问题\n" +
-                "2. 支持选中后的缩放和拖动\n" +
-                "3. 修复部分模式下自动橡皮失效的问题\n" +
-                "4. 修复幻灯片放映时的部分问题";
-            TextBlockSuggestion.Text = "打开设置，点击“重置”中的“重置设置为推荐设置”，以提升教学体验！";
+                "1. 修复由缩放导致的崩溃\n" +
+                "2. 优化选中墨迹后的缩放\n" +
+                "3. 修复部分情况下无法书写的问题（未测试）";
+            TextBlockSuggestion.Text = "老师讲评试卷可以点击右侧的背景和深色按钮，即可启动黑板功能（同样支持用笔来擦除），\n双指可以缩放和拖动，左边也会有工具栏方便画图形。";
 
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             LabelVersion.Content = "Version: " + version.ToString();
