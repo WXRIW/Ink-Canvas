@@ -859,7 +859,6 @@ namespace Ink_Canvas
 
         private void TimerCheckPPT_Elapsed(object sender, ElapsedEventArgs e)
         {
-            timerCheckPPT.Stop();
             try
             {
                 Process[] processes = Process.GetProcessesByName("wpp");
