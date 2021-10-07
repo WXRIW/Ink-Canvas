@@ -481,12 +481,12 @@ namespace Ink_Canvas
         {
             if (Main_Grid.Background == Brushes.Transparent)
             {
-                BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
                 if (currentMode == 1)
                 {
                     currentMode = 0;
                     GridBackgroundCover.Visibility = Visibility.Hidden;
                 }
+                BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
             }
             inkCanvas.IsManipulationEnabled = true;
             drawingShapeMode = 0;
@@ -707,7 +707,6 @@ namespace Ink_Canvas
         {
             if (Main_Grid.Background == Brushes.Transparent)
             {
-                BtnHideInkCanvas_Click(BtnHideInkCanvas, e);
                 if (currentMode == 0)
                 {
                     currentMode++;
@@ -722,6 +721,7 @@ namespace Ink_Canvas
                         BtnSwitch.Content = "白板";
                     }
                 }
+                BtnHideInkCanvas_Click(BtnHideInkCanvas, e);
             }
             else
             {
@@ -752,7 +752,10 @@ namespace Ink_Canvas
             if (BtnSwitchTheme.Content.ToString() == "深色")
             {
                 BtnSwitchTheme.Content = "浅色";
-                BtnSwitch.Content = "黑板";
+                if (BtnSwitch.Content.ToString() != "屏幕")
+                {
+                    BtnSwitch.Content = "黑板";
+                }
                 BtnExit.Foreground = Brushes.White;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 BtnColorBlack.Background = Brushes.White;
@@ -765,7 +768,10 @@ namespace Ink_Canvas
             else
             {
                 BtnSwitchTheme.Content = "深色";
-                BtnSwitch.Content = "白板";
+                if (BtnSwitch.Content.ToString() != "屏幕")
+                {
+                    BtnSwitch.Content = "白板";
+                }
                 BtnExit.Foreground = Brushes.Black;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                 BtnColorBlack.Background = Brushes.Black;
@@ -804,7 +810,21 @@ namespace Ink_Canvas
                 GridBackgroundCoverHolder.Visibility = Visibility.Visible;
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
 
-                BtnSwitch.Content = "屏幕";
+                if (GridBackgroundCover.Visibility == Visibility.Hidden)
+                {
+                    if (BtnSwitchTheme.Content.ToString() == "浅色")
+                    {
+                        BtnSwitch.Content = "黑板";
+                    }
+                    else
+                    {
+                        BtnSwitch.Content = "白板";
+                    }
+                }
+                else
+                {
+                    BtnSwitch.Content = "屏幕";
+                }
 
                 BtnHideInkCanvas.Content = "隐藏\n画板";
             }
