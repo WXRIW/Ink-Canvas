@@ -143,8 +143,6 @@ namespace Ink_Canvas
                             Version version = Assembly.GetExecutingAssembly().GetName().Version;
                             TextBlockVersion.Text = version.ToString();
 
-                            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-
                             string lastVersion = "";
                             try
                             {
@@ -153,7 +151,7 @@ namespace Ink_Canvas
                             catch { }
                             if (!lastVersion.Contains(version.ToString()))
                             {
-                                new ChangeLogWindow().ShowDialog();
+                                //new ChangeLogWindow().ShowDialog();
                                 lastVersion += "\n" + version.ToString();
                                 File.WriteAllText("versions.ini", lastVersion.Trim());
                             }
@@ -200,6 +198,8 @@ namespace Ink_Canvas
 
             //加载设置
             LoadSettings();
+
+            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
 
             TextBlockVersion.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
