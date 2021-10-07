@@ -77,7 +77,10 @@
                                    Text="*部分设置可能需要重新打开后生效。"/>
                         <GroupBox Header="行为">
                             <ui:SimpleStackPanel Spacing="12">
-                                <Button Content="立即重新启动画板" Width="160" FontFamily="Microsoft YaHei UI" Click="BtnRestart_Click" Margin="0,0,0,10"/>
+                                <ui:SimpleStackPanel Spacing="12" Orientation="Horizontal">
+                                    <Button Content="立即重新启动画板" Width="160" FontFamily="Microsoft YaHei UI" Click="BtnRestart_Click" Margin="0,0,0,10"/>
+                                    <Button Content="立即退出" Width="160" FontFamily="Microsoft YaHei UI" Click="BtnExit_Click" Margin="0,0,0,10"/>
+                                </ui:SimpleStackPanel>
                                 <ui:ToggleSwitch Name="ToggleSwitchRunAtStartup" Header="开机时运行" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchRunAtStartup_Toggled"/>
                                 <TextBlock Text="我们并不推荐使用 WPS Office，因为其对于触摸设备的较差支持。" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchSupportPowerPoint" Header="Microsoft PowerPoint 支持" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportPowerPoint_Toggled"/>

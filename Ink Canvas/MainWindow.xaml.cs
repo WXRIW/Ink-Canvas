@@ -268,6 +268,7 @@ namespace Ink_Canvas
             else
             {
                 BtnHideControl.Visibility = Visibility.Collapsed;
+                ToggleSwitchShowButtonHideControl.IsOn = false;
             }
             if (Settings.Appearance.IsShowLRSwitchButton)
             {
@@ -277,6 +278,7 @@ namespace Ink_Canvas
             else
             {
                 BtnSwitchSide.Visibility = Visibility.Collapsed;
+                ToggleSwitchShowButtonLRSwitch.IsOn = false;
             }
             if (Settings.Appearance.IsShowModeFingerToggleSwitch)
             {
@@ -710,6 +712,15 @@ namespace Ink_Canvas
                 {
                     currentMode++;
                     GridBackgroundCover.Visibility = Visibility.Visible;
+
+                    if (BtnSwitchTheme.Content.ToString() == "浅色")
+                    {
+                        BtnSwitch.Content = "黑板";
+                    }
+                    else
+                    {
+                        BtnSwitch.Content = "白板";
+                    }
                 }
             }
             else
@@ -718,9 +729,19 @@ namespace Ink_Canvas
                 {
                     case 0:
                         GridBackgroundCover.Visibility = Visibility.Hidden;
+
+                        if (BtnSwitchTheme.Content.ToString() == "浅色")
+                        {
+                            BtnSwitch.Content = "黑板";
+                        }
+                        else
+                        {
+                            BtnSwitch.Content = "白板";
+                        }
                         break;
                     case 1:
                         GridBackgroundCover.Visibility = Visibility.Visible;
+                        BtnSwitch.Content = "屏幕";
                         break;
                 }
             }
@@ -731,6 +752,7 @@ namespace Ink_Canvas
             if (BtnSwitchTheme.Content.ToString() == "深色")
             {
                 BtnSwitchTheme.Content = "浅色";
+                BtnSwitch.Content = "黑板";
                 BtnExit.Foreground = Brushes.White;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 BtnColorBlack.Background = Brushes.White;
@@ -743,6 +765,7 @@ namespace Ink_Canvas
             else
             {
                 BtnSwitchTheme.Content = "深色";
+                BtnSwitch.Content = "白板";
                 BtnExit.Foreground = Brushes.Black;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                 BtnColorBlack.Background = Brushes.Black;
@@ -780,6 +803,9 @@ namespace Ink_Canvas
                 inkCanvas.Visibility = Visibility.Visible;
                 GridBackgroundCoverHolder.Visibility = Visibility.Visible;
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+
+                BtnSwitch.Content = "屏幕";
+
                 BtnHideInkCanvas.Content = "隐藏\n画板";
             }
             else
@@ -787,6 +813,14 @@ namespace Ink_Canvas
                 Main_Grid.Background = Brushes.Transparent;
                 inkCanvas.Visibility = Visibility.Collapsed;
                 GridBackgroundCoverHolder.Visibility = Visibility.Collapsed;
+                if (BtnSwitchTheme.Content.ToString() == "浅色")
+                {
+                    BtnSwitch.Content = "黑板";
+                }
+                else
+                {
+                    BtnSwitch.Content = "白板";
+                }
                 BtnHideInkCanvas.Content = "显示\n画板";
             }
         }
@@ -867,6 +901,7 @@ namespace Ink_Canvas
                     return;
                 }
 
+                //使用下方提前创建 PowerPoint 实例，将导致 PowerPoint 不再有启动界面
                 //pptApplication = (Microsoft.Office.Interop.PowerPoint.Application)Activator.CreateInstance(Marshal.GetTypeFromCLSID(new Guid("91493441-5A91-11CF-8700-00AA0060263B")));
                 //new ComAwareEventInfo(typeof(EApplication_Event), "SlideShowBegin").AddEventHandler(pptApplication, new EApplication_SlideShowBeginEventHandler(this.PptApplication_SlideShowBegin));
                 //new ComAwareEventInfo(typeof(EApplication_Event), "SlideShowEnd").AddEventHandler(pptApplication, new EApplication_SlideShowEndEventHandler(this.PptApplication_SlideShowEnd));
