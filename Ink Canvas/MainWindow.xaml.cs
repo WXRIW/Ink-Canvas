@@ -567,6 +567,8 @@ namespace Ink_Canvas
 
         #endregion
 
+        #region Touch Events
+
         bool isTouchDown = false; Point iniP = new Point(0, 0);
         bool isLastTouchEraser = false;
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
@@ -701,6 +703,8 @@ namespace Ink_Canvas
             }
         }
 
+        #endregion Touch Events
+
         int currentMode = 0;
 
         private void BtnSwitch_Click(object sender, RoutedEventArgs e)
@@ -712,14 +716,19 @@ namespace Ink_Canvas
                     currentMode++;
                     GridBackgroundCover.Visibility = Visibility.Visible;
 
-                    if (BtnSwitchTheme.Content.ToString() == "浅色")
-                    {
-                        BtnSwitch.Content = "黑板";
-                    }
-                    else
-                    {
-                        BtnSwitch.Content = "白板";
-                    }
+                    SaveStrokes(true);
+                    inkCanvas.Strokes.Clear();
+                    RestoreStrokes();
+
+                    //if (BtnSwitchTheme.Content.ToString() == "浅色")
+                    //{
+                    //    BtnSwitch.Content = "黑板";
+                    //}
+                    //else
+                    //{
+                    //    BtnSwitch.Content = "白板";
+                    //}
+                    BtnSwitch.Content = "屏幕";
                 }
                 BtnHideInkCanvas_Click(BtnHideInkCanvas, e);
             }
@@ -729,6 +738,10 @@ namespace Ink_Canvas
                 {
                     case 0:
                         GridBackgroundCover.Visibility = Visibility.Hidden;
+
+                        SaveStrokes();
+                        inkCanvas.Strokes.Clear();
+                        RestoreStrokes(true);
 
                         if (BtnSwitchTheme.Content.ToString() == "浅色")
                         {
@@ -741,6 +754,11 @@ namespace Ink_Canvas
                         break;
                     case 1:
                         GridBackgroundCover.Visibility = Visibility.Visible;
+
+                        SaveStrokes(true);
+                        inkCanvas.Strokes.Clear();
+                        RestoreStrokes();
+
                         BtnSwitch.Content = "屏幕";
                         break;
                 }
@@ -1435,25 +1453,6 @@ namespace Ink_Canvas
             return ipEndPoint.Address.ToString();
         }
 
-        private void inkCanvas_EditingModeChanged(object sender, RoutedEventArgs e)
-        {
-            if (Settings.Canvas.IsShowCursor)
-            {
-                if (((InkCanvas)sender).EditingMode == InkCanvasEditingMode.Ink || drawingShapeMode != 0)
-                {
-                    ((InkCanvas)sender).ForceCursor = true;
-                }
-                else
-                {
-                    ((InkCanvas)sender).ForceCursor = false;
-                }
-            }
-            else
-            {
-                ((InkCanvas)sender).ForceCursor = false;
-            }
-        }
-
         private void ToggleSwitchTransparentButtonBackground_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
@@ -1489,6 +1488,27 @@ namespace Ink_Canvas
 
             SaveSettingsToFile();
         }
+
+        private void inkCanvas_EditingModeChanged(object sender, RoutedEventArgs e)
+        {
+            if (Settings.Canvas.IsShowCursor)
+            {
+                if (((InkCanvas)sender).EditingMode == InkCanvasEditingMode.Ink || drawingShapeMode != 0)
+                {
+                    ((InkCanvas)sender).ForceCursor = true;
+                }
+                else
+                {
+                    ((InkCanvas)sender).ForceCursor = false;
+                }
+            }
+            else
+            {
+                ((InkCanvas)sender).ForceCursor = false;
+            }
+        }
+
+        #region Left Side Panel
 
         int drawingShapeMode = 0;
 
@@ -1697,73 +1717,7 @@ namespace Ink_Canvas
             isMouseDown = false;
         }
 
-        private void ToggleSwitchEnableTwoFingerRotation_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (!isLoaded) return;
-
-            Settings.Gesture.IsEnableTwoFingerRotation = ToggleSwitchEnableTwoFingerRotation.IsOn;
-
-            SaveSettingsToFile();
-        }
-
-        private void ToggleSwitchEnableTwoFingerGestureInPresentationMode_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (!isLoaded) return;
-
-            Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode = ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn;
-
-            SaveSettingsToFile();
-        }
-
-        private void BtnResetToSuggestion_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                isLoaded = false;
-                Settings = new Settings();
-                Settings.Appearance.IsShowEraserButton = false;
-                Settings.Appearance.IsShowExitButton = false;
-                Settings.Startup.IsAutoHideCanvas = true;
-                SaveSettingsToFile();
-                LoadSettings(false);
-                isLoaded = true;
-
-                if (ToggleSwitchRunAtStartup.IsOn == false)
-                {
-                    ToggleSwitchRunAtStartup.IsOn = true;
-                }
-            }
-            catch { }
-            SymbolIconResetSuggestionComplete.Visibility = Visibility.Visible;
-            new Thread(new ThreadStart(() => {
-                Thread.Sleep(5000);
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    SymbolIconResetSuggestionComplete.Visibility = Visibility.Collapsed;
-                });
-            })).Start();
-        }
-
-        private void BtnResetToDefault_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                isLoaded = false;
-                File.Delete("settings.json");
-                Settings = new Settings();
-                LoadSettings(false);
-                isLoaded = true;
-            }
-            catch { }
-            SymbolIconResetDefaultComplete.Visibility = Visibility.Visible;
-            new Thread(new ThreadStart(() => {
-                Thread.Sleep(5000);
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    SymbolIconResetDefaultComplete.Visibility = Visibility.Collapsed;
-                });
-            })).Start();
-        }
+        #region Selection Gestures
 
         private void BtnSelect_Click(object sender, RoutedEventArgs e)
         {
@@ -1876,7 +1830,7 @@ namespace Ink_Canvas
             {
                 if (lastTouchPointOnGridInkCanvasCover.X < inkCanvas.GetSelectionBounds().Left ||
                     lastTouchPointOnGridInkCanvasCover.Y < inkCanvas.GetSelectionBounds().Top ||
-                    lastTouchPointOnGridInkCanvasCover.X > inkCanvas.GetSelectionBounds().Right||
+                    lastTouchPointOnGridInkCanvasCover.X > inkCanvas.GetSelectionBounds().Right ||
                     lastTouchPointOnGridInkCanvasCover.Y > inkCanvas.GetSelectionBounds().Bottom)
                 {
                     inkCanvas.Select(new StrokeCollection());
@@ -1892,6 +1846,228 @@ namespace Ink_Canvas
             //}
             dec.Remove(e.TouchDevice.Id);
         }
+
+        #endregion Selection Gestures
+
+        #endregion Left Side Panel
+
+        private void ToggleSwitchEnableTwoFingerRotation_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsEnableTwoFingerRotation = ToggleSwitchEnableTwoFingerRotation.IsOn;
+
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchEnableTwoFingerGestureInPresentationMode_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode = ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn;
+
+            SaveSettingsToFile();
+        }
+
+        private void BtnResetToSuggestion_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                isLoaded = false;
+                Settings = new Settings();
+                Settings.Appearance.IsShowEraserButton = false;
+                Settings.Appearance.IsShowExitButton = false;
+                Settings.Startup.IsAutoHideCanvas = true;
+                SaveSettingsToFile();
+                LoadSettings(false);
+                isLoaded = true;
+
+                if (ToggleSwitchRunAtStartup.IsOn == false)
+                {
+                    ToggleSwitchRunAtStartup.IsOn = true;
+                }
+            }
+            catch { }
+            SymbolIconResetSuggestionComplete.Visibility = Visibility.Visible;
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(5000);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    SymbolIconResetSuggestionComplete.Visibility = Visibility.Collapsed;
+                });
+            })).Start();
+        }
+
+        private void BtnResetToDefault_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                isLoaded = false;
+                File.Delete("settings.json");
+                Settings = new Settings();
+                LoadSettings(false);
+                isLoaded = true;
+            }
+            catch { }
+            SymbolIconResetDefaultComplete.Visibility = Visibility.Visible;
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(5000);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    SymbolIconResetDefaultComplete.Visibility = Visibility.Collapsed;
+                });
+            })).Start();
+        }
+
+
+        #region Whiteboard Controls
+
+        int CurrentWhiteboardIndex = 1;
+        int WhiteboardTotalCount = 1;
+        MemoryStream[] WhiteboardStrokesStreams = new MemoryStream[100]; //最多99页，0用来存储非白板时的墨迹以便还原
+
+        private void SaveStrokes(bool isBackupMain = false)
+        {
+            MemoryStream ms = new MemoryStream();
+            inkCanvas.Strokes.Save(ms);
+            ms.Position = 0;
+            if (isBackupMain)
+            {
+                WhiteboardStrokesStreams[0] = ms;
+            }
+            else
+            {
+                WhiteboardStrokesStreams[CurrentWhiteboardIndex] = ms;
+            }
+        }
+
+        private void RestoreStrokes(bool isBackupMain = false)
+        {
+            try
+            {
+                if (isBackupMain)
+                {
+                    if (WhiteboardStrokesStreams[0].Length > 0)
+                    {
+                        inkCanvas.Strokes = new System.Windows.Ink.StrokeCollection(WhiteboardStrokesStreams[0]);
+                    }
+                }
+                else
+                {
+                    if (WhiteboardStrokesStreams[CurrentWhiteboardIndex].Length > 0)
+                    {
+                        inkCanvas.Strokes = new System.Windows.Ink.StrokeCollection(WhiteboardStrokesStreams[CurrentWhiteboardIndex]);
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void BtnWhiteBoardSwitchPrevious_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentWhiteboardIndex <= 1) return;
+
+            SaveStrokes();
+
+            inkCanvas.Strokes.Clear();
+            CurrentWhiteboardIndex--;
+
+            RestoreStrokes();
+
+            UpdateIndexInfoDisplay();
+        }
+
+        private void BtnWhiteBoardSwitchNext_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentWhiteboardIndex >= WhiteboardTotalCount) return;
+
+            SaveStrokes();
+
+            inkCanvas.Strokes.Clear();
+            CurrentWhiteboardIndex++;
+
+            RestoreStrokes();
+
+            UpdateIndexInfoDisplay();
+        }
+
+        private void BtnWhiteBoardAdd_Click(object sender, RoutedEventArgs e)
+        {
+            SaveStrokes();
+            inkCanvas.Strokes.Clear();
+
+            WhiteboardTotalCount++;
+            CurrentWhiteboardIndex++;
+
+            if (CurrentWhiteboardIndex != WhiteboardTotalCount)
+            {
+                for (int i = WhiteboardTotalCount; i > CurrentWhiteboardIndex; i--)
+                {
+                    WhiteboardStrokesStreams[i] = WhiteboardStrokesStreams[i - 1];
+                }
+            }
+
+            WhiteboardStrokesStreams[CurrentWhiteboardIndex] = new MemoryStream();
+
+            UpdateIndexInfoDisplay();
+        }
+
+        private void BtnWhiteBoardDelete_Click(object sender, RoutedEventArgs e)
+        {
+            inkCanvas.Strokes.Clear();
+
+            if (CurrentWhiteboardIndex != WhiteboardTotalCount)
+            {
+                for (int i = CurrentWhiteboardIndex; i <= WhiteboardTotalCount; i++)
+                {
+                    WhiteboardStrokesStreams[i] = WhiteboardStrokesStreams[i + 1];
+                }
+            }
+            else
+            {
+                CurrentWhiteboardIndex--;
+            }
+
+            WhiteboardTotalCount--;
+
+            RestoreStrokes();
+
+            UpdateIndexInfoDisplay();
+        }
+
+        private void UpdateIndexInfoDisplay()
+        {
+            TextBlockWhiteBoardIndexInfo.Text = string.Format("{0} / {1}", CurrentWhiteboardIndex, WhiteboardTotalCount);
+
+            if (CurrentWhiteboardIndex == 1)
+            {
+                BtnWhiteBoardSwitchPrevious.IsEnabled = false;
+            }
+            else
+            {
+                BtnWhiteBoardSwitchPrevious.IsEnabled = true;
+            }
+
+            if (CurrentWhiteboardIndex == WhiteboardTotalCount)
+            {
+                BtnWhiteBoardSwitchNext.IsEnabled = false;
+            }
+            else
+            {
+                BtnWhiteBoardSwitchNext.IsEnabled = true;
+            }
+
+            if (WhiteboardTotalCount == 1)
+            {
+                BtnWhiteBoardDelete.IsEnabled = false;
+            }
+            else
+            {
+                BtnWhiteBoardDelete.IsEnabled = true;
+            }
+        }
+
+        #endregion Whiteboard Controls
     }
 
     enum HotkeyModifiers
