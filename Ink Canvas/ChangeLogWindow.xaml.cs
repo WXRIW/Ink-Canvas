@@ -46,9 +46,9 @@ namespace Ink_Canvas
 
             //Version 2.1.2-release
             TextBlockChangeLog.Text = "" +
-                "1. 修复由缩放导致的崩溃\n" +
-                "2. 优化选中墨迹后的缩放\n" +
-                "3. 修复部分情况下无法书写的问题（未测试）";
+                "1. 支持多页白板/黑板\n" +
+                "2. \n" +
+                "3. ";
             TextBlockSuggestion.Text = "老师讲评试卷可以点击右侧的背景和深色按钮，即可启动黑板功能（同样支持用笔来擦除），\n双指可以缩放和拖动，左边也会有工具栏方便画图形。";
 
             Version version = Assembly.GetExecutingAssembly().GetName().Version;

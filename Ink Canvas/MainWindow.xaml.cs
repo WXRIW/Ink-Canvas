@@ -782,6 +782,14 @@ namespace Ink_Canvas
                 {
                     inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
                 }
+
+                foreach (Stroke stroke in inkCanvas.Strokes)
+                {
+                    if (stroke.DrawingAttributes.Color == Colors.Black)
+                    {
+                        stroke.DrawingAttributes.Color = Colors.White;
+                    }
+                }
             }
             else
             {
@@ -797,6 +805,14 @@ namespace Ink_Canvas
                 if (inkColor == 0)
                 {
                     inkCanvas.DefaultDrawingAttributes.Color = Colors.Black;
+                }
+
+                foreach (Stroke stroke in inkCanvas.Strokes)
+                {
+                    if (stroke.DrawingAttributes.Color == Colors.White)
+                    {
+                        stroke.DrawingAttributes.Color = Colors.Black;
+                    }
                 }
             }
             if (!Settings.Appearance.IsTransparentButtonBackground)
@@ -2068,6 +2084,24 @@ namespace Ink_Canvas
         }
 
         #endregion Whiteboard Controls
+
+        private void BtnPenWidthDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                InkWidthSlider.Value -= 1;
+            }
+            catch { }
+        }
+
+        private void BtnPenWidthIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                InkWidthSlider.Value += 1;
+            }
+            catch { }
+        }
     }
 
     enum HotkeyModifiers

@@ -61,41 +61,46 @@
               TouchDown="GridInkCanvasSelectionCover_TouchDown"
               TouchUp="GridInkCanvasSelectionCover_TouchUp"
               Background="#01FFFFFF" Opacity="0.01" Visibility="Collapsed"/>
-        
-        <ui:SimpleStackPanel Spacing="10" Orientation="Horizontal"
+
+        <Grid Visibility="{Binding ElementName=GridBackgroundCoverHolder, Path=Visibility}">
+            <ui:SimpleStackPanel Spacing="10" Orientation="Horizontal"
                              VerticalAlignment="Bottom"
                              HorizontalAlignment="Center"
                              Height="50" Margin="10"
                              Visibility="{Binding ElementName=GridBackgroundCover, Path=Visibility}">
-            <Button Name="BtnWhiteBoardSwitchPrevious" Content="&lt;" FontFamily="Symbol"
+                <Button Name="BtnWhiteBoardSwitchPrevious" Content="&lt;" FontFamily="Symbol"
                     Width="50" Height="48" FontSize="25" Click="BtnWhiteBoardSwitchPrevious_Click"
                     Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
                     Background="{Binding ElementName=BtnExit, Path=Background}"
                     VerticalContentAlignment="Top"
                     IsEnabled="False"/>
-            <Border Height="48" CornerRadius="2" Margin="3,0">
-                <TextBlock Name="TextBlockWhiteBoardIndexInfo" Text="1 / 1" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Microsoft YaHei UI" FontSize="18"/>
-            </Border>
-            <Button Name="BtnWhiteBoardSwitchNext" Content="&gt;" FontFamily="Symbol"
+                <Border Height="48" CornerRadius="2" Margin="3,0">
+                    <TextBlock Name="TextBlockWhiteBoardIndexInfo"
+                               Text="1 / 1"
+                               Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
+                               VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Microsoft YaHei UI" FontSize="18"/>
+                </Border>
+                <Button Name="BtnWhiteBoardSwitchNext" Content="&gt;" FontFamily="Symbol"
                     Width="50" Height="48" FontSize="25" Click="BtnWhiteBoardSwitchNext_Click"
                     Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
                     Background="{Binding ElementName=BtnExit, Path=Background}"
                     VerticalContentAlignment="Top"
                     IsEnabled="False"/>
-            <Button Name="BtnWhiteBoardAdd" FontFamily="Microsoft YaHei UI"
+                <Button Name="BtnWhiteBoardAdd" FontFamily="Microsoft YaHei UI"
                     Width="50" Height="48" FontSize="26" Click="BtnWhiteBoardAdd_Click"
                     Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
                     Background="{Binding ElementName=BtnExit, Path=Background}">
-                <ui:SymbolIcon Symbol="Add" />
-            </Button>
-            <Button Name="BtnWhiteBoardDelete" Click="BtnWhiteBoardDelete_Click"
+                    <ui:SymbolIcon Symbol="Add" />
+                </Button>
+                <Button Name="BtnWhiteBoardDelete" Click="BtnWhiteBoardDelete_Click"
                     FontFamily="Microsoft YaHei UI" Width="50" Height="48" FontSize="26"
                     Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
                     Background="{Binding ElementName=BtnExit, Path=Background}"
                     IsEnabled="False">
-                <ui:SymbolIcon Symbol="Delete" />
-            </Button>
-        </ui:SimpleStackPanel>
+                    <ui:SymbolIcon Symbol="Delete" />
+                </Button>
+            </ui:SimpleStackPanel>
+        </Grid>
 
         <Border Name="BorderSettings" Background="White" BorderBrush="Black"
                 BorderThickness="1" CornerRadius="10"
@@ -342,7 +347,7 @@
             </StackPanel>
         </Viewbox>
         <StackPanel Name="StackPanelShapes" Margin="{Binding ElementName=ViewBoxStackPanelMain, Path=Margin}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="46" Visibility="{Binding ElementName=inkCanvas, Path=Visibility}">
-            <Slider HorizontalAlignment="Center"
+            <Slider HorizontalAlignment="Center" Visibility="Collapsed"
                     Minimum="1" Maximum="20" Orientation="Vertical" 
                     Height="330" FontFamily="Microsoft YaHei UI" 
                     ui:ControlHelper.Header="画笔&#x000A;粗细"
@@ -351,8 +356,36 @@
                     RenderTransformOrigin="0.5,0.5"
                     Value="{Binding ElementName=InkWidthSlider, Path=Value, Mode=TwoWay}">
             </Slider>
-            <TextBlock Visibility="Collapsed" Text="{Binding Value, ElementName=InkWidthSlider, Mode=OneWay}"
-                       FontSize="14"/>
+            <TextBlock Text="画笔&#x000A;粗细"
+                       FontSize="14" HorizontalAlignment="Center"/>
+            <Button Name="BtnPenWidthIncrease" Visibility="Visible" FontFamily="Microsoft YaHei UI"
+                    Margin="0,10,0,5" Height="{Binding ElementName=BtnPen, Path=ActualHeight}" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                    Click="BtnPenWidthIncrease_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
+                    Background="{Binding ElementName=BtnExit, Path=Background}">
+                <!--<ui:SymbolIcon Symbol="Add"/>-->
+                <Grid Margin="0,3,-5,0">
+                    <TextBlock Text="&lt;" FontFamily="Symbol" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock.LayoutTransform>
+                            <RotateTransform Angle="90"/>
+                        </TextBlock.LayoutTransform>
+                    </TextBlock>
+                </Grid>
+            </Button>
+            <TextBlock Visibility="Visible" Text="{Binding Value, ElementName=InkWidthSlider, Mode=OneWay}"
+                       FontSize="14" HorizontalAlignment="Center"/>
+            <Button Name="BtnPenWidthDecrease" Visibility="Visible" FontFamily="Microsoft YaHei UI"
+                    Margin="0,5,0,0" Height="{Binding ElementName=BtnPen, Path=ActualHeight}" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                    Click="BtnPenWidthDecrease_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
+                    Background="{Binding ElementName=BtnExit, Path=Background}">
+                <!--<ui:SymbolIcon Symbol="Remove"/>-->
+                <Grid Margin="0,4,-5,0">
+                    <TextBlock Text="&gt;" FontFamily="Symbol" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock.LayoutTransform>
+                            <RotateTransform Angle="90"/>
+                        </TextBlock.LayoutTransform>
+                    </TextBlock>
+                </Grid>
+            </Button>
             <Button Name="BtnPen" Content="笔" Visibility="Visible" FontFamily="Microsoft YaHei UI"
                     Margin="0,25,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                     Click="BtnPen_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
