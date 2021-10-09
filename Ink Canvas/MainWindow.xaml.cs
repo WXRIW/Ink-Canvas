@@ -575,11 +575,22 @@ namespace Ink_Canvas
         {
             iniP = e.GetTouchPoint(inkCanvas).Position;
 
-            if (e.GetTouchPoint(null).Bounds.Width > BoundsWidth)
+            double boundsWidth = e.GetTouchPoint(null).Bounds.Width;
+            if (boundsWidth > BoundsWidth)
             {
                 isLastTouchEraser = true;
                 if (drawingShapeMode == 0 && forceEraser) return;
-                inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                if (boundsWidth > BoundsWidth * 1.7)
+                {
+                    inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
+                    inkCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
+                }
+                else
+                {
+                    inkCanvas.EraserShape = new RectangleStylusShape(8, 8);
+                    //inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
+                    inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                }
             }
             else
             {
@@ -720,15 +731,15 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Clear();
                     RestoreStrokes();
 
-                    //if (BtnSwitchTheme.Content.ToString() == "浅色")
-                    //{
-                    //    BtnSwitch.Content = "黑板";
-                    //}
-                    //else
-                    //{
-                    //    BtnSwitch.Content = "白板";
-                    //}
-                    BtnSwitch.Content = "屏幕";
+                    if (BtnSwitchTheme.Content.ToString() == "浅色")
+                    {
+                        BtnSwitch.Content = "黑板";
+                    }
+                    else
+                    {
+                        BtnSwitch.Content = "白板";
+                    }
+                    //BtnSwitch.Content = "屏幕";
                 }
                 BtnHideInkCanvas_Click(BtnHideInkCanvas, e);
             }
@@ -1574,10 +1585,27 @@ namespace Ink_Canvas
             {
                 if (isLastTouchEraser)
                 {
-                    if (inkCanvas.EditingMode != InkCanvasEditingMode.EraseByStroke)
-                    {
-                        inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
-                    }
+                    //if (inkCanvas.EditingMode != InkCanvasEditingMode.EraseByStroke)
+                    //{
+                    //    inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                    //}
+                    //MessageBox.Show(inkCanvas.EditingMode.ToString());
+                    //if (inkCanvas.EditingMode == InkCanvasEditingMode.EraseByPoint || inkCanvas.EditingMode == InkCanvasEditingMode.EraseByStroke)
+                    //{
+
+                    //}
+                    //double boundsWidth = e.GetTouchPoint(null).Bounds.Width;
+                    //if (boundsWidth > BoundsWidth * 1.7)
+                    //{
+                    //    inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
+                    //    inkCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
+                    //}
+                    //else
+                    //{
+                    //    inkCanvas.EraserShape = new RectangleStylusShape(8, 8);
+                    //    //inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
+                    //    inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                    //}
                     return;
                 }
                 if (isWaitUntilNextTouchDown) return;

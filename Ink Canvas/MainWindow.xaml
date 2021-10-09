@@ -7,7 +7,8 @@
         AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize"
         mc:Ignorable="d" WindowState="Maximized" Loaded="Window_Loaded" Background="Transparent" ShowInTaskbar="False"
         Title="MainWindow" Height="1000" Width="800" FontFamily="Microsoft YaHei UI"
-        Foreground="Black" Closed="Window_Closed">
+        Foreground="Black" Closed="Window_Closed"
+        Stylus.IsPressAndHoldEnabled="False">
     <!--资源中添加命令-->
     <Window.Resources>
         <RoutedUICommand x:Key="KeyExit" Text=" "/>
@@ -356,7 +357,7 @@
                     RenderTransformOrigin="0.5,0.5"
                     Value="{Binding ElementName=InkWidthSlider, Path=Value, Mode=TwoWay}">
             </Slider>
-            <TextBlock Text="画笔&#x000A;粗细"
+            <TextBlock Text="画笔&#x000A;粗细" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
                        FontSize="14" HorizontalAlignment="Center"/>
             <Button Name="BtnPenWidthIncrease" Visibility="Visible" FontFamily="Microsoft YaHei UI"
                     Margin="0,10,0,5" Height="{Binding ElementName=BtnPen, Path=ActualHeight}" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
@@ -372,7 +373,7 @@
                 </Grid>
             </Button>
             <TextBlock Visibility="Visible" Text="{Binding Value, ElementName=InkWidthSlider, Mode=OneWay}"
-                       FontSize="14" HorizontalAlignment="Center"/>
+                       FontSize="14" HorizontalAlignment="Center" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
             <Button Name="BtnPenWidthDecrease" Visibility="Visible" FontFamily="Microsoft YaHei UI"
                     Margin="0,5,0,0" Height="{Binding ElementName=BtnPen, Path=ActualHeight}" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                     Click="BtnPenWidthDecrease_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
