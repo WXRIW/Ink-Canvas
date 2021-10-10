@@ -30,6 +30,7 @@ using Microsoft.VisualBasic;
 using System.Reflection;
 using System.Collections.Generic;
 using Point = System.Windows.Point;
+using System.Windows.Input.StylusPlugIns;
 
 namespace Ink_Canvas
 {
@@ -458,6 +459,20 @@ namespace Ink_Canvas
         private void BtnClear_Click(object sender, RoutedEventArgs e)
         {
             forceEraser = false;
+
+            int whiteboardIndex = CurrentWhiteboardIndex;
+            if (currentMode == 0)
+            {
+                whiteboardIndex = 0;
+            }
+            strokeCollections[whiteboardIndex] = lastTouchDownStrokeCollection;
+
+            BtnUndo.IsEnabled = true;
+            BtnUndo.Visibility = Visibility.Visible;
+
+            BtnRedo.IsEnabled = false;
+            BtnRedo.Visibility = Visibility.Collapsed;
+
             inkCanvas.Strokes.Clear();
         }
 
@@ -605,6 +620,7 @@ namespace Ink_Canvas
         //中心点
         System.Windows.Point centerPoint;
         InkCanvasEditingMode lastInkCanvasEditingMode = InkCanvasEditingMode.Ink;
+        bool isSingleFingerDragMode = false;
 
         private void inkCanvas_PreviewTouchDown(object sender, TouchEventArgs e)
         {
@@ -614,9 +630,12 @@ namespace Ink_Canvas
             {
                 TouchPoint touchPoint = e.GetTouchPoint(inkCanvas);
                 centerPoint = touchPoint.Position;
+
+                //记录第一根手指点击时的 StrokeCollection
+                lastTouchDownStrokeCollection = inkCanvas.Strokes.Clone();
             }
             //设备两个及两个以上，将画笔功能关闭
-            if (dec.Count > 1)
+            if (dec.Count > 1 || isSingleFingerDragMode)
             {
                 if (inkCanvas.EditingMode != InkCanvasEditingMode.None && inkCanvas.EditingMode != InkCanvasEditingMode.Select)
                 {
@@ -637,6 +656,25 @@ namespace Ink_Canvas
                 }
             }
             dec.Remove(e.TouchDevice.Id);
+            if (dec.Count == 0)
+            {
+                if (lastTouchDownStrokeCollection != inkCanvas.Strokes)
+                {
+                    int whiteboardIndex = CurrentWhiteboardIndex;
+                    if (currentMode == 0)
+                    {
+                        whiteboardIndex = 0;
+                    }
+                    Label.Content = whiteboardIndex.ToString();
+                    strokeCollections[whiteboardIndex] = lastTouchDownStrokeCollection;
+
+                    BtnUndo.IsEnabled = true;
+                    BtnUndo.Visibility = Visibility.Visible;
+
+                    BtnRedo.IsEnabled = false;
+                    BtnRedo.Visibility = Visibility.Collapsed;
+                }
+            }
         }
 
         private void inkCanvas_ManipulationStarting(object sender, ManipulationStartingEventArgs e)
@@ -660,7 +698,7 @@ namespace Ink_Canvas
         private MatrixTransform imageTransform;
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
-            if (dec.Count >= 2 && (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible))
+            if ((dec.Count >= 2 && (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible)) || isSingleFingerDragMode)
             {
                 ManipulationDelta md = e.DeltaManipulation;
                 Vector trans = md.Translation;  // 获得位移矢量
@@ -739,7 +777,7 @@ namespace Ink_Canvas
                     {
                         BtnSwitch.Content = "白板";
                     }
-                    //BtnSwitch.Content = "屏幕";
+                    StackPanelPPTButtons.Visibility = Visibility.Visible;
                 }
                 BtnHideInkCanvas_Click(BtnHideInkCanvas, e);
             }
@@ -747,7 +785,8 @@ namespace Ink_Canvas
             {
                 switch ((++currentMode) % 2)
                 {
-                    case 0:
+                    case 0: //屏幕模式
+                        currentMode = 0;
                         GridBackgroundCover.Visibility = Visibility.Hidden;
 
                         SaveStrokes();
@@ -762,8 +801,10 @@ namespace Ink_Canvas
                         {
                             BtnSwitch.Content = "白板";
                         }
+                        StackPanelPPTButtons.Visibility = Visibility.Visible;
                         break;
-                    case 1:
+                    case 1: //黑板或白板模式
+                        currentMode = 1;
                         GridBackgroundCover.Visibility = Visibility.Visible;
 
                         SaveStrokes(true);
@@ -771,9 +812,16 @@ namespace Ink_Canvas
                         RestoreStrokes();
 
                         BtnSwitch.Content = "屏幕";
+                        StackPanelPPTButtons.Visibility = Visibility.Collapsed;
                         break;
                 }
             }
+
+            BtnUndo.IsEnabled = false;
+            BtnUndo.Visibility = Visibility.Visible;
+
+            BtnRedo.IsEnabled = false;
+            BtnRedo.Visibility = Visibility.Collapsed;
         }
 
         private void BtnSwitchTheme_Click(object sender, RoutedEventArgs e)
@@ -865,10 +913,12 @@ namespace Ink_Canvas
                     {
                         BtnSwitch.Content = "白板";
                     }
+                    StackPanelPPTButtons.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     BtnSwitch.Content = "屏幕";
+                    StackPanelPPTButtons.Visibility = Visibility.Collapsed;
                 }
 
                 BtnHideInkCanvas.Content = "隐藏\n画板";
@@ -886,6 +936,7 @@ namespace Ink_Canvas
                 {
                     BtnSwitch.Content = "白板";
                 }
+                StackPanelPPTButtons.Visibility = Visibility.Visible;
                 BtnHideInkCanvas.Content = "显示\n画板";
             }
         }
@@ -895,12 +946,12 @@ namespace Ink_Canvas
             if (ViewBoxStackPanelMain.HorizontalAlignment == HorizontalAlignment.Right)
             {
                 ViewBoxStackPanelMain.HorizontalAlignment = HorizontalAlignment.Left;
-                StackPanelShapes.HorizontalAlignment = HorizontalAlignment.Right;
+                ViewBoxStackPanelShapes.HorizontalAlignment = HorizontalAlignment.Right;
             }
             else
             {
                 ViewBoxStackPanelMain.HorizontalAlignment = HorizontalAlignment.Right;
-                StackPanelShapes.HorizontalAlignment = HorizontalAlignment.Left;
+                ViewBoxStackPanelShapes.HorizontalAlignment = HorizontalAlignment.Left;
             }
         }
 
@@ -1581,6 +1632,7 @@ namespace Ink_Canvas
 
         private void inkCanvas_TouchMove(object sender, TouchEventArgs e)
         {
+            if (isSingleFingerDragMode) return;
             if (drawingShapeMode != 0)
             {
                 if (isLastTouchEraser)
@@ -1759,6 +1811,23 @@ namespace Ink_Canvas
         {
             lastTempStroke = null;
             isMouseDown = false;
+        }
+        private void BtnPenWidthDecrease_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                InkWidthSlider.Value -= 1;
+            }
+            catch { }
+        }
+
+        private void BtnPenWidthIncrease_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                InkWidthSlider.Value += 1;
+            }
+            catch { }
         }
 
         #region Selection Gestures
@@ -2054,6 +2123,8 @@ namespace Ink_Canvas
             WhiteboardStrokesStreams[CurrentWhiteboardIndex] = new MemoryStream();
 
             UpdateIndexInfoDisplay();
+
+            if (WhiteboardTotalCount >= 99) BtnWhiteBoardAdd.IsEnabled = false;
         }
 
         private void BtnWhiteBoardDelete_Click(object sender, RoutedEventArgs e)
@@ -2077,10 +2148,18 @@ namespace Ink_Canvas
             RestoreStrokes();
 
             UpdateIndexInfoDisplay();
+
+            if (WhiteboardTotalCount < 99) BtnWhiteBoardAdd.IsEnabled = true;
         }
 
         private void UpdateIndexInfoDisplay()
         {
+            BtnUndo.IsEnabled = false;
+            BtnUndo.Visibility = Visibility.Visible;
+
+            BtnRedo.IsEnabled = false;
+            BtnRedo.Visibility = Visibility.Collapsed;
+
             TextBlockWhiteBoardIndexInfo.Text = string.Format("{0} / {1}", CurrentWhiteboardIndex, WhiteboardTotalCount);
 
             if (CurrentWhiteboardIndex == 1)
@@ -2113,20 +2192,117 @@ namespace Ink_Canvas
 
         #endregion Whiteboard Controls
 
-        private void BtnPenWidthDecrease_Click(object sender, RoutedEventArgs e)
+        private void inkCanvas_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
             try
             {
-                InkWidthSlider.Value -= 1;
+                StylusPointCollection stylusPoints = new StylusPointCollection();
+                int n = e.Stroke.StylusPoints.Count - 1;
+                string s = "";
+
+                for (int i = 0; i < n; i++)
+                {
+                    double speed = GetPointSpeed(e.Stroke.StylusPoints[Math.Max(i - 1, 0)].ToPoint(), e.Stroke.StylusPoints[i].ToPoint(), e.Stroke.StylusPoints[Math.Min(i + 1, n)].ToPoint());
+                    s += speed.ToString() + "\t";
+                    StylusPoint point = new StylusPoint();
+                    if (speed <= 0.5)
+                    {
+                        point.PressureFactor = (float)0.5;
+                    }
+                    else
+                    {
+                        point.PressureFactor = (float)(0.5 - 0.3 * (Math.Min(speed, 1) - 0.5)/0.5);
+                    }
+                    point.X = e.Stroke.StylusPoints[i].X;
+                    point.Y = e.Stroke.StylusPoints[i].Y;
+                    stylusPoints.Add(point);
+                }
+                Label.Visibility = Visibility.Visible;
+                Label.Content = s;
+                e.Stroke.StylusPoints = stylusPoints;
             }
-            catch { }
+            catch
+            {
+
+            }
         }
 
-        private void BtnPenWidthIncrease_Click(object sender, RoutedEventArgs e)
+        public double GetPointSpeed(Point point1, Point point2, Point point3)
+        {
+            return (Math.Sqrt((point1.X - point2.X) * (point1.X - point2.X) + (point1.Y - point2.Y) * (point1.Y - point2.Y))
+                + Math.Sqrt((point3.X - point2.X) * (point3.X - point2.X) + (point3.Y - point2.Y) * (point3.Y - point2.Y)))
+                / 20;
+        }
+
+        private void BtnFingerDragMode_Click(object sender, RoutedEventArgs e)
+        {
+            if (isSingleFingerDragMode)
+            {
+                isSingleFingerDragMode = false;
+                BtnFingerDragMode.Content = "单指\n拖动";
+            }
+            else
+            {
+                isSingleFingerDragMode = true;
+                BtnFingerDragMode.Content = "多指\n拖动";
+            }
+        }
+
+        StrokeCollection[] strokeCollections = new StrokeCollection[100];
+        bool[] whiteboadLastModeIsRedo = new bool[100];
+        int currentStrokeCollectionIndex = 0;
+        StrokeCollection lastTouchDownStrokeCollection = new StrokeCollection();
+
+        private void BtnUndo_Click(object sender, RoutedEventArgs e)
+        {
+            int whiteboardIndex = CurrentWhiteboardIndex;
+            if (currentMode == 0)
+            {
+                whiteboardIndex = 0;
+            }
+
+            StrokeCollection strokes = inkCanvas.Strokes.Clone();
+            inkCanvas.Strokes = strokeCollections[whiteboardIndex].Clone();
+            strokeCollections[whiteboardIndex] = strokes;
+
+            BtnRedo.IsEnabled = true;
+            BtnRedo.Visibility = Visibility.Visible;
+
+            BtnUndo.IsEnabled = false;
+            BtnUndo.Visibility = Visibility.Collapsed;
+        }
+
+        private void BtnRedo_Click(object sender, RoutedEventArgs e)
+        {
+            int whiteboardIndex = CurrentWhiteboardIndex;
+            if (currentMode == 0)
+            {
+                whiteboardIndex = 0;
+            }
+
+            StrokeCollection strokes = inkCanvas.Strokes.Clone();
+            inkCanvas.Strokes = strokeCollections[whiteboardIndex].Clone();
+            strokeCollections[whiteboardIndex] = strokes;
+
+            BtnUndo.IsEnabled = true;
+            BtnUndo.Visibility = Visibility.Visible;
+
+            BtnRedo.IsEnabled = false;
+            BtnRedo.Visibility = Visibility.Collapsed;
+        }
+
+        private void Btn_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             try
             {
-                InkWidthSlider.Value += 1;
+                if (((Button)sender).IsEnabled)
+                {
+                    ((StackPanel)((Button)sender).Content).Opacity = 1;
+                }
+                else
+                {
+                    ((StackPanel)((Button)sender).Content).Opacity = 0.2;
+                }
             }
             catch { }
         }
@@ -2140,4 +2316,252 @@ namespace Ink_Canvas
         MOD_WIN = 0x8
     }
 
+    #region Test for pen
+    // A StylusPlugin that renders ink with a linear gradient brush effect.
+    class CustomDynamicRenderer : DynamicRenderer
+    {
+        //[ThreadStatic]
+        //static private Brush brush = null;
+
+        //[ThreadStatic]
+        //static private Pen pen = null;
+
+        //private Point prevPoint;
+
+        //protected override void OnStylusDown(RawStylusInput rawStylusInput)
+        //{
+        //    // Allocate memory to store the previous point to draw from.
+        //    prevPoint = new Point(double.NegativeInfinity, double.NegativeInfinity);
+        //    base.OnStylusDown(rawStylusInput);
+        //}
+        protected override void OnDraw(System.Windows.Media.DrawingContext drawingContext, System.Windows.Input.StylusPointCollection stylusPoints, System.Windows.Media.Geometry geometry, System.Windows.Media.Brush fillBrush)
+        {
+
+
+            ImageSource img = new BitmapImage(new Uri("pack://application:,,,/Resources/maobi.png"));
+
+            //前一个点的绘制。
+            Point prevPoint = new Point(double.NegativeInfinity,
+                                        double.NegativeInfinity);
+
+
+            var w = Global.StrokeWidth + 15;    //输出时笔刷的实际大小
+
+
+            Point pt = new Point(0, 0);
+            Vector v = new Vector();            //前一个点与当前点的距离
+            var subtractY = 0d;                 //当前点处前一点的Y偏移
+            var subtractX = 0d;                 //当前点处前一点的X偏移
+            var pointWidth = Global.StrokeWidth;
+            double x = 0, y = 0;
+            for (int i = 0; i < stylusPoints.Count; i++)
+            {
+                pt = (Point)stylusPoints[i];
+                v = Point.Subtract(prevPoint, pt);
+
+                Debug.WriteLine("X " + pt.X + "\t" + pt.Y);
+
+                subtractY = (pt.Y - prevPoint.Y) / v.Length;    //设置stylusPoints两个点之间需要填充的XY偏移
+                subtractX = (pt.X - prevPoint.X) / v.Length;
+
+                if (w - v.Length < Global.StrokeWidth)          //控制笔刷大小
+                {
+                    pointWidth = Global.StrokeWidth;
+                }
+                else
+                {
+                    pointWidth = w - v.Length;                  //在两个点距离越大的时候，笔刷所展示的大小越小
+                }
+
+
+                for (double j = 0; j < v.Length; j = j + 1d)    //填充stylusPoints两个点之间
+                {
+                    x = 0; y = 0;
+
+                    if (prevPoint.X == double.NegativeInfinity || prevPoint.Y == double.NegativeInfinity || double.PositiveInfinity == prevPoint.X || double.PositiveInfinity == prevPoint.Y)
+                    {
+                        y = pt.Y;
+                        x = pt.X;
+                    }
+                    else
+                    {
+                        y = prevPoint.Y + subtractY;
+                        x = prevPoint.X + subtractX;
+                    }
+
+                    drawingContext.DrawImage(img, new Rect(x - pointWidth / 2, y - pointWidth / 2, pointWidth, pointWidth));    //在当前点画笔刷图片
+                    prevPoint = new Point(x, y);
+
+
+                    if (double.IsNegativeInfinity(v.Length) || double.IsPositiveInfinity(v.Length))
+                    { break; }
+                }
+            }
+            stylusPoints = null;
+        }
+        //protected override void OnDraw(DrawingContext drawingContext,
+        //                               StylusPointCollection stylusPoints,
+        //                               Geometry geometry, Brush fillBrush)
+        //{
+        //    // Create a new Brush, if necessary.
+        //    //brush ??= new LinearGradientBrush(Colors.Red, Colors.Blue, 20d);
+
+        //    // Create a new Pen, if necessary.
+        //    //pen ??= new Pen(brush, 2d);
+
+        //    // Draw linear gradient ellipses between 
+        //    // all the StylusPoints that have come in.
+        //    for (int i = 0; i < stylusPoints.Count; i++)
+        //    {
+        //        Point pt = (Point)stylusPoints[i];
+        //        Vector v = Point.Subtract(prevPoint, pt);
+
+        //        // Only draw if we are at least 4 units away 
+        //        // from the end of the last ellipse. Otherwise, 
+        //        // we're just redrawing and wasting cycles.
+        //        if (v.Length > 4)
+        //        {
+        //            // Set the thickness of the stroke based 
+        //            // on how hard the user pressed.
+        //            double radius = stylusPoints[i].PressureFactor * 10d;
+        //            drawingContext.DrawEllipse(brush, pen, pt, radius, radius);
+        //            prevPoint = pt;
+        //        }
+        //    }
+        //}
+    }
+    public class Global
+    {
+        public static double StrokeWidth = 2.5;
+    }
+    public class CustomRenderingInkCanvas : InkCanvas
+    {
+        CustomDynamicRenderer customRenderer = new CustomDynamicRenderer();
+
+        public CustomRenderingInkCanvas() : base()
+        {
+            // Use the custom dynamic renderer on the
+            // custom InkCanvas.
+            this.DynamicRenderer = customRenderer;
+        }
+
+        //protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
+        //{
+        //    //// Remove the original stroke and add a custom stroke.
+        //    //this.Strokes.Remove(e.Stroke);
+        //    //CustomStroke customStroke = new CustomStroke(e.Stroke.StylusPoints);
+        //    //this.Strokes.Add(customStroke);
+
+        //    // Pass the custom stroke to base class' OnStrokeCollected method.
+        //    InkCanvasStrokeCollectedEventArgs args =
+        //        new InkCanvasStrokeCollectedEventArgs(customStroke);
+        //    base.OnStrokeCollected(args);
+        //}
+    }// A class for rendering custom strokes
+    class CustomStroke : Stroke
+    {
+        Brush brush;
+        Pen pen;
+
+        public CustomStroke(StylusPointCollection stylusPoints)
+            : base(stylusPoints)
+        {
+            // Create the Brush and Pen used for drawing.
+            brush = new LinearGradientBrush(Colors.Red, Colors.Blue, 20d);
+            pen = new Pen(brush, 2d);
+        }
+        //protected override void DrawCore(DrawingContext drawingContext, DrawingAttributes drawingAttributes)
+        //{
+
+
+        //            ImageSource img = new BitmapImage(new Uri("pack://application:,,,/Resources/maobi.png"));
+
+        //    //前一个点的绘制。
+        //    Point prevPoint = new Point(double.NegativeInfinity,
+        //                                double.NegativeInfinity);
+
+
+        //    var w = Global.StrokeWidth + 15;    //输出时笔刷的实际大小
+
+
+        //    Point pt = new Point(0, 0);
+        //    Vector v = new Vector();            //前一个点与当前点的距离
+        //    var subtractY = 0d;                 //当前点处前一点的Y偏移
+        //    var subtractX = 0d;                 //当前点处前一点的X偏移
+        //    var pointWidth = Global.StrokeWidth;
+        //    double x = 0, y = 0;
+        //    for (int i = 0; i < stylusPoints.Count; i++)
+        //    {
+        //        pt = (Point)stylusPoints[i];
+        //        v = Point.Subtract(prevPoint, pt);
+
+        //        Debug.WriteLine("X " + pt.X + "\t" + pt.Y);
+
+        //        subtractY = (pt.Y - prevPoint.Y) / v.Length;    //设置stylusPoints两个点之间需要填充的XY偏移
+        //        subtractX = (pt.X - prevPoint.X) / v.Length;
+
+        //        if (w - v.Length < Global.StrokeWidth)          //控制笔刷大小
+        //        {
+        //            pointWidth = Global.StrokeWidth;
+        //        }
+        //        else
+        //        {
+        //            pointWidth = w - v.Length;                  //在两个点距离越大的时候，笔刷所展示的大小越小
+        //        }
+
+
+        //        for (double j = 0; j < v.Length; j = j + 1d)    //填充stylusPoints两个点之间
+        //        {
+        //            x = 0; y = 0;
+
+        //            if (prevPoint.X == double.NegativeInfinity || prevPoint.Y == double.NegativeInfinity || double.PositiveInfinity == prevPoint.X || double.PositiveInfinity == prevPoint.Y)
+        //            {
+        //                y = pt.Y;
+        //                x = pt.X;
+        //            }
+        //            else
+        //            {
+        //                y = prevPoint.Y + subtractY;
+        //                x = prevPoint.X + subtractX;
+        //            }
+
+        //            drawingContext.DrawImage(img, new Rect(x - pointWidth / 2, y - pointWidth / 2, pointWidth, pointWidth));    //在当前点画笔刷图片
+        //            prevPoint = new Point(x, y);
+
+
+        //            if (double.IsNegativeInfinity(v.Length) || double.IsPositiveInfinity(v.Length))
+        //            { break; }
+        //        }
+        //    }
+        //    stylusPoints = null;
+        //}
+        //protected override void DrawCore(DrawingContext drawingContext,
+        //                                 DrawingAttributes drawingAttributes)
+        //{
+        //    // Allocate memory to store the previous point to draw from.
+        //    Point prevPoint = new Point(double.NegativeInfinity,
+        //                                double.NegativeInfinity);
+
+        //    // Draw linear gradient ellipses between
+        //    // all the StylusPoints in the Stroke.
+        //    for (int i = 0; i < this.StylusPoints.Count; i++)
+        //    {
+        //        Point pt = (Point)this.StylusPoints[i];
+        //        Vector v = Point.Subtract(prevPoint, pt);
+
+        //        // Only draw if we are at least 4 units away
+        //        // from the end of the last ellipse. Otherwise,
+        //        // we're just redrawing and wasting cycles.
+        //        if (v.Length > 4)
+        //        {
+        //            // Set the thickness of the stroke
+        //            // based on how hard the user pressed.
+        //            double radius = this.StylusPoints[i].PressureFactor * 10d;
+        //            drawingContext.DrawEllipse(brush, pen, pt, radius, radius);
+        //            prevPoint = pt;
+        //        }
+        //    }
+        //}
+    }
+    #endregion
 }
