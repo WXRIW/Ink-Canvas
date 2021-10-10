@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Ink_Canvas" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False"
         xmlns:ui="http://schemas.modernwpf.com/2019" FontFamily="Microsoft YaHei UI" Topmost="True"
         mc:Ignorable="d" ui:WindowHelper.UseModernWindowStyle="True" Loaded="Window_Loaded" Closed="Window_Closed"
-        Title="" Height="350" Width="700">
+        Title="" Height="300" Width="500">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>

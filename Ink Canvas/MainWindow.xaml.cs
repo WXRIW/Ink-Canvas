@@ -686,7 +686,6 @@ namespace Ink_Canvas
                     {
                         whiteboardIndex = 0;
                     }
-                    Label.Content = whiteboardIndex.ToString();
                     strokeCollections[whiteboardIndex] = lastTouchDownStrokeCollection;
 
                     BtnUndo.IsEnabled = true;
@@ -2149,7 +2148,7 @@ namespace Ink_Canvas
 
         int CurrentWhiteboardIndex = 1;
         int WhiteboardTotalCount = 1;
-        MemoryStream[] WhiteboardStrokesStreams = new MemoryStream[100]; //最多99页，0用来存储非白板时的墨迹以便还原
+        MemoryStream[] WhiteboardStrokesStreams = new MemoryStream[101]; //最多99页，0用来存储非白板时的墨迹以便还原
 
         private void SaveStrokes(bool isBackupMain = false)
         {
@@ -2319,13 +2318,17 @@ namespace Ink_Canvas
                     double speed = GetPointSpeed(e.Stroke.StylusPoints[Math.Max(i - 1, 0)].ToPoint(), e.Stroke.StylusPoints[i].ToPoint(), e.Stroke.StylusPoints[Math.Min(i + 1, n)].ToPoint());
                     s += speed.ToString() + "\t";
                     StylusPoint point = new StylusPoint();
-                    if (speed <= 0.5)
+                    if (speed >= 0.5)
+                    {
+                        point.PressureFactor = (float)(0.5 - 0.3 * (Math.Min(speed, 1) - 0.5) / 0.5);
+                    }
+                    else if(speed >= 0.05)
                     {
                         point.PressureFactor = (float)0.5;
                     }
                     else
                     {
-                        point.PressureFactor = (float)(0.5 - 0.3 * (Math.Min(speed, 1) - 0.5)/0.5);
+                        point.PressureFactor = (float)(0.5 + 0.4 * (0.05 - speed) / 0.05);
                     }
                     point.X = e.Stroke.StylusPoints[i].X;
                     point.Y = e.Stroke.StylusPoints[i].Y;
