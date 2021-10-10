@@ -47,9 +47,13 @@ namespace Ink_Canvas
             //Version 2.1.2-release
             TextBlockChangeLog.Text = "" +
                 "1. 支持多页白板/黑板\n" +
-                "2. \n" +
-                "3. ";
-            TextBlockSuggestion.Text = "老师讲评试卷可以点击右侧的背景和深色按钮，即可启动黑板功能（同样支持用笔来擦除），\n双指可以缩放和拖动，左边也会有工具栏方便画图形。";
+                "2. 支持撤销\n" +
+                "3. 双击清屏即可在清屏的同时隐藏画板\n" +
+                "4. 对深浅主题下墨迹颜色的优化\n" +
+                "\n" +
+                "目前基本可以取代“希沃白板”";
+            TextBlockSuggestionTitle.Visibility = Visibility.Collapsed;
+            //TextBlockSuggestion.Text = "老师讲评试卷可以点击右侧的背景和深色按钮，即可启动黑板功能（同样支持用笔来擦除），\n双指可以缩放和拖动，左边也会有工具栏方便画图形。";
 
             Version version = Assembly.GetExecutingAssembly().GetName().Version;
             LabelVersion.Content = "Version: " + version.ToString();

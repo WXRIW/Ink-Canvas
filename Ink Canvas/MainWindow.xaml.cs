@@ -152,7 +152,7 @@ namespace Ink_Canvas
                             catch { }
                             if (!lastVersion.Contains(version.ToString()))
                             {
-                                //new ChangeLogWindow().ShowDialog();
+                                new ChangeLogWindow().ShowDialog();
                                 lastVersion += "\n" + version.ToString();
                                 File.WriteAllText("versions.ini", lastVersion.Trim());
                             }
@@ -460,18 +460,21 @@ namespace Ink_Canvas
         {
             forceEraser = false;
 
-            int whiteboardIndex = CurrentWhiteboardIndex;
-            if (currentMode == 0)
+            if (inkCanvas.Strokes.Count != 0)
             {
-                whiteboardIndex = 0;
+                int whiteboardIndex = CurrentWhiteboardIndex;
+                if (currentMode == 0)
+                {
+                    whiteboardIndex = 0;
+                }
+                strokeCollections[whiteboardIndex] = inkCanvas.Strokes.Clone();
+
+                BtnUndo.IsEnabled = true;
+                BtnUndo.Visibility = Visibility.Visible;
+
+                BtnRedo.IsEnabled = false;
+                BtnRedo.Visibility = Visibility.Collapsed;
             }
-            strokeCollections[whiteboardIndex] = lastTouchDownStrokeCollection;
-
-            BtnUndo.IsEnabled = true;
-            BtnUndo.Visibility = Visibility.Visible;
-
-            BtnRedo.IsEnabled = false;
-            BtnRedo.Visibility = Visibility.Collapsed;
 
             inkCanvas.Strokes.Clear();
         }
@@ -537,7 +540,16 @@ namespace Ink_Canvas
         {
             inkColor = 2;
             forceEraser = false;
-            inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF1ED760");
+            if (BtnSwitchTheme.Content.ToString() == "浅色")
+            {
+                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF1ED760");
+                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
+            }
+            else
+            {
+                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF169141");
+                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
+            }
 
             ColorSwitchCheck();
         }
@@ -555,7 +567,16 @@ namespace Ink_Canvas
         {
             inkColor = 4;
             forceEraser = false;
-            inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFFB900");
+            if (BtnSwitchTheme.Content.ToString() == "浅色")
+            {
+                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFFC000");
+                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
+            }
+            else
+            {
+                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFF38B00");
+                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
+            }
 
             ColorSwitchCheck();
         }
@@ -841,13 +862,13 @@ namespace Ink_Canvas
                 {
                     inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
                 }
-
-                foreach (Stroke stroke in inkCanvas.Strokes)
+                else if (inkColor == 2)
                 {
-                    if (stroke.DrawingAttributes.Color == Colors.Black)
-                    {
-                        stroke.DrawingAttributes.Color = Colors.White;
-                    }
+                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF1ED760");
+                }
+                else if (inkColor == 4)
+                {
+                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFFC000");
                 }
             }
             else
@@ -865,21 +886,61 @@ namespace Ink_Canvas
                 {
                     inkCanvas.DefaultDrawingAttributes.Color = Colors.Black;
                 }
-
-                foreach (Stroke stroke in inkCanvas.Strokes)
+                else if(inkColor == 2)
                 {
-                    if (stroke.DrawingAttributes.Color == Colors.White)
-                    {
-                        stroke.DrawingAttributes.Color = Colors.Black;
-                    }
+                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF169141");
+                }
+                else if(inkColor == 4)
+                {
+                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFF38B00");
                 }
             }
+            AdjustStrokeColor();
             if (!Settings.Appearance.IsTransparentButtonBackground)
             {
                 ToggleSwitchTransparentButtonBackground_Toggled(ToggleSwitchTransparentButtonBackground, null);
             }
         }
 
+        private void AdjustStrokeColor()
+        {
+            if (BtnSwitchTheme.Content.ToString() == "浅色")
+            {
+                foreach (Stroke stroke in inkCanvas.Strokes)
+                {
+                    if (stroke.DrawingAttributes.Color == Colors.Black)
+                    {
+                        stroke.DrawingAttributes.Color = Colors.White;
+                    }
+                    else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FF169141")))
+                    {
+                        stroke.DrawingAttributes.Color = StringToColor("#FF1ED760");
+                    }
+                    else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FFF38B00")))
+                    {
+                        stroke.DrawingAttributes.Color = StringToColor("#FFFFC000");
+                    }
+                }
+            }
+            else
+            {
+                foreach (Stroke stroke in inkCanvas.Strokes)
+                {
+                    if (stroke.DrawingAttributes.Color == Colors.White)
+                    {
+                        stroke.DrawingAttributes.Color = Colors.Black;
+                    }
+                    else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FF1ED760")))
+                    {
+                        stroke.DrawingAttributes.Color = StringToColor("#FF169141");
+                    }
+                    else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FFFFC000")))
+                    {
+                        stroke.DrawingAttributes.Color = StringToColor("#FFF38B00");
+                    }
+                }
+            }
+        }
 
         int BoundsWidth = 5;
         private void ToggleSwitchModeFinger_Toggled(object sender, RoutedEventArgs e)
@@ -1052,12 +1113,6 @@ namespace Ink_Canvas
                         // 在阅读模式下出现异常时，通过下面的方式来获得当前选中的幻灯片对象
                         slide = pptApplication.SlideShowWindows[1].View.Slide;
                     }
-
-                    //如果检测到已经开始放映，则立即进入画板模式
-                    if (pptApplication.SlideShowWindows.Count >= 1)
-                    {
-                        PptApplication_SlideShowBegin(pptApplication.SlideShowWindows[1]);
-                    }
                 }
 
                 if (pptApplication == null) throw new Exception();
@@ -1067,6 +1122,12 @@ namespace Ink_Canvas
                 {
                     BtnPPTSlideShow.Visibility = Visibility.Visible;
                 });
+
+                //如果检测到已经开始放映，则立即进入画板模式
+                if (pptApplication.SlideShowWindows.Count >= 1)
+                {
+                    PptApplication_SlideShowBegin(pptApplication.SlideShowWindows[1]);
+                }
             }
             catch
             {
@@ -1098,15 +1159,42 @@ namespace Ink_Canvas
                 BtnPPTSlideShow.Visibility = Visibility.Collapsed;
                 BtnPPTSlideShowEnd.Visibility = Visibility.Visible;
                 ViewBoxStackPanelMain.Margin = new Thickness(10, 10, 10, 10);
+
                 if (Settings.Behavior.IsShowCanvasAtNewSlideShow && Main_Grid.Background == Brushes.Transparent)
                 {
+                    if (currentMode != 0)
+                    {
+                        currentMode = 0;
+                        GridBackgroundCover.Visibility = Visibility.Hidden;
+
+                        SaveStrokes();
+                        inkCanvas.Strokes.Clear();
+
+                        if (BtnSwitchTheme.Content.ToString() == "浅色")
+                        {
+                            BtnSwitch.Content = "黑板";
+                        }
+                        else
+                        {
+                            BtnSwitch.Content = "白板";
+                        }
+                        StackPanelPPTButtons.Visibility = Visibility.Visible;
+                    }
                     BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
                 }
-                if (GridBackgroundCover.Visibility == Visibility.Visible)
-                {
-                    currentMode = 0;
-                    GridBackgroundCover.Visibility = Visibility.Hidden;
-                }
+                //if (GridBackgroundCover.Visibility == Visibility.Visible)
+                //{
+                //    SaveStrokes();
+                //    currentMode = 0;
+                //    GridBackgroundCover.Visibility = Visibility.Hidden;
+                //}
+
+                BtnRedo.IsEnabled = false;
+                BtnRedo.Visibility = Visibility.Collapsed;
+
+                BtnUndo.IsEnabled = false;
+                BtnUndo.Visibility = Visibility.Visible;
+
                 inkCanvas.Strokes.Clear();
             });
             previousSlideID = Wn.View.CurrentShowPosition;
@@ -1120,7 +1208,24 @@ namespace Ink_Canvas
                 BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
                 StackPanelPPTControls.Visibility = Visibility.Collapsed;
                 ViewBoxStackPanelMain.Margin = new Thickness(10, 10, 10, 55);
+
+                if (currentMode != 0)
+                {
+                    BtnSwitch_Click(BtnSwitch, null);
+                }
+                //if (GridBackgroundCover.Visibility == Visibility.Visible)
+                //{
+                //    SaveStrokes();
+                //}
+
+                BtnRedo.IsEnabled = false;
+                BtnRedo.Visibility = Visibility.Collapsed;
+
+                BtnUndo.IsEnabled = false;
+                BtnUndo.Visibility = Visibility.Visible;
+
                 inkCanvas.Strokes.Clear();
+
                 if (Main_Grid.Background != Brushes.Transparent)
                 {
                     BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
@@ -1156,7 +1261,14 @@ namespace Ink_Canvas
                     ms.Position = 0;
                     memoryStreams[previousSlideID] = ms;
 
+                    BtnRedo.IsEnabled = false;
+                    BtnRedo.Visibility = Visibility.Collapsed;
+
+                    BtnUndo.IsEnabled = false;
+                    BtnUndo.Visibility = Visibility.Visible;
+
                     inkCanvas.Strokes.Clear();
+
                     try
                     {
                         if (memoryStreams[Wn.View.CurrentShowPosition].Length > 0)
@@ -2072,6 +2184,7 @@ namespace Ink_Canvas
                         inkCanvas.Strokes = new System.Windows.Ink.StrokeCollection(WhiteboardStrokesStreams[CurrentWhiteboardIndex]);
                     }
                 }
+                AdjustStrokeColor();
             }
             catch { }
         }
@@ -2194,6 +2307,7 @@ namespace Ink_Canvas
 
         private void inkCanvas_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
+            if (!ToggleSwitchSimulatePressure.IsOn) return;
             try
             {
                 StylusPointCollection stylusPoints = new StylusPointCollection();
@@ -2305,6 +2419,17 @@ namespace Ink_Canvas
                 }
             }
             catch { }
+        }
+
+        private void ToggleSwitchSimulatePressure_Toggled(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BtnClear_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            //BtnClear_Click(BtnClear, null);
+            BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
         }
     }
 
