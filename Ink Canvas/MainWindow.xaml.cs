@@ -1073,9 +1073,10 @@ namespace Ink_Canvas
                 MessageBox.Show("未找到幻灯片");
             }
         }
-
+        public static bool IsShowingRestoreHiddenSlidesWindow = false;
         private void TimerCheckPPT_Elapsed(object sender, ElapsedEventArgs e)
         {
+            if (IsShowingRestoreHiddenSlidesWindow) return;
             try
             {
                 Process[] processes = Process.GetProcessesByName("wpp");
@@ -1104,6 +1105,7 @@ namespace Ink_Canvas
                     pptApplication.SlideShowEnd += PptApplication_SlideShowEnd;
                     // 获得幻灯片对象集合
                     slides = presentation.Slides;
+
                     // 获得幻灯片的数量
                     slidescount = slides.Count;
                     memoryStreams = new MemoryStream[slidescount + 2];
@@ -1137,8 +1139,9 @@ namespace Ink_Canvas
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    if (isHaveHiddenSlide)
+                    if (isHaveHiddenSlide && !IsShowingRestoreHiddenSlidesWindow)
                     {
+                        IsShowingRestoreHiddenSlidesWindow = true;
                         new RestoreHiddenSlidesWindow().ShowDialog();
                     }
 

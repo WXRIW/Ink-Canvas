@@ -44,5 +44,10 @@ namespace Ink_Canvas
         {
             Close();
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            MainWindow.IsShowingRestoreHiddenSlidesWindow = false;
+        }
     }
 }

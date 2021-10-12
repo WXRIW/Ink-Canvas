@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d" Topmost="True" WindowStartupLocation="CenterScreen" ui:WindowHelper.UseModernWindowStyle="True"
-        ResizeMode="NoResize"
+        ResizeMode="NoResize" Closed="Window_Closed"
         Title="演示文档设置 - Ink Canvas 画板" Height="160" Width="450" FontFamily="Microsoft YaHei UI">
     <Grid>
         <Grid Margin="10">
