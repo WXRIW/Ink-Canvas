@@ -54,7 +54,7 @@
                 </DrawingAttributes>
             </InkCanvas.DefaultDrawingAttributes>-->
         </InkCanvas>
-        <Grid Name="GridInkCanvasSelectionCover" IsManipulationEnabled="True"
+        <Grid Name="GridInkCanvasSelectionCover" MouseUp="GridInkCanvasSelectionCover_MouseUp" IsManipulationEnabled="True"
               ManipulationStarting="GridInkCanvasSelectionCover_ManipulationStarting"
               ManipulationCompleted="GridInkCanvasSelectionCover_ManipulationCompleted"
               ManipulationDelta="GridInkCanvasSelectionCover_ManipulationDelta"
@@ -253,7 +253,9 @@
                             Width="120" Margin="10"
                             HorizontalAlignment="Right"
                             Content="关闭"
-                            Click="BtnSettings_Click"/>
+                            Click="BtnSettings_Click"
+                            Foreground="Black"
+                            Background="{Binding ElementName=BtnExit, Path=Background}"/>
                 </Grid>
             </Grid>
         </Border>

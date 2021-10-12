@@ -1,0 +1,26 @@
+﻿<Window x:Class="Ink_Canvas.RestoreHiddenSlidesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019"
+        mc:Ignorable="d" Topmost="True" WindowStartupLocation="CenterScreen" ui:WindowHelper.UseModernWindowStyle="True"
+        ResizeMode="NoResize"
+        Title="演示文档设置 - Ink Canvas 画板" Height="160" Width="450" FontFamily="Microsoft YaHei UI">
+    <Grid>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            <Viewbox HorizontalAlignment="Left" Margin="10" Height="30">
+                <ui:SymbolIcon Symbol="SlideShow" Foreground="{Binding ElementName=Label, Path=Foreground}"/>
+            </Viewbox>
+            <Label Name="Label" Content="检测到此演示文档中包含隐藏的幻灯片，是否取消隐藏？" Margin="60,20,0,20" VerticalAlignment="Center"/>
+            <ui:SimpleStackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Orientation="Horizontal" Spacing="10">
+                <Button Margin="0" Content="是" Width="100" FontFamily="Microsoft YaHei UI" Click="ButtonYes_Click"/>
+                <Button Margin="0" Content="否" Width="100" FontFamily="Microsoft YaHei UI" Click="ButtonNo_Click"/>
+            </ui:SimpleStackPanel>
+        </Grid>
+    </Grid>
+</Window>

@@ -605,6 +605,8 @@ namespace Ink_Canvas
 
         #region Touch Events
 
+        int lastTouchDownTime = 0, lastTouchUpTime = 0;
+
         bool isTouchDown = false; Point iniP = new Point(0, 0);
         bool isLastTouchEraser = false;
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
@@ -718,7 +720,7 @@ namespace Ink_Canvas
         private MatrixTransform imageTransform;
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
-            if ((dec.Count >= 2 && (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible)) || isSingleFingerDragMode)
+            if ((dec.Count >= 2 && (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible || StackPanelPPTButtons.Visibility == Visibility.Collapsed)) || isSingleFingerDragMode)
             {
                 ManipulationDelta md = e.DeltaManipulation;
                 Vector trans = md.Translation;  // 获得位移矢量
@@ -856,6 +858,8 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.White;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 BtnColorBlack.Background = Brushes.White;
+                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
+                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                 if (inkColor == 0)
                 {
@@ -880,6 +884,8 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.Black;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                 BtnColorBlack.Background = Brushes.Black;
+                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
+                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
                 if (inkColor == 0)
                 {
@@ -988,6 +994,7 @@ namespace Ink_Canvas
                 Main_Grid.Background = Brushes.Transparent;
                 inkCanvas.Visibility = Visibility.Collapsed;
                 GridBackgroundCoverHolder.Visibility = Visibility.Collapsed;
+                if (currentMode != 0) SaveStrokes();
                 if (BtnSwitchTheme.Content.ToString() == "浅色")
                 {
                     BtnSwitch.Content = "黑板";
@@ -1017,11 +1024,11 @@ namespace Ink_Canvas
 
         #region PowerPoint
 
-        Microsoft.Office.Interop.PowerPoint.Application pptApplication = null;
-        Microsoft.Office.Interop.PowerPoint.Presentation presentation = null;
-        Microsoft.Office.Interop.PowerPoint.Slides slides = null;
-        Microsoft.Office.Interop.PowerPoint.Slide slide = null;
-        int slidescount = 0;
+        public static Microsoft.Office.Interop.PowerPoint.Application pptApplication = null;
+        public static Microsoft.Office.Interop.PowerPoint.Presentation presentation = null;
+        public static Microsoft.Office.Interop.PowerPoint.Slides slides = null;
+        public static Microsoft.Office.Interop.PowerPoint.Slide slide = null;
+        public static int slidescount = 0;
         private void BtnCheckPPT_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -1117,8 +1124,24 @@ namespace Ink_Canvas
                 if (pptApplication == null) throw new Exception();
                 //BtnCheckPPT.Visibility = Visibility.Collapsed;
 
+                //检查是否有隐藏幻灯片
+                bool isHaveHiddenSlide = false;
+                foreach (Slide slide in slides)
+                {
+                    if (slide.SlideShowTransition.Hidden == Microsoft.Office.Core.MsoTriState.msoTrue)
+                    {
+                        isHaveHiddenSlide = true;
+                        break;
+                    }
+                }
+
                 Application.Current.Dispatcher.Invoke(() =>
                 {
+                    if (isHaveHiddenSlide)
+                    {
+                        new RestoreHiddenSlidesWindow().ShowDialog();
+                    }
+
                     BtnPPTSlideShow.Visibility = Visibility.Visible;
                 });
 
@@ -1234,7 +1257,7 @@ namespace Ink_Canvas
 
         private void Main_Grid_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (StackPanelPPTControls.Visibility != Visibility.Visible) return;
+            if (StackPanelPPTControls.Visibility != Visibility.Visible || currentMode != 0) return;
 
             if (e.Key == Key.Down || e.Key == Key.PageDown || e.Key == Key.Right)
             {
@@ -2304,43 +2327,154 @@ namespace Ink_Canvas
 
         #endregion Whiteboard Controls
 
+        //此函数中的所有代码版权所有 WXRIW，在其他项目中使用前必须提前联系（wxriw@outlook.com），谢谢！
         private void inkCanvas_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
-            if (!ToggleSwitchSimulatePressure.IsOn) return;
-            try
+            //Label.Visibility = Visibility.Visible;
+            //Label.Content = e.Stroke.StylusPoints.Count.ToString();
+            //if (!ToggleSwitchSimulatePressure.IsOn) return;
+            int mode = 1;
+            switch (mode)
             {
-                StylusPointCollection stylusPoints = new StylusPointCollection();
-                int n = e.Stroke.StylusPoints.Count - 1;
-                string s = "";
+                case 0:
+                    try
+                    {
+                        StylusPointCollection stylusPoints = new StylusPointCollection();
+                        int n = e.Stroke.StylusPoints.Count - 1;
+                        string s = "";
 
-                for (int i = 0; i < n; i++)
-                {
-                    double speed = GetPointSpeed(e.Stroke.StylusPoints[Math.Max(i - 1, 0)].ToPoint(), e.Stroke.StylusPoints[i].ToPoint(), e.Stroke.StylusPoints[Math.Min(i + 1, n)].ToPoint());
-                    s += speed.ToString() + "\t";
-                    StylusPoint point = new StylusPoint();
-                    if (speed >= 0.5)
-                    {
-                        point.PressureFactor = (float)(0.5 - 0.3 * (Math.Min(speed, 1) - 0.5) / 0.5);
+                        for (int i = 0; i <= n; i++)
+                        {
+                            double speed = GetPointSpeed(e.Stroke.StylusPoints[Math.Max(i - 1, 0)].ToPoint(), e.Stroke.StylusPoints[i].ToPoint(), e.Stroke.StylusPoints[Math.Min(i + 1, n)].ToPoint());
+                            s += speed.ToString() + "\t";
+                            StylusPoint point = new StylusPoint();
+                            if (speed >= 0.25)
+                            {
+                                point.PressureFactor = (float)(0.5 - 0.3 * (Math.Min(speed, 1.5) - 0.3) / 1.2);
+                            }
+                            else if (speed >= 0.05)
+                            {
+                                point.PressureFactor = (float)0.5;
+                            }
+                            else
+                            {
+                                point.PressureFactor = (float)(0.5 + 0.4 * (0.05 - speed) / 0.05);
+                            }
+                            point.X = e.Stroke.StylusPoints[i].X;
+                            point.Y = e.Stroke.StylusPoints[i].Y;
+                            stylusPoints.Add(point);
+                        }
+                        //Label.Visibility = Visibility.Visible;
+                        //Label.Content = s;
+                        e.Stroke.StylusPoints = stylusPoints;
                     }
-                    else if(speed >= 0.05)
+                    catch
                     {
-                        point.PressureFactor = (float)0.5;
-                    }
-                    else
-                    {
-                        point.PressureFactor = (float)(0.5 + 0.4 * (0.05 - speed) / 0.05);
-                    }
-                    point.X = e.Stroke.StylusPoints[i].X;
-                    point.Y = e.Stroke.StylusPoints[i].Y;
-                    stylusPoints.Add(point);
-                }
-                Label.Visibility = Visibility.Visible;
-                Label.Content = s;
-                e.Stroke.StylusPoints = stylusPoints;
-            }
-            catch
-            {
 
+                    }
+                    break;
+                case 1:
+                    try
+                    {
+                        StylusPointCollection stylusPoints = new StylusPointCollection();
+                        int n = e.Stroke.StylusPoints.Count - 1;
+                        double pressure = 0.1;
+                        int x = 8;
+                        if(n >= x)
+                        {
+                            for (int i = 0; i < n - x; i++)
+                            {
+                                StylusPoint point = new StylusPoint();
+
+                                point.PressureFactor = (float)0.5;
+                                point.X = e.Stroke.StylusPoints[i].X;
+                                point.Y = e.Stroke.StylusPoints[i].Y;
+                                stylusPoints.Add(point);
+                            }
+                            for (int i = n - x; i <= n; i++)
+                            {
+                                StylusPoint point = new StylusPoint();
+
+                                point.PressureFactor = (float)((0.5 - pressure) * (n - i) / x + pressure);
+                                point.X = e.Stroke.StylusPoints[i].X;
+                                point.Y = e.Stroke.StylusPoints[i].Y;
+                                stylusPoints.Add(point);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i <= n; i++)
+                            {
+                                StylusPoint point = new StylusPoint();
+
+                                point.PressureFactor = (float)(0.4 * (n - i) / n + pressure);
+                                point.X = e.Stroke.StylusPoints[i].X;
+                                point.Y = e.Stroke.StylusPoints[i].Y;
+                                stylusPoints.Add(point);
+                            }
+                        }
+                        e.Stroke.StylusPoints = stylusPoints;
+                    }
+                    catch
+                    {
+
+                    }
+                    break;
+                case 2:
+                    try
+                    {
+                        StylusPointCollection stylusPoints = new StylusPointCollection();
+                        int n = e.Stroke.StylusPoints.Count - 1;
+                        double pressure = 0.1;
+                        int x = 8;
+                        if (lastTouchDownTime < lastTouchUpTime)
+                        {
+                            double k = (lastTouchUpTime - lastTouchDownTime) / (n + 1); // 每个点之间间隔 k 毫秒
+                            Label.Visibility = Visibility.Visible;
+                            Label.Content = k.ToString();
+                            x = (int)(1000 / k); // 取 1000 ms 内的点
+                        }
+
+                        if(n >= x)
+                        {
+                            for (int i = 0; i < n - x; i++)
+                            {
+                                StylusPoint point = new StylusPoint();
+
+                                point.PressureFactor = (float)0.5;
+                                point.X = e.Stroke.StylusPoints[i].X;
+                                point.Y = e.Stroke.StylusPoints[i].Y;
+                                stylusPoints.Add(point);
+                            }
+                            for (int i = n - x; i <= n; i++)
+                            {
+                                StylusPoint point = new StylusPoint();
+
+                                point.PressureFactor = (float)((0.5 - pressure) * (n - i) / x + pressure);
+                                point.X = e.Stroke.StylusPoints[i].X;
+                                point.Y = e.Stroke.StylusPoints[i].Y;
+                                stylusPoints.Add(point);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i <= n; i++)
+                            {
+                                StylusPoint point = new StylusPoint();
+
+                                point.PressureFactor = (float)(0.4 * (n - i) / n + pressure);
+                                point.X = e.Stroke.StylusPoints[i].X;
+                                point.Y = e.Stroke.StylusPoints[i].Y;
+                                stylusPoints.Add(point);
+                            }
+                        }
+                        e.Stroke.StylusPoints = stylusPoints;
+                    }
+                    catch
+                    {
+
+                    }
+                    break;
             }
         }
 
@@ -2429,6 +2563,11 @@ namespace Ink_Canvas
 
         }
 
+        private void GridInkCanvasSelectionCover_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+        }
+
         private void BtnClear_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             //BtnClear_Click(BtnClear, null);
@@ -2448,115 +2587,115 @@ namespace Ink_Canvas
     // A StylusPlugin that renders ink with a linear gradient brush effect.
     class CustomDynamicRenderer : DynamicRenderer
     {
-        //[ThreadStatic]
-        //static private Brush brush = null;
+        [ThreadStatic]
+        static private Brush brush = null;
 
-        //[ThreadStatic]
-        //static private Pen pen = null;
+        [ThreadStatic]
+        static private Pen pen = null;
 
-        //private Point prevPoint;
+        private Point prevPoint;
 
-        //protected override void OnStylusDown(RawStylusInput rawStylusInput)
-        //{
-        //    // Allocate memory to store the previous point to draw from.
-        //    prevPoint = new Point(double.NegativeInfinity, double.NegativeInfinity);
-        //    base.OnStylusDown(rawStylusInput);
-        //}
-        protected override void OnDraw(System.Windows.Media.DrawingContext drawingContext, System.Windows.Input.StylusPointCollection stylusPoints, System.Windows.Media.Geometry geometry, System.Windows.Media.Brush fillBrush)
+        protected override void OnStylusDown(RawStylusInput rawStylusInput)
         {
-
-
-            ImageSource img = new BitmapImage(new Uri("pack://application:,,,/Resources/maobi.png"));
-
-            //前一个点的绘制。
-            Point prevPoint = new Point(double.NegativeInfinity,
-                                        double.NegativeInfinity);
-
-
-            var w = Global.StrokeWidth + 15;    //输出时笔刷的实际大小
-
-
-            Point pt = new Point(0, 0);
-            Vector v = new Vector();            //前一个点与当前点的距离
-            var subtractY = 0d;                 //当前点处前一点的Y偏移
-            var subtractX = 0d;                 //当前点处前一点的X偏移
-            var pointWidth = Global.StrokeWidth;
-            double x = 0, y = 0;
-            for (int i = 0; i < stylusPoints.Count; i++)
-            {
-                pt = (Point)stylusPoints[i];
-                v = Point.Subtract(prevPoint, pt);
-
-                Debug.WriteLine("X " + pt.X + "\t" + pt.Y);
-
-                subtractY = (pt.Y - prevPoint.Y) / v.Length;    //设置stylusPoints两个点之间需要填充的XY偏移
-                subtractX = (pt.X - prevPoint.X) / v.Length;
-
-                if (w - v.Length < Global.StrokeWidth)          //控制笔刷大小
-                {
-                    pointWidth = Global.StrokeWidth;
-                }
-                else
-                {
-                    pointWidth = w - v.Length;                  //在两个点距离越大的时候，笔刷所展示的大小越小
-                }
-
-
-                for (double j = 0; j < v.Length; j = j + 1d)    //填充stylusPoints两个点之间
-                {
-                    x = 0; y = 0;
-
-                    if (prevPoint.X == double.NegativeInfinity || prevPoint.Y == double.NegativeInfinity || double.PositiveInfinity == prevPoint.X || double.PositiveInfinity == prevPoint.Y)
-                    {
-                        y = pt.Y;
-                        x = pt.X;
-                    }
-                    else
-                    {
-                        y = prevPoint.Y + subtractY;
-                        x = prevPoint.X + subtractX;
-                    }
-
-                    drawingContext.DrawImage(img, new Rect(x - pointWidth / 2, y - pointWidth / 2, pointWidth, pointWidth));    //在当前点画笔刷图片
-                    prevPoint = new Point(x, y);
-
-
-                    if (double.IsNegativeInfinity(v.Length) || double.IsPositiveInfinity(v.Length))
-                    { break; }
-                }
-            }
-            stylusPoints = null;
+            // Allocate memory to store the previous point to draw from.
+            prevPoint = new Point(double.NegativeInfinity, double.NegativeInfinity);
+            base.OnStylusDown(rawStylusInput);
         }
-        //protected override void OnDraw(DrawingContext drawingContext,
-        //                               StylusPointCollection stylusPoints,
-        //                               Geometry geometry, Brush fillBrush)
+        //protected override void OnDraw(System.Windows.Media.DrawingContext drawingContext, System.Windows.Input.StylusPointCollection stylusPoints, System.Windows.Media.Geometry geometry, System.Windows.Media.Brush fillBrush)
         //{
-        //    // Create a new Brush, if necessary.
-        //    //brush ??= new LinearGradientBrush(Colors.Red, Colors.Blue, 20d);
 
-        //    // Create a new Pen, if necessary.
-        //    //pen ??= new Pen(brush, 2d);
 
-        //    // Draw linear gradient ellipses between 
-        //    // all the StylusPoints that have come in.
+        //    ImageSource img = new BitmapImage(new Uri("pack://application:,,,/Resources/maobi.png"));
+
+        //    //前一个点的绘制。
+        //    Point prevPoint = new Point(double.NegativeInfinity,
+        //                                double.NegativeInfinity);
+
+
+        //    var w = Global.StrokeWidth + 15;    //输出时笔刷的实际大小
+
+
+        //    Point pt = new Point(0, 0);
+        //    Vector v = new Vector();            //前一个点与当前点的距离
+        //    var subtractY = 0d;                 //当前点处前一点的Y偏移
+        //    var subtractX = 0d;                 //当前点处前一点的X偏移
+        //    var pointWidth = Global.StrokeWidth;
+        //    double x = 0, y = 0;
         //    for (int i = 0; i < stylusPoints.Count; i++)
         //    {
-        //        Point pt = (Point)stylusPoints[i];
-        //        Vector v = Point.Subtract(prevPoint, pt);
+        //        pt = (Point)stylusPoints[i];
+        //        v = Point.Subtract(prevPoint, pt);
 
-        //        // Only draw if we are at least 4 units away 
-        //        // from the end of the last ellipse. Otherwise, 
-        //        // we're just redrawing and wasting cycles.
-        //        if (v.Length > 4)
+        //        Debug.WriteLine("X " + pt.X + "\t" + pt.Y);
+
+        //        subtractY = (pt.Y - prevPoint.Y) / v.Length;    //设置stylusPoints两个点之间需要填充的XY偏移
+        //        subtractX = (pt.X - prevPoint.X) / v.Length;
+
+        //        if (w - v.Length < Global.StrokeWidth)          //控制笔刷大小
         //        {
-        //            // Set the thickness of the stroke based 
-        //            // on how hard the user pressed.
-        //            double radius = stylusPoints[i].PressureFactor * 10d;
-        //            drawingContext.DrawEllipse(brush, pen, pt, radius, radius);
-        //            prevPoint = pt;
+        //            pointWidth = Global.StrokeWidth;
+        //        }
+        //        else
+        //        {
+        //            pointWidth = w - v.Length;                  //在两个点距离越大的时候，笔刷所展示的大小越小
+        //        }
+
+
+        //        for (double j = 0; j < v.Length; j = j + 1d)    //填充stylusPoints两个点之间
+        //        {
+        //            x = 0; y = 0;
+
+        //            if (prevPoint.X == double.NegativeInfinity || prevPoint.Y == double.NegativeInfinity || double.PositiveInfinity == prevPoint.X || double.PositiveInfinity == prevPoint.Y)
+        //            {
+        //                y = pt.Y;
+        //                x = pt.X;
+        //            }
+        //            else
+        //            {
+        //                y = prevPoint.Y + subtractY;
+        //                x = prevPoint.X + subtractX;
+        //            }
+
+        //            drawingContext.DrawImage(img, new Rect(x - pointWidth / 2, y - pointWidth / 2, pointWidth, pointWidth));    //在当前点画笔刷图片
+        //            prevPoint = new Point(x, y);
+
+
+        //            if (double.IsNegativeInfinity(v.Length) || double.IsPositiveInfinity(v.Length))
+        //            { break; }
         //        }
         //    }
+        //    stylusPoints = null;
         //}
+        protected override void OnDraw(DrawingContext drawingContext,
+                                       StylusPointCollection stylusPoints,
+                                       Geometry geometry, Brush fillBrush)
+        {
+            // Create a new Brush, if necessary.
+            //brush ??= new LinearGradientBrush(Colors.Red, Colors.Blue, 20d);
+
+            // Create a new Pen, if necessary.
+            //pen ??= new Pen(brush, 2d);
+
+            // Draw linear gradient ellipses between 
+            // all the StylusPoints that have come in.
+            for (int i = 0; i < stylusPoints.Count; i++)
+            {
+                Point pt = (Point)stylusPoints[i];
+                Vector v = Point.Subtract(prevPoint, pt);
+
+                // Only draw if we are at least 4 units away 
+                // from the end of the last ellipse. Otherwise, 
+                // we're just redrawing and wasting cycles.
+                if (v.Length > 4)
+                {
+                    // Set the thickness of the stroke based 
+                    // on how hard the user pressed.
+                    double radius = stylusPoints[i].PressureFactor * 10d;
+                    drawingContext.DrawEllipse(brush, pen, pt, radius, radius);
+                    prevPoint = pt;
+                }
+            }
+        }
     }
     public class Global
     {
@@ -2573,18 +2712,18 @@ namespace Ink_Canvas
             this.DynamicRenderer = customRenderer;
         }
 
-        //protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
-        //{
-        //    //// Remove the original stroke and add a custom stroke.
-        //    //this.Strokes.Remove(e.Stroke);
-        //    //CustomStroke customStroke = new CustomStroke(e.Stroke.StylusPoints);
-        //    //this.Strokes.Add(customStroke);
+        protected override void OnStrokeCollected(InkCanvasStrokeCollectedEventArgs e)
+        {
+            // Remove the original stroke and add a custom stroke.
+            this.Strokes.Remove(e.Stroke);
+            CustomStroke customStroke = new CustomStroke(e.Stroke.StylusPoints);
+            this.Strokes.Add(customStroke);
 
-        //    // Pass the custom stroke to base class' OnStrokeCollected method.
-        //    InkCanvasStrokeCollectedEventArgs args =
-        //        new InkCanvasStrokeCollectedEventArgs(customStroke);
-        //    base.OnStrokeCollected(args);
-        //}
+            // Pass the custom stroke to base class' OnStrokeCollected method.
+            InkCanvasStrokeCollectedEventArgs args =
+                new InkCanvasStrokeCollectedEventArgs(customStroke);
+            base.OnStrokeCollected(args);
+        }
     }// A class for rendering custom strokes
     class CustomStroke : Stroke
     {
@@ -2663,33 +2802,33 @@ namespace Ink_Canvas
         //    }
         //    stylusPoints = null;
         //}
-        //protected override void DrawCore(DrawingContext drawingContext,
-        //                                 DrawingAttributes drawingAttributes)
-        //{
-        //    // Allocate memory to store the previous point to draw from.
-        //    Point prevPoint = new Point(double.NegativeInfinity,
-        //                                double.NegativeInfinity);
+        protected override void DrawCore(DrawingContext drawingContext,
+                                         DrawingAttributes drawingAttributes)
+        {
+            // Allocate memory to store the previous point to draw from.
+            Point prevPoint = new Point(double.NegativeInfinity,
+                                        double.NegativeInfinity);
 
-        //    // Draw linear gradient ellipses between
-        //    // all the StylusPoints in the Stroke.
-        //    for (int i = 0; i < this.StylusPoints.Count; i++)
-        //    {
-        //        Point pt = (Point)this.StylusPoints[i];
-        //        Vector v = Point.Subtract(prevPoint, pt);
+            // Draw linear gradient ellipses between
+            // all the StylusPoints in the Stroke.
+            for (int i = 0; i < this.StylusPoints.Count; i++)
+            {
+                Point pt = (Point)this.StylusPoints[i];
+                Vector v = Point.Subtract(prevPoint, pt);
 
-        //        // Only draw if we are at least 4 units away
-        //        // from the end of the last ellipse. Otherwise,
-        //        // we're just redrawing and wasting cycles.
-        //        if (v.Length > 4)
-        //        {
-        //            // Set the thickness of the stroke
-        //            // based on how hard the user pressed.
-        //            double radius = this.StylusPoints[i].PressureFactor * 10d;
-        //            drawingContext.DrawEllipse(brush, pen, pt, radius, radius);
-        //            prevPoint = pt;
-        //        }
-        //    }
-        //}
+                // Only draw if we are at least 4 units away
+                // from the end of the last ellipse. Otherwise,
+                // we're just redrawing and wasting cycles.
+                if (v.Length > 4)
+                {
+                    // Set the thickness of the stroke
+                    // based on how hard the user pressed.
+                    double radius = this.StylusPoints[i].PressureFactor * 10d;
+                    drawingContext.DrawEllipse(brush, pen, pt, radius, radius);
+                    prevPoint = pt;
+                }
+            }
+        }
     }
     #endregion
 }
