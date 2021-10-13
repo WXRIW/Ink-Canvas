@@ -9,6 +9,10 @@ namespace Ink_Canvas
 {
     public class Settings
     {
+        [JsonProperty("appearance")]
+        public Appearance Appearance { get; set; } = new Appearance();
+        [JsonProperty("automation")]
+        public Automation Automation { get; set; } = new Automation();
         [JsonProperty("behavior")]
         public Behavior Behavior { get; set; } = new Behavior();
         [JsonProperty("canvas")]
@@ -17,8 +21,6 @@ namespace Ink_Canvas
         public Gesture Gesture { get; set; } = new Gesture();
         [JsonProperty("startup")]
         public Startup Startup { get; set; } = new Startup();
-        [JsonProperty("appearance")]
-        public Appearance Appearance { get; set; } = new Appearance();
     }
 
     public class Behavior
@@ -35,6 +37,8 @@ namespace Ink_Canvas
         public double InkWidth { get; set; } = 2.5;
         [JsonProperty("isShowCursor")]
         public bool IsShowCursor { get; set; } = false;
+        [JsonProperty("inkStyle")]
+        public int InkStyle { get; set; } = 0;
     }
 
     public class Gesture
@@ -67,5 +71,13 @@ namespace Ink_Canvas
         public bool IsShowLRSwitchButton { get; set; } = false;
         [JsonProperty("isShowModeFingerToggleSwitch")]
         public bool IsShowModeFingerToggleSwitch { get; set; } = true;
+    }
+
+    public class Automation
+    {
+        [JsonProperty("isAutoKillPptService")]
+        public bool IsAutoKillPptService { get; set; } = false;
+        [JsonProperty("isAutoKillEasiNote")]
+        public bool IsAutoKillEasiNote { get; set; } = false;
     }
 }

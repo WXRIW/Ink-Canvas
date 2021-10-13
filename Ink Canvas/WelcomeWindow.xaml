@@ -1,0 +1,27 @@
+﻿<Window x:Class="Ink_Canvas.WelcomeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019"
+        mc:Ignorable="d" Topmost="True" ResizeMode="NoResize" ui:WindowHelper.UseModernWindowStyle="True"
+        WindowStartupLocation="CenterScreen" FontFamily="Microsoft YaHei UI" Closing="Window_Closing"
+        Title="欢迎向导 - Ink Canvas 画板" Height="250" Width="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Label Content="欢迎在马鞍山二中使用 Ink Canvas 画板" FontSize="20" Margin="10,10,0,0"/>
+        <Image Source="Logo.png" Grid.Row="1" HorizontalAlignment="Right" Margin="20"/>
+        <ui:SimpleStackPanel Grid.Row="1" Margin="30,10,0,0">
+            <CheckBox Name="CheckBoxSetAsRecommendation" FontFamily="Microsoft YaHei UI" Content="配置为推荐设置" IsChecked="True"/>
+            <CheckBox Name="CheckBoxRunAtStartup" FontFamily="Microsoft YaHei UI" Content="开机时运行" IsChecked="True"/>
+            <CheckBox Name="CheckBoxAutoKillPptService" FontFamily="Microsoft YaHei UI" Content="自动查杀“PPT 小工具”" IsChecked="True"/>
+            <CheckBox Name="CheckBoxAutoKillEasiNote" FontFamily="Microsoft YaHei UI" Content="自动查杀“希沃白板 5”"/>
+        </ui:SimpleStackPanel>
+        <Button Grid.Row="2" Margin="0,0,10,10" FontFamily="Microsoft YaHei UI"
+                HorizontalAlignment="Right" Content="确定" Width="100" Click="Button_Click"/>
+    </Grid>
+</Window>

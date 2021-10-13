@@ -43,11 +43,18 @@ namespace Ink_Canvas
         {
             InitializeComponent();
             BorderSettings.Visibility = Visibility.Collapsed;
+
+            timerCheckPPT.Elapsed += TimerCheckPPT_Elapsed;
+            timerCheckPPT.Interval = 1000;
+
+            timerKillProcess.Elapsed += TimerKillProcess_Elapsed;
+            timerKillProcess.Interval = 5000;
         }
 
         Timer timerCheckPPT = new Timer();
+        Timer timerKillProcess = new Timer();
 
-        Settings Settings = new Settings();
+        public static Settings Settings = new Settings();
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -145,51 +152,61 @@ namespace Ink_Canvas
                             TextBlockVersion.Text = version.ToString();
 
                             string lastVersion = "";
-                            try
+                            if (!File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "versions.ini"))
                             {
-                                lastVersion = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "versions.ini");
+                                new WelcomeWindow().ShowDialog();
                             }
-                            catch { }
-                            if (!lastVersion.Contains(version.ToString()))
+                            else
                             {
-                                new ChangeLogWindow().ShowDialog();
-                                lastVersion += "\n" + version.ToString();
-                                File.WriteAllText("versions.ini", lastVersion.Trim());
-                            }
-                        });
-
-                        try
-                        {
-                            if (response.Contains("<update>"))
-                            {
-                                string str = Strings.Mid(response, response.IndexOf("<update>") + 9);
-                                if (str.Contains("<update>"))
+                                try
                                 {
-                                    str = Strings.Left(str, str.IndexOf("<update>")).Trim();
-                                    if (str.Length > 0)
+                                    lastVersion = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "versions.ini");
+                                }
+                                catch { }
+                                if (!lastVersion.Contains(version.ToString()))
+                                {
+                                    new ChangeLogWindow().ShowDialog();
+                                    lastVersion += "\n" + version.ToString();
+                                    File.WriteAllText("versions.ini", lastVersion.Trim());
+                                }
+
+                                //第二次启动时才可以进入检查版本更新模式
+                                new Thread(new ThreadStart(() => {
+                                    try
                                     {
-                                        string updateIP;
-                                        int updatePort;
-
-                                        string[] vs = str.Split(':');
-                                        updateIP = vs[0];
-                                        updatePort = int.Parse(vs[1]);
-
-                                        if (OAUS.Core.VersionHelper.HasNewVersion(GetIp(updateIP), updatePort))
+                                        if (response.Contains("<update>"))
                                         {
-                                            string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
-                                            System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
-
-                                            Application.Current.Dispatcher.Invoke(() =>
+                                            string str = Strings.Mid(response, response.IndexOf("<update>") + 9);
+                                            if (str.Contains("<update>"))
                                             {
-                                                Application.Current.Shutdown();
-                                            });
+                                                str = Strings.Left(str, str.IndexOf("<update>")).Trim();
+                                                if (str.Length > 0)
+                                                {
+                                                    string updateIP;
+                                                    int updatePort;
+
+                                                    string[] vs = str.Split(':');
+                                                    updateIP = vs[0];
+                                                    updatePort = int.Parse(vs[1]);
+
+                                                    if (OAUS.Core.VersionHelper.HasNewVersion(GetIp(updateIP), updatePort))
+                                                    {
+                                                        string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
+                                                        System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
+
+                                                        Application.Current.Dispatcher.Invoke(() =>
+                                                        {
+                                                            Application.Current.Shutdown();
+                                                        });
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
-                                }
+                                    catch { }
+                                })).Start();
                             }
-                        }
-                        catch { }
+                        });
                     }
                 }
                 catch { }
@@ -311,8 +328,7 @@ namespace Ink_Canvas
 
             if (Settings.Behavior.PowerPointSupport)
             {
-                timerCheckPPT.Elapsed += TimerCheckPPT_Elapsed;
-                timerCheckPPT.Interval = 1000;
+                ToggleSwitchSupportPowerPoint.IsOn = true;
                 timerCheckPPT.Start();
             }
             else
@@ -372,14 +388,90 @@ namespace Ink_Canvas
                     ToggleSwitchShowCursor.IsOn = false;
                     inkCanvas.ForceCursor = false;
                 }
+
+                if (Settings.Canvas.InkStyle != 0)
+                {
+                    ComboBoxPenStyle.SelectedIndex = Settings.Canvas.InkStyle;
+                }
             }
             else
             {
                 Settings.Canvas = new Canvas();
             }
+
+            if (Settings.Automation != null)
+            {
+                if (Settings.Automation.IsAutoKillEasiNote || Settings.Automation.IsAutoKillPptService)
+                {
+                    timerKillProcess.Start();
+                }
+                else
+                {
+                    timerKillProcess.Stop();
+                }
+
+                if (Settings.Automation.IsAutoKillEasiNote)
+                {
+                    ToggleSwitchAutoKillEasiNote.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchAutoKillEasiNote.IsOn = false;
+                }
+
+                if (Settings.Automation.IsAutoKillPptService)
+                {
+                    ToggleSwitchAutoKillPptService.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchAutoKillPptService.IsOn = false;
+                }
+            }
+            else
+            {
+                Settings.Automation = new Automation();
+            }
         }
 
-        string settingsFileName = "settings.json";
+        private void TimerKillProcess_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                string arg = "/F";
+                if (Settings.Automation.IsAutoKillPptService)
+                {
+                    Process[] processes = Process.GetProcessesByName("PPTService");
+                    if (processes.Length > 0)
+                    {
+                        arg += " /IM PPTService.exe";
+                    }
+                }
+                if (Settings.Automation.IsAutoKillEasiNote)
+                {
+                    Process[] processes = Process.GetProcessesByName("EasiNote");
+                    if (processes.Length > 0)
+                    {
+                        arg += " /IM EasiNote.exe";
+                    }
+                }
+                if (arg != "/F")
+                {
+                    Process p = new Process();
+                    p.StartInfo = new ProcessStartInfo("taskkill", arg);
+                    p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    p.Start();
+
+                    if (arg.Contains("EasiNote"))
+                    {
+                        MessageBox.Show("检测到“希沃白板 5”，已自动关闭。");
+                    }
+                }
+            }
+            catch { }
+        }
+
+        public static string settingsFileName = "settings.json";
         bool isLoaded = false;
 
         private void back_HotKey(object sender, ExecutedRoutedEventArgs e)
@@ -454,6 +546,7 @@ namespace Ink_Canvas
             inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
             drawingShapeMode = 0;
             inkCanvas_EditingModeChanged(inkCanvas, null);
+            CancelSingleFingerDragMode();
         }
 
         private void BtnClear_Click(object sender, RoutedEventArgs e)
@@ -477,6 +570,16 @@ namespace Ink_Canvas
             }
 
             inkCanvas.Strokes.Clear();
+
+            CancelSingleFingerDragMode();
+        }
+
+        private void CancelSingleFingerDragMode()
+        {
+            if (isSingleFingerDragMode)
+            {
+                BtnFingerDragMode_Click(BtnFingerDragMode, null);
+            }
         }
 
         private void BtnHideControl_Click(object sender, RoutedEventArgs e)
@@ -509,6 +612,32 @@ namespace Ink_Canvas
             inkCanvas.IsManipulationEnabled = true;
             drawingShapeMode = 0;
             inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+            CancelSingleFingerDragMode();
+
+            // 改变选中提示
+            ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
+            switch (inkColor)
+            {
+                case 0:
+                    ViewboxBtnColorBlackContent.Visibility = Visibility.Visible;
+                    break;
+                case 1:
+                    ViewboxBtnColorRedContent.Visibility = Visibility.Visible;
+                    break;
+                case 2:
+                    ViewboxBtnColorGreenContent.Visibility = Visibility.Visible;
+                    break;
+                case 3:
+                    ViewboxBtnColorBlueContent.Visibility = Visibility.Visible;
+                    break;
+                case 4:
+                    ViewboxBtnColorYellowContent.Visibility = Visibility.Visible;
+                    break;
+            }
         }
 
         private void BtnColorBlack_Click(object sender, RoutedEventArgs e)
@@ -860,6 +989,7 @@ namespace Ink_Canvas
                 BtnColorBlack.Background = Brushes.White;
                 BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
                 BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
+                SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                 if (inkColor == 0)
                 {
@@ -886,6 +1016,7 @@ namespace Ink_Canvas
                 BtnColorBlack.Background = Brushes.Black;
                 BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
                 BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
+                SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
                 if (inkColor == 0)
                 {
@@ -1404,6 +1535,15 @@ namespace Ink_Canvas
 
             Settings.Behavior.PowerPointSupport = ToggleSwitchSupportPowerPoint.IsOn;
             SaveSettingsToFile();
+
+            if (Settings.Behavior.PowerPointSupport)
+            {
+                timerCheckPPT.Start();
+            }
+            else
+            {
+                timerCheckPPT.Stop();
+            }
         }
 
         private void ToggleSwitchShowCanvasAtNewSlideShow_Toggled(object sender, RoutedEventArgs e)
@@ -1523,9 +1663,52 @@ namespace Ink_Canvas
             }
         }
 
+        private void ToggleSwitchTransparentButtonBackground_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Appearance.IsTransparentButtonBackground = ToggleSwitchTransparentButtonBackground.IsOn;
+            if (Settings.Appearance.IsTransparentButtonBackground)
+            {
+                BtnExit.Background = new SolidColorBrush(StringToColor("#7F909090"));
+            }
+            else
+            {
+                if (BtnSwitchTheme.Content.ToString() == "深色")
+                {
+                    //Light
+                    BtnExit.Background = new SolidColorBrush(StringToColor("#FFCCCCCC"));
+                }
+                else
+                {
+                    //Dark
+                    BtnExit.Background = new SolidColorBrush(StringToColor("#FF555555"));
+                }
+            }
+
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchShowCursor_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Canvas.IsShowCursor = ToggleSwitchShowCursor.IsOn;
+            inkCanvas_EditingModeChanged(inkCanvas, null);
+
+            SaveSettingsToFile();
+        }
+
         #endregion
 
         #region Canvas
+
+        private void ComboBoxPenStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Canvas.InkStyle = ComboBoxPenStyle.SelectedIndex;
+            SaveSettingsToFile();
+        }
 
         private void InkWidthSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -1541,7 +1724,127 @@ namespace Ink_Canvas
 
         #endregion
 
-        private void SaveSettingsToFile()
+        #region Automation
+
+        private void ToggleSwitchAutoKillPptService_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Automation.IsAutoKillPptService = ToggleSwitchAutoKillPptService.IsOn;
+            SaveSettingsToFile();
+
+            if (Settings.Automation.IsAutoKillEasiNote || Settings.Automation.IsAutoKillPptService)
+            {
+                timerKillProcess.Start();
+            }
+            else
+            {
+                timerKillProcess.Stop();
+            }
+        }
+
+        private void ToggleSwitchAutoKillEasiNote_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Automation.IsAutoKillEasiNote = ToggleSwitchAutoKillEasiNote.IsOn;
+            SaveSettingsToFile();
+
+            if (Settings.Automation.IsAutoKillEasiNote || Settings.Automation.IsAutoKillPptService)
+            {
+                timerKillProcess.Start();
+            }
+            else
+            {
+                timerKillProcess.Stop();
+            }
+        }
+        #endregion
+
+        #region Gesture
+
+        private void ToggleSwitchEnableTwoFingerRotation_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsEnableTwoFingerRotation = ToggleSwitchEnableTwoFingerRotation.IsOn;
+
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchEnableTwoFingerGestureInPresentationMode_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode = ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn;
+
+            SaveSettingsToFile();
+        }
+
+        #endregion
+
+        #region Reset
+
+        public static void SetSettingsToRecommendation()
+        {
+            bool IsAutoKillPptService = Settings.Automation.IsAutoKillPptService;
+            bool IsAutoKillEasiNote = Settings.Automation.IsAutoKillEasiNote;
+            Settings = new Settings();
+            Settings.Appearance.IsShowEraserButton = false;
+            Settings.Appearance.IsShowExitButton = false;
+            Settings.Startup.IsAutoHideCanvas = true;
+            Settings.Automation.IsAutoKillEasiNote = IsAutoKillEasiNote;
+            Settings.Automation.IsAutoKillPptService = IsAutoKillPptService;
+            Settings.Canvas.InkWidth = 2.5;
+        }
+
+        private void BtnResetToSuggestion_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                isLoaded = false;
+                SetSettingsToRecommendation();
+                SaveSettingsToFile();
+                LoadSettings(false);
+                isLoaded = true;
+
+                if (ToggleSwitchRunAtStartup.IsOn == false)
+                {
+                    ToggleSwitchRunAtStartup.IsOn = true;
+                }
+            }
+            catch { }
+            SymbolIconResetSuggestionComplete.Visibility = Visibility.Visible;
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(5000);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    SymbolIconResetSuggestionComplete.Visibility = Visibility.Collapsed;
+                });
+            })).Start();
+        }
+
+        private void BtnResetToDefault_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                isLoaded = false;
+                File.Delete("settings.json");
+                Settings = new Settings();
+                LoadSettings(false);
+                isLoaded = true;
+            }
+            catch { }
+            SymbolIconResetDefaultComplete.Visibility = Visibility.Visible;
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(5000);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    SymbolIconResetDefaultComplete.Visibility = Visibility.Collapsed;
+                });
+            })).Start();
+        }
+        #endregion
+
+        public static void SaveSettingsToFile()
         {
             string text = JsonConvert.SerializeObject(Settings, Formatting.Indented);
             try
@@ -1601,7 +1904,7 @@ namespace Ink_Canvas
         /// </summary>
         /// <param name="exeName">程序名称</param>
         /// <returns></returns>
-        public bool StartAutomaticallyCreate(string exeName)
+        public static bool StartAutomaticallyCreate(string exeName)
         {
             try
             {
@@ -1629,7 +1932,7 @@ namespace Ink_Canvas
         /// </summary>
         /// <param name="exeName">程序名称</param>
         /// <returns></returns>
-        public bool StartAutomaticallyDel(string exeName)
+        public static bool StartAutomaticallyDel(string exeName)
         {
             try
             {
@@ -1668,42 +1971,6 @@ namespace Ink_Canvas
             return ipEndPoint.Address.ToString();
         }
 
-        private void ToggleSwitchTransparentButtonBackground_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (!isLoaded) return;
-
-            Settings.Appearance.IsTransparentButtonBackground = ToggleSwitchTransparentButtonBackground.IsOn;
-            if (Settings.Appearance.IsTransparentButtonBackground)
-            {
-                BtnExit.Background = new SolidColorBrush(StringToColor("#7F909090"));
-            }
-            else
-            {
-                if (BtnSwitchTheme.Content.ToString() == "深色")
-                {
-                    //Light
-                    BtnExit.Background = new SolidColorBrush(StringToColor("#FFCCCCCC"));
-                }
-                else
-                {
-                    //Dark
-                    BtnExit.Background = new SolidColorBrush(StringToColor("#FF555555"));
-                }
-            }
-
-            SaveSettingsToFile();
-        }
-
-        private void ToggleSwitchShowCursor_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (!isLoaded) return;
-
-            Settings.Canvas.IsShowCursor = ToggleSwitchShowCursor.IsOn;
-            inkCanvas_EditingModeChanged(inkCanvas, null);
-
-            SaveSettingsToFile();
-        }
-
         private void inkCanvas_EditingModeChanged(object sender, RoutedEventArgs e)
         {
             if (Settings.Canvas.IsShowCursor)
@@ -1733,6 +2000,7 @@ namespace Ink_Canvas
             drawingShapeMode = 0;
             inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             inkCanvas.IsManipulationEnabled = true;
+            CancelSingleFingerDragMode();
         }
 
         private void BtnDrawLine_Click(object sender, RoutedEventArgs e)
@@ -1741,6 +2009,7 @@ namespace Ink_Canvas
             drawingShapeMode = 1;
             inkCanvas.EditingMode = InkCanvasEditingMode.None;
             inkCanvas.IsManipulationEnabled = true;
+            CancelSingleFingerDragMode();
         }
 
         private void BtnDrawArrow_Click(object sender, RoutedEventArgs e)
@@ -1749,6 +2018,7 @@ namespace Ink_Canvas
             drawingShapeMode = 2;
             inkCanvas.EditingMode = InkCanvasEditingMode.None;
             inkCanvas.IsManipulationEnabled = true;
+            CancelSingleFingerDragMode();
         }
 
         private void BtnDrawRectangle_Click(object sender, RoutedEventArgs e)
@@ -1757,6 +2027,7 @@ namespace Ink_Canvas
             drawingShapeMode = 3;
             inkCanvas.EditingMode = InkCanvasEditingMode.None;
             inkCanvas.IsManipulationEnabled = true;
+            CancelSingleFingerDragMode();
         }
 
         private void BtnDrawEllipse_Click(object sender, RoutedEventArgs e)
@@ -1765,6 +2036,7 @@ namespace Ink_Canvas
             drawingShapeMode = 4;
             inkCanvas.EditingMode = InkCanvasEditingMode.None;
             inkCanvas.IsManipulationEnabled = true;
+            CancelSingleFingerDragMode();
         }
 
         private void inkCanvas_TouchMove(object sender, TouchEventArgs e)
@@ -2101,74 +2373,6 @@ namespace Ink_Canvas
 
         #endregion Left Side Panel
 
-        private void ToggleSwitchEnableTwoFingerRotation_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (!isLoaded) return;
-
-            Settings.Gesture.IsEnableTwoFingerRotation = ToggleSwitchEnableTwoFingerRotation.IsOn;
-
-            SaveSettingsToFile();
-        }
-
-        private void ToggleSwitchEnableTwoFingerGestureInPresentationMode_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (!isLoaded) return;
-
-            Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode = ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn;
-
-            SaveSettingsToFile();
-        }
-
-        private void BtnResetToSuggestion_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                isLoaded = false;
-                Settings = new Settings();
-                Settings.Appearance.IsShowEraserButton = false;
-                Settings.Appearance.IsShowExitButton = false;
-                Settings.Startup.IsAutoHideCanvas = true;
-                SaveSettingsToFile();
-                LoadSettings(false);
-                isLoaded = true;
-
-                if (ToggleSwitchRunAtStartup.IsOn == false)
-                {
-                    ToggleSwitchRunAtStartup.IsOn = true;
-                }
-            }
-            catch { }
-            SymbolIconResetSuggestionComplete.Visibility = Visibility.Visible;
-            new Thread(new ThreadStart(() => {
-                Thread.Sleep(5000);
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    SymbolIconResetSuggestionComplete.Visibility = Visibility.Collapsed;
-                });
-            })).Start();
-        }
-
-        private void BtnResetToDefault_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                isLoaded = false;
-                File.Delete("settings.json");
-                Settings = new Settings();
-                LoadSettings(false);
-                isLoaded = true;
-            }
-            catch { }
-            SymbolIconResetDefaultComplete.Visibility = Visibility.Visible;
-            new Thread(new ThreadStart(() => {
-                Thread.Sleep(5000);
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    SymbolIconResetDefaultComplete.Visibility = Visibility.Collapsed;
-                });
-            })).Start();
-        }
-
 
         #region Whiteboard Controls
 
@@ -2333,13 +2537,18 @@ namespace Ink_Canvas
         //此函数中的所有代码版权所有 WXRIW，在其他项目中使用前必须提前联系（wxriw@outlook.com），谢谢！
         private void inkCanvas_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
-            //Label.Visibility = Visibility.Visible;
-            //Label.Content = e.Stroke.StylusPoints.Count.ToString();
-            //if (!ToggleSwitchSimulatePressure.IsOn) return;
-            int mode = 1;
-            switch (mode)
+            // 检查是否是压感笔书写
+            foreach (StylusPoint stylusPoint in e.Stroke.StylusPoints)
             {
-                case 0:
+                if (stylusPoint.PressureFactor!= 0.5 && stylusPoint.PressureFactor != 0)
+                {
+                    return;
+                }
+            }
+
+            switch (Settings.Canvas.InkStyle)
+            {
+                case 1:
                     try
                     {
                         StylusPointCollection stylusPoints = new StylusPointCollection();
@@ -2376,13 +2585,13 @@ namespace Ink_Canvas
 
                     }
                     break;
-                case 1:
+                case 0:
                     try
                     {
                         StylusPointCollection stylusPoints = new StylusPointCollection();
                         int n = e.Stroke.StylusPoints.Count - 1;
                         double pressure = 0.1;
-                        int x = 8;
+                        int x = 10;
                         if(n >= x)
                         {
                             for (int i = 0; i < n - x; i++)
@@ -2423,7 +2632,7 @@ namespace Ink_Canvas
 
                     }
                     break;
-                case 2:
+                case 3: //根据 mode == 0 改写，目前暂未完成
                     try
                     {
                         StylusPointCollection stylusPoints = new StylusPointCollection();

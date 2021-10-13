@@ -147,7 +147,13 @@
                                                FontSize="14"/>
                                 </StackPanel>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowCursor" Header="显示画笔光标" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCursor_Toggled"/>
-                                <ui:ToggleSwitch Name="ToggleSwitchSimulatePressure" Header="模拟压感（笔锋）(Beta)" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSimulatePressure_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchSimulatePressure" Visibility="Collapsed" Header="模拟压感（笔锋）(Beta)" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSimulatePressure_Toggled"/>
+                                <TextBlock Text="画笔样式"  FontFamily="Microsoft YaHei UI" FontSize="14"/>
+                                <ComboBox Name="ComboBoxPenStyle" FontFamily="Microsoft YaHei UI" SelectedIndex="0" SelectionChanged="ComboBoxPenStyle_SelectionChanged">
+                                    <ComboBoxItem Content="模拟笔锋（仿希沃算法）" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="模拟笔锋（根据速度计算）" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="无笔锋"  FontFamily="Microsoft YaHei UI"/>
+                                </ComboBox>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="手势">
@@ -191,6 +197,12 @@
                                         <ui:SymbolIcon Name="SymbolIconResetDefaultComplete" Symbol="Accept" Visibility="Collapsed"/>
                                     </ui:SimpleStackPanel>
                                 </StackPanel>
+                            </ui:SimpleStackPanel>
+                        </GroupBox>
+                        <GroupBox Header="自动">
+                            <ui:SimpleStackPanel Spacing="12">
+                                <ui:ToggleSwitch Name="ToggleSwitchAutoKillPptService" Header="自动查杀“PPT 小工具”" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoKillPptService_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchAutoKillEasiNote" Header="自动查杀“希沃白板 5”" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoKillEasiNote_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="关于">
@@ -297,21 +309,46 @@
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                         Click="BtnSwitch_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
                     <StackPanel Name="StackPanelColors" Margin="7,0,7,0">
-                        <Button Name="BtnColorBlack" Content="" FontFamily="Microsoft YaHei UI" Background="Black"
-                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
-                            Click="BtnColorBlack_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
-                        <Button Name="BtnColorRed" Content="" FontFamily="Microsoft YaHei UI" Background="Red"
-                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
-                            Click="BtnColorRed_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
-                        <Button Name="BtnColorGreen" Content="" FontFamily="Microsoft YaHei UI" Background="#169141"
-                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
-                            Click="BtnColorGreen_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
-                        <Button Name="BtnColorBlue" Content="" FontFamily="Microsoft YaHei UI" Background="#239AD6"
-                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
-                            Click="BtnColorBlue_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
-                        <Button Name="BtnColorYellow" Content="" FontFamily="Microsoft YaHei UI" Background="#F38B00"
-                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
-                            Click="BtnColorYellow_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"/>
+                        <Button Name="BtnColorBlack" FontFamily="Microsoft YaHei UI" Background="Black"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Click="BtnColorBlack_Click">
+                            <Viewbox Name="ViewboxBtnColorBlackContent" Visibility="Collapsed">
+                                <ui:SymbolIcon Symbol="Accept" Name="SymbolIconBtnColorBlackContent" Foreground="White"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Name="BtnColorRed" FontFamily="Microsoft YaHei UI" Background="Red"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Click="BtnColorRed_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
+                            <Viewbox Name="ViewboxBtnColorRedContent">
+                                <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Name="BtnColorGreen" FontFamily="Microsoft YaHei UI" Background="#169141"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Click="BtnColorGreen_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
+                            <Viewbox Name="ViewboxBtnColorGreenContent" Visibility="Collapsed">
+                                <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Name="BtnColorBlue" FontFamily="Microsoft YaHei UI" Background="#239AD6"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Click="BtnColorBlue_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
+                            <Viewbox Name="ViewboxBtnColorBlueContent" Visibility="Collapsed">
+                                <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
+                            </Viewbox>
+                        </Button>
+                        <Button Name="BtnColorYellow" FontFamily="Microsoft YaHei UI" Background="#F38B00"
+                                Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
+                                Click="BtnColorYellow_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
+                            <Viewbox Name="ViewboxBtnColorYellowContent" Visibility="Collapsed">
+                                <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
+                            </Viewbox>
+                        </Button>
                     </StackPanel>
                     <Button Name="BtnClear" Content="清屏" FontFamily="Microsoft YaHei UI"
                             Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
@@ -402,9 +439,11 @@
                 <Button Name="BtnSelect" Content="选择&#x000A;墨迹" Visibility="Visible" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                         Click="BtnSelect_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
-                <Button Name="BtnPen" Content="笔" Visibility="Visible" FontFamily="Microsoft YaHei UI"
+                <Button Name="BtnPen" Visibility="Visible" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
-                        Click="BtnPen_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                        Click="BtnPen_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}">
+                    <ui:SymbolIcon Symbol="Edit"/>
+                </Button>
                 <Button Name="BtnErase" Content="橡皮" Visibility="Visible" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                         Click="BtnErase_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
