@@ -619,7 +619,7 @@ namespace Ink_Canvas
             ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
             ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
             ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorYellowContent.Visibility = Visibility.Collapsed;
             switch (inkColor)
             {
                 case 0:
