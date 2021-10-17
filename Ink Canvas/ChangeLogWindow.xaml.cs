@@ -46,7 +46,7 @@ namespace Ink_Canvas
 
             //Version 2.1.2-release
             TextBlockChangeLog.Text = "" +
-                "1. 添加“截图”功能\n" +
+                "1. 添加“截屏”功能\n" +
                 "2. 修复部分问题" +
                 "3. 为部分网络环境下的二中专版预留环境\n";
             TextBlockSuggestionTitle.Visibility = Visibility.Collapsed;
