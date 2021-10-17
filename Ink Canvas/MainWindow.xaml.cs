@@ -2888,24 +2888,33 @@ namespace Ink_Canvas
         {
             try
             {
-                System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
-                var bitmap = new System.Drawing.Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                GridNotifications.Visibility = Visibility.Collapsed;
 
-                using (System.Drawing.Graphics memoryGrahics = System.Drawing.Graphics.FromImage(bitmap))
-                {
-                    memoryGrahics.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, System.Drawing.CopyPixelOperation.SourceCopy);
-                }
+                new Thread(new ThreadStart(() => {
+                    Thread.Sleep(20);
 
-                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots"))
-                {
-                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots");
-                }
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
+                        var bitmap = new System.Drawing.Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-                bitmap.Save(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                    @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png", ImageFormat.Png);
+                        using (System.Drawing.Graphics memoryGrahics = System.Drawing.Graphics.FromImage(bitmap))
+                        {
+                            memoryGrahics.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, System.Drawing.CopyPixelOperation.SourceCopy);
+                        }
 
-                ShowNotification("截图成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                    @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png");
+                        if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots"))
+                        {
+                            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots");
+                        }
+
+                        bitmap.Save(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                            @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png", ImageFormat.Png);
+
+                        ShowNotification("截图成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                            @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png");
+                    });
+                })).Start();
             }
             catch
             {

@@ -268,9 +268,9 @@
             </Grid>
         </Border>
 
-        <Grid Name="GridNotifications" Margin="50" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-            <Border CornerRadius="30" Height="60" Background="LightGray" Opacity="0.85">
-                <TextBlock Name="TextBlockNotice" Text="测试文本" Margin="20,10" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18"/>
+        <Grid Name="GridNotifications" Margin="0,60" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Border CornerRadius="25" Height="50" Background="LightGray" Opacity="0.85">
+                <TextBlock Name="TextBlockNotice" Text="测试文本" Margin="20,10" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
             </Border>
         </Grid>
 
