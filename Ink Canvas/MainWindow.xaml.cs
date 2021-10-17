@@ -661,6 +661,16 @@ namespace Ink_Canvas
             inkColor = 1;
             forceEraser = false;
             inkCanvas.DefaultDrawingAttributes.Color = Colors.Red;
+            if (BtnSwitchTheme.Content.ToString() == "浅色")
+            {
+                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFF3333");
+                BtnColorRed.Background = new SolidColorBrush(StringToColor("#FFFF3333"));
+            }
+            else
+            {
+                inkCanvas.DefaultDrawingAttributes.Color = Colors.Red;
+                BtnColorRed.Background = Brushes.Red;
+            }
 
             ColorSwitchCheck();
         }
@@ -987,6 +997,7 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.White;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 BtnColorBlack.Background = Brushes.White;
+                BtnColorRed.Background = new SolidColorBrush(StringToColor("#FFFF3333"));
                 BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
                 BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
                 SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
@@ -1014,6 +1025,7 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.Black;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                 BtnColorBlack.Background = Brushes.Black;
+                BtnColorRed.Background = Brushes.Red;
                 BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
                 BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
                 SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
@@ -1048,6 +1060,10 @@ namespace Ink_Canvas
                     {
                         stroke.DrawingAttributes.Color = Colors.White;
                     }
+                    else if (stroke.DrawingAttributes.Color == Colors.Red)
+                    {
+                        stroke.DrawingAttributes.Color = StringToColor("#FFFF3333");
+                    }
                     else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FF169141")))
                     {
                         stroke.DrawingAttributes.Color = StringToColor("#FF1ED760");
@@ -1065,6 +1081,10 @@ namespace Ink_Canvas
                     if (stroke.DrawingAttributes.Color == Colors.White)
                     {
                         stroke.DrawingAttributes.Color = Colors.Black;
+                    }
+                    else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FFFF3333")))
+                    {
+                        stroke.DrawingAttributes.Color = Colors.Red;
                     }
                     else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FF1ED760")))
                     {
@@ -1125,7 +1145,11 @@ namespace Ink_Canvas
                 Main_Grid.Background = Brushes.Transparent;
                 inkCanvas.Visibility = Visibility.Collapsed;
                 GridBackgroundCoverHolder.Visibility = Visibility.Collapsed;
-                if (currentMode != 0) SaveStrokes();
+                if (currentMode != 0)
+                {
+                    SaveStrokes();
+                    RestoreStrokes(true);
+                }
                 if (BtnSwitchTheme.Content.ToString() == "浅色")
                 {
                     BtnSwitch.Content = "黑板";
