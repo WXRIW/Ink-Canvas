@@ -1277,14 +1277,22 @@ namespace Ink_Canvas
                 MessageBox.Show("未找到幻灯片");
             }
         }
+        private void ToggleSwitchSupportWPS_Toggled(object sender, RoutedEventArgs e)
+        {
+            isWPSSupportOn = ToggleSwitchSupportWPS.IsOn;
+        }
+
+        public static bool isWPSSupportOn = false;
+
         public static bool IsShowingRestoreHiddenSlidesWindow = false;
+
         private void TimerCheckPPT_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (IsShowingRestoreHiddenSlidesWindow) return;
             try
             {
                 Process[] processes = Process.GetProcessesByName("wpp");
-                if (processes.Length > 0)
+                if (processes.Length > 0 && !isWPSSupportOn)
                 {
                     return;
                 }
