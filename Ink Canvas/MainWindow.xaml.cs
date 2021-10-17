@@ -226,7 +226,7 @@ namespace Ink_Canvas
         #region Definations and Loading
 
         public static Settings Settings = new Settings();
-        public static string settingsFileName = "settings.json";
+        public static string settingsFileName = "Settings.json";
         bool isLoaded = false;
         bool isAutoUpdateEnabled = false;
 
@@ -237,7 +237,17 @@ namespace Ink_Canvas
             {
                 try
                 {
-                    string response = GetWebClient("http://ink.wxriw.cn:1957");
+                    string VersionInfo = "";
+                    if (File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "VersionInfo.ini"))
+                    {
+                        VersionInfo = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "VersionInfo.ini");
+                    }
+                    string Url = "http://ink.wxriw.cn:1957";
+                    if (VersionInfo != "")
+                    {
+                        Url += "/?verinfo=" + VersionInfo;
+                    }
+                    string response = GetWebClient(Url);
                     if (response.Contains("Special Version"))
                     {
                         isAutoUpdateEnabled = true;
@@ -265,7 +275,7 @@ namespace Ink_Canvas
                             TextBlockVersion.Text = version.ToString();
 
                             string lastVersion = "";
-                            if (!File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "versions.ini"))
+                            if (!File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini"))
                             {
                                 new WelcomeWindow().ShowDialog();
                             }

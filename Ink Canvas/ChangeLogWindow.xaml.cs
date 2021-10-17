@@ -46,12 +46,9 @@ namespace Ink_Canvas
 
             //Version 2.1.2-release
             TextBlockChangeLog.Text = "" +
-                "1. 支持模拟笔锋，字迹更美观\n" +
-                "2. 支持自动查杀希沃部分软件\n" +
-                "3. 检测到有隐藏幻灯片时可一键取消隐藏\n" +
-                "4. 对深浅主题下墨迹颜色的优化\n" +
-                "\n" +
-                "目前非联网功能可以完全取代“希沃白板 5”";
+                "1. 添加“截图”功能\n" +
+                "2. 修复部分问题" +
+                "3. 为部分网络环境下的二中专版预留环境\n";
             TextBlockSuggestionTitle.Visibility = Visibility.Collapsed;
             //TextBlockSuggestion.Text = "老师讲评试卷可以点击右侧的背景和深色按钮，即可启动黑板功能（同样支持用笔来擦除），\n双指可以缩放和拖动，左边也会有工具栏方便画图形。";
 
