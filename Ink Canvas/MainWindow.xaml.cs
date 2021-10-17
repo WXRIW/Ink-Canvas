@@ -225,6 +225,7 @@ namespace Ink_Canvas
         public static Settings Settings = new Settings();
         public static string settingsFileName = "settings.json";
         bool isLoaded = false;
+        bool isAutoUpdateEnabled = false;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
