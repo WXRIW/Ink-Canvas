@@ -104,7 +104,7 @@
         </Grid>
 
         <Border Name="BorderSettings" Background="White" BorderBrush="Black"
-                BorderThickness="1" CornerRadius="10"
+                BorderThickness="1" CornerRadius="10" ui:ThemeManager.RequestedTheme="Light"
                 Width="400" HorizontalAlignment="Center"
                 Margin="100" Visibility="Visible">
             <Grid>
@@ -263,12 +263,16 @@
                             Width="120" Margin="10"
                             HorizontalAlignment="Right"
                             Content="关闭"
-                            Click="BtnSettings_Click"
-                            Foreground="Black"
-                            Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                            Click="BtnSettings_Click"/>
                 </Grid>
             </Grid>
         </Border>
+
+        <Grid Name="GridNotifications" Margin="50" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Border CornerRadius="30" Height="60" Background="LightGray" Opacity="0.85">
+                <TextBlock Name="TextBlockNotice" Text="测试文本" Margin="20,10" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18"/>
+            </Border>
+        </Grid>
 
         <Viewbox Name="ViewBoxStackPanelMain" Margin="10,10,10,55" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="46">
             <StackPanel Name="StackPanelMain" Width="46">
@@ -354,6 +358,9 @@
                     <Button x:Name="BtnHideInkCanvas" Content="隐藏&#x000A;画板" FontFamily="Microsoft YaHei UI"
                             Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                             Click="BtnHideInkCanvas_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
+                    <Button x:Name="BtnScreenshot" Content="截屏" FontFamily="Microsoft YaHei UI"
+                            Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
+                            Click="BtnScreenshot_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
                     <Button x:Name="BtnCheckPPT" Visibility="Collapsed" Content="检查" FontFamily="Microsoft YaHei UI"
                             Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                             Click="BtnCheckPPT_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>

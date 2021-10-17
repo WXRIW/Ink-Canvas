@@ -31,6 +31,9 @@ using System.Reflection;
 using System.Collections.Generic;
 using Point = System.Windows.Point;
 using System.Windows.Input.StylusPlugIns;
+using MessageBox = System.Windows.MessageBox;
+using System.Drawing.Imaging;
+using System.Windows.Media.Animation;
 
 namespace Ink_Canvas
 {
@@ -1380,12 +1383,9 @@ namespace Ink_Canvas
             Application.Current.Dispatcher.Invoke(() =>
             {
                 //调整颜色
-                //MessageBox.Show(string.Format("{0}, {1}", Wn.View..ToString(), Wn.Height.ToString()));
                 double screenRatio = SystemParameters.PrimaryScreenWidth / SystemParameters.PrimaryScreenHeight;
-                //MessageBox.Show(Math.Abs(screenRatio - 16.0 / 9).ToString());
                 if (Math.Abs(screenRatio - 16.0 / 9) <= 0.01)
                 {
-                    //MessageBox.Show((Wn.Presentation.PageSetup.SlideWidth / Wn.Presentation.PageSetup.SlideHeight).ToString());
                     if (Wn.Presentation.PageSetup.SlideWidth / Wn.Presentation.PageSetup.SlideHeight < 1.65)
                     {
                         isButtonBackgroundTransparent = ToggleSwitchTransparentButtonBackground.IsOn;
@@ -2298,6 +2298,7 @@ namespace Ink_Canvas
 
         private void Btn_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            if (!isLoaded) return;
             try
             {
                 if (((Button)sender).IsEnabled)
@@ -2861,6 +2862,7 @@ namespace Ink_Canvas
             catch (Exception) { }
             return false;
         }
+
         /// <summary>
         /// 开机自启删除
         /// </summary>
@@ -2879,6 +2881,80 @@ namespace Ink_Canvas
         #endregion
 
         #endregion Functions
+
+        #region Screenshot
+
+        private void BtnScreenshot_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
+                var bitmap = new System.Drawing.Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+                using (System.Drawing.Graphics memoryGrahics = System.Drawing.Graphics.FromImage(bitmap))
+                {
+                    memoryGrahics.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, System.Drawing.CopyPixelOperation.SourceCopy);
+                }
+
+                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots"))
+                {
+                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots");
+                }
+
+                bitmap.Save(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                    @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png", ImageFormat.Png);
+
+                ShowNotification("截图成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                    @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png");
+            }
+            catch
+            {
+                ShowNotification("截图保存失败");
+            }
+        }
+
+        #endregion
+
+        #region Notification
+
+        int lastNotificationShowTime = 0;
+        int notificationShowTime = 2500;
+
+        private void ShowNotification(string notice, bool isShowImmediately = true)
+        {
+            lastNotificationShowTime = Environment.TickCount;
+
+            GridNotifications.Visibility = Visibility.Visible;
+            //GridNotifications.Opacity = 1;
+            TextBlockNotice.Text = notice;
+
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(notificationShowTime + 200);
+                if (Environment.TickCount - lastNotificationShowTime >= notificationShowTime)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        GridNotifications.Visibility = Visibility.Collapsed;
+                        //DoubleAnimation daV = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromSeconds(0.15)));
+                        //GridNotifications.BeginAnimation(UIElement.OpacityProperty, daV);
+
+                        //new Thread(new ThreadStart(() => {
+                        //    Thread.Sleep(200);
+                        //    Application.Current.Dispatcher.Invoke(() =>
+                        //    {
+                        //        if (GridNotifications.Opacity == 0)
+                        //        {
+                        //            GridNotifications.Visibility = Visibility.Collapsed;
+                        //            GridNotifications.Opacity = 1;
+                        //        }
+                        //    });
+                        //})).Start();
+                    });
+                }
+            })).Start();
+        }
+
+        #endregion
     }
 
     #region Test for pen
