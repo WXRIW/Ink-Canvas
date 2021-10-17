@@ -1374,10 +1374,39 @@ namespace Ink_Canvas
             BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
         }
 
+        bool isButtonBackgroundTransparent = true; //此变量仅用于保存用于幻灯片放映时的优化
         private void PptApplication_SlideShowBegin(SlideShowWindow Wn)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
+                //调整颜色
+                //MessageBox.Show(string.Format("{0}, {1}", Wn.View..ToString(), Wn.Height.ToString()));
+                double screenRatio = SystemParameters.PrimaryScreenWidth / SystemParameters.PrimaryScreenHeight;
+                //MessageBox.Show(Math.Abs(screenRatio - 16.0 / 9).ToString());
+                if (Math.Abs(screenRatio - 16.0 / 9) <= 0.01)
+                {
+                    //MessageBox.Show((Wn.Presentation.PageSetup.SlideWidth / Wn.Presentation.PageSetup.SlideHeight).ToString());
+                    if (Wn.Presentation.PageSetup.SlideWidth / Wn.Presentation.PageSetup.SlideHeight < 1.65)
+                    {
+                        isButtonBackgroundTransparent = ToggleSwitchTransparentButtonBackground.IsOn;
+
+                        if (BtnSwitchTheme.Content.ToString() == "深色")
+                        {
+                            //Light
+                            BtnExit.Background = new SolidColorBrush(StringToColor("#AACCCCCC"));
+                        }
+                        else
+                        {
+                            //Dark
+                            BtnExit.Background = new SolidColorBrush(StringToColor("#AA555555"));
+                        }
+                    }
+                }
+                else if(screenRatio == 256 / 135)
+                {
+
+                }
+
                 slidescount = Wn.Presentation.Slides.Count;
                 memoryStreams = new MemoryStream[slidescount + 2];
 
@@ -1430,6 +1459,28 @@ namespace Ink_Canvas
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
+                if (isButtonBackgroundTransparent == ToggleSwitchTransparentButtonBackground.IsOn &&
+                    isButtonBackgroundTransparent == true)
+                {
+                    if (Settings.Appearance.IsTransparentButtonBackground)
+                    {
+                        BtnExit.Background = new SolidColorBrush(StringToColor("#7F909090"));
+                    }
+                    else
+                    {
+                        if (BtnSwitchTheme.Content.ToString() == "深色")
+                        {
+                            //Light
+                            BtnExit.Background = new SolidColorBrush(StringToColor("#FFCCCCCC"));
+                        }
+                        else
+                        {
+                            //Dark
+                            BtnExit.Background = new SolidColorBrush(StringToColor("#FF555555"));
+                        }
+                    }
+                }
+
                 BtnPPTSlideShow.Visibility = Visibility.Visible;
                 BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
                 StackPanelPPTControls.Visibility = Visibility.Collapsed;

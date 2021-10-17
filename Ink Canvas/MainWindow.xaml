@@ -7,7 +7,7 @@
         AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize"
         mc:Ignorable="d" WindowState="Maximized" Loaded="Window_Loaded" Background="Transparent" ShowInTaskbar="False"
         Title="MainWindow" Height="1000" Width="800" FontFamily="Microsoft YaHei UI"
-        Foreground="Black" Stylus.IsPressAndHoldEnabled="False">
+        Foreground="Black"  Stylus.IsPressAndHoldEnabled="False">
     <!--资源中添加命令-->
     <Window.Resources>
         <RoutedUICommand x:Key="KeyExit" Text=" "/>
