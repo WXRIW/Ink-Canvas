@@ -1440,7 +1440,7 @@ namespace Ink_Canvas
                         currentMode = 0;
                         GridBackgroundCover.Visibility = Visibility.Hidden;
 
-                        SaveStrokes();
+                        //SaveStrokes();
                         inkCanvas.Strokes.Clear();
 
                         if (BtnSwitchTheme.Content.ToString() == "浅色")
@@ -1506,7 +1506,22 @@ namespace Ink_Canvas
 
                 if (currentMode != 0)
                 {
-                    BtnSwitch_Click(BtnSwitch, null);
+                    currentMode = 0;
+                    GridBackgroundCover.Visibility = Visibility.Hidden;
+
+                    //SaveStrokes();
+                    inkCanvas.Strokes.Clear();
+                    //RestoreStrokes(true);
+
+                    if (BtnSwitchTheme.Content.ToString() == "浅色")
+                    {
+                        BtnSwitch.Content = "黑板";
+                    }
+                    else
+                    {
+                        BtnSwitch.Content = "白板";
+                    }
+                    StackPanelPPTButtons.Visibility = Visibility.Visible;
                 }
                 //if (GridBackgroundCover.Visibility == Visibility.Visible)
                 //{
