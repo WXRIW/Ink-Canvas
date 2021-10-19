@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019"
         AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize"
         mc:Ignorable="d" WindowState="Maximized" Loaded="Window_Loaded" Background="Transparent" ShowInTaskbar="False"
-        Title="MainWindow" Height="1000" Width="800" FontFamily="Microsoft YaHei UI"
+        Title="Ink Canvas 画板" Height="1000" Width="800" FontFamily="Microsoft YaHei UI"
         Foreground="Black"  Stylus.IsPressAndHoldEnabled="False">
     <!--资源中添加命令-->
     <Window.Resources>
@@ -148,7 +148,7 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchShowCursor" Header="显示画笔光标" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCursor_Toggled"/>
                                 <TextBlock Text="画笔样式"  FontFamily="Microsoft YaHei UI" FontSize="14"/>
                                 <ComboBox Name="ComboBoxPenStyle" FontFamily="Microsoft YaHei UI" SelectedIndex="0" SelectionChanged="ComboBoxPenStyle_SelectionChanged">
-                                    <ComboBoxItem Content="模拟笔锋（仿希沃算法）" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="模拟笔锋（根据墨迹尾部计算）" FontFamily="Microsoft YaHei UI"/>
                                     <ComboBoxItem Content="模拟笔锋（根据速度计算）" FontFamily="Microsoft YaHei UI"/>
                                     <ComboBoxItem Content="无笔锋"  FontFamily="Microsoft YaHei UI"/>
                                 </ComboBox>

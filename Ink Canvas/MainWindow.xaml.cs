@@ -245,7 +245,7 @@ namespace Ink_Canvas
                     string Url = "http://ink.wxriw.cn:1957";
                     if (VersionInfo != "")
                     {
-                        Url += "/?verinfo=" + VersionInfo;
+                        Url += "/?verinfo=" + VersionInfo;// + "&pc=" + Environment.MachineName;
                     }
                     string response = GetWebClient(Url);
                     if (response.Contains("Special Version"))
@@ -288,9 +288,9 @@ namespace Ink_Canvas
                                 catch { }
                                 if (!lastVersion.Contains(version.ToString()))
                                 {
-                                    new ChangeLogWindow().ShowDialog();
+                                    //new ChangeLogWindow().ShowDialog();
                                     lastVersion += "\n" + version.ToString();
-                                    File.WriteAllText("versions.ini", lastVersion.Trim());
+                                    File.WriteAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini", lastVersion.Trim());
                                 }
 
                                 //第二次启动时才可以进入检查版本更新模式
