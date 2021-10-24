@@ -879,11 +879,11 @@ namespace Ink_Canvas
         {
             if (ToggleSwitchModeFinger.IsOn)
             {
-                BoundsWidth = 10;
+                BoundsWidth = 10; //35
             }
             else
             {
-                BoundsWidth = 5;
+                BoundsWidth = 5; //20
             }
         }
 
