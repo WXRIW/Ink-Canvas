@@ -669,10 +669,23 @@ namespace Ink_Canvas
                     if (BtnSwitchTheme.Content.ToString() == "浅色")
                     {
                         BtnSwitch.Content = "黑板";
+                        BtnExit.Foreground = Brushes.White;
                     }
                     else
                     {
                         BtnSwitch.Content = "白板";
+                        if (isPresentationHaveBlackSpace)
+                        {
+                            BtnExit.Foreground = Brushes.White;
+                            SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
+                            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                        }
+                        else
+                        {
+                            BtnExit.Foreground = Brushes.Black;
+                            SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
+                            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                        }
                     }
                     StackPanelPPTButtons.Visibility = Visibility.Visible;
                 }
@@ -693,10 +706,25 @@ namespace Ink_Canvas
                         if (BtnSwitchTheme.Content.ToString() == "浅色")
                         {
                             BtnSwitch.Content = "黑板";
+                            BtnExit.Foreground = Brushes.White;
+                            SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
+                            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                         }
                         else
                         {
                             BtnSwitch.Content = "白板";
+                            if (isPresentationHaveBlackSpace)
+                            {
+                                BtnExit.Foreground = Brushes.White;
+                                SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
+                                ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                            }
+                            else
+                            {
+                                BtnExit.Foreground = Brushes.Black;
+                                SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
+                                ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                            }
                         }
                         StackPanelPPTButtons.Visibility = Visibility.Visible;
                         break;
@@ -709,6 +737,18 @@ namespace Ink_Canvas
                         RestoreStrokes();
 
                         BtnSwitch.Content = "屏幕";
+                        if (BtnSwitchTheme.Content.ToString() == "浅色")
+                        {
+                            BtnExit.Foreground = Brushes.White;
+                            SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
+                            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                        }
+                        else
+                        {
+                            BtnExit.Foreground = Brushes.Black;
+                            SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
+                            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                        }
                         StackPanelPPTButtons.Visibility = Visibility.Collapsed;
                         break;
                 }
@@ -1395,7 +1435,8 @@ namespace Ink_Canvas
             BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
         }
 
-        bool isButtonBackgroundTransparent = true; //此变量仅用于保存用于幻灯片放映时的优化
+        bool isPresentationHaveBlackSpace = false;
+        //bool isButtonBackgroundTransparent = true; //此变量仅用于保存用于幻灯片放映时的优化
         private void PptApplication_SlideShowBegin(SlideShowWindow Wn)
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -1406,17 +1447,21 @@ namespace Ink_Canvas
                 {
                     if (Wn.Presentation.PageSetup.SlideWidth / Wn.Presentation.PageSetup.SlideHeight < 1.65)
                     {
-                        isButtonBackgroundTransparent = ToggleSwitchTransparentButtonBackground.IsOn;
+                        isPresentationHaveBlackSpace = true;
+                        //isButtonBackgroundTransparent = ToggleSwitchTransparentButtonBackground.IsOn;
 
                         if (BtnSwitchTheme.Content.ToString() == "深色")
                         {
                             //Light
-                            BtnExit.Background = new SolidColorBrush(StringToColor("#AACCCCCC"));
+                            BtnExit.Foreground = Brushes.White;
+                            SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
+                            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                            //BtnExit.Background = new SolidColorBrush(StringToColor("#AACCCCCC"));
                         }
                         else
                         {
                             //Dark
-                            BtnExit.Background = new SolidColorBrush(StringToColor("#AA555555"));
+                            //BtnExit.Background = new SolidColorBrush(StringToColor("#AA555555"));
                         }
                     }
                 }
@@ -1477,27 +1522,32 @@ namespace Ink_Canvas
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (isButtonBackgroundTransparent == ToggleSwitchTransparentButtonBackground.IsOn &&
-                    isButtonBackgroundTransparent == true)
-                {
-                    if (Settings.Appearance.IsTransparentButtonBackground)
-                    {
-                        BtnExit.Background = new SolidColorBrush(StringToColor("#7F909090"));
-                    }
-                    else
-                    {
+                isPresentationHaveBlackSpace = false;
+
+                //if (isButtonBackgroundTransparent == ToggleSwitchTransparentButtonBackground.IsOn &&
+                //    isButtonBackgroundTransparent == true)
+                //{
+                    //if (Settings.Appearance.IsTransparentButtonBackground)
+                    //{
+                    //    BtnExit.Background = new SolidColorBrush(StringToColor("#7F909090"));
+                    //}
+                    //else
+                    //{
                         if (BtnSwitchTheme.Content.ToString() == "深色")
                         {
                             //Light
-                            BtnExit.Background = new SolidColorBrush(StringToColor("#FFCCCCCC"));
+                            BtnExit.Foreground = Brushes.Black;
+                            SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
+                            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                            //BtnExit.Background = new SolidColorBrush(StringToColor("#FFCCCCCC"));
                         }
                         else
                         {
                             //Dark
-                            BtnExit.Background = new SolidColorBrush(StringToColor("#FF555555"));
+                            //BtnExit.Background = new SolidColorBrush(StringToColor("#FF555555"));
                         }
-                    }
-                }
+                    //}
+                //}
 
                 BtnPPTSlideShow.Visibility = Visibility.Visible;
                 BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
