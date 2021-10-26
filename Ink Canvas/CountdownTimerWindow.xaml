@@ -7,7 +7,7 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:processbars="clr-namespace:Ink_Canvas.ProcessBars"
         ui:ThemeManager.RequestedTheme="Light" Topmost="True" Background="Transparent"
-        mc:Ignorable="d" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True" ui:WindowHelper.UseModernWindowStyle="True"
+        mc:Ignorable="d" WindowStyle="None" AllowsTransparency="True"
         Title="Ink Canvas 画板 - 计时器" Height="500" Width="800">
     <Border Background="#F0F3F9" CornerRadius="10">
         <Grid>

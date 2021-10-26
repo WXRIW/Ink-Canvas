@@ -232,7 +232,7 @@ namespace Ink_Canvas
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            new CountdownTimerWindow().ShowDialog();
+            //new CountdownTimerWindow().ShowDialog();
             //检查
             new Thread(new ThreadStart(() =>
             {
@@ -3012,6 +3012,18 @@ namespace Ink_Canvas
 
         int lastNotificationShowTime = 0;
         int notificationShowTime = 2500;
+
+        private void StackPanel_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (((StackPanel)sender).Visibility == Visibility.Visible)
+            {
+                GridForLeftSideReservedSpace.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                GridForLeftSideReservedSpace.Visibility = Visibility.Visible;
+            }
+        }
 
         private void ShowNotification(string notice, bool isShowImmediately = true)
         {

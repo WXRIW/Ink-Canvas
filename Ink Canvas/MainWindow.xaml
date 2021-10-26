@@ -464,7 +464,7 @@
                 <Button Name="BtnDrawEllipse" Content="椭圆" Visibility="Visible" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,15" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                         Click="BtnDrawEllipse_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
-                <StackPanel Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}">
+                <StackPanel IsVisibleChanged="StackPanel_IsVisibleChanged" Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}">
                     <StackPanel Visibility="{Binding ElementName=StackPanelPPTControls, Path=Visibility}">
                         <Button Content="↑" FontFamily="Microsoft YaHei UI"
                             Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
@@ -500,7 +500,7 @@
                 <Button Name="BtnClearAndHideCanvas" Content="清屏&#x000A;&amp;&#x000A;隐藏" Visibility="Collapsed" FontFamily="Microsoft YaHei UI"
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}" Block.TextAlignment="Center"
                         Click="BtnSelect_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
-                <Grid Height="{Binding ElementName=StackPanelInfo, Path=ActualHeight}"/>
+                <Grid Name="GridForLeftSideReservedSpace" Height="{Binding ElementName=StackPanelInfo, Path=ActualHeight}"/>
             </StackPanel>
         </Viewbox>
     </Grid>
