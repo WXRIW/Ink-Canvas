@@ -232,6 +232,7 @@ namespace Ink_Canvas
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            new CountdownTimerWindow().ShowDialog();
             //检查
             new Thread(new ThreadStart(() =>
             {

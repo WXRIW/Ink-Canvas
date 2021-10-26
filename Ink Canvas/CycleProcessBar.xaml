@@ -1,0 +1,15 @@
+﻿<UserControl x:Class="Ink_Canvas.ProcessBars.CycleProcessBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Ink_Canvas.ProcessBars"
+             mc:Ignorable="d" >
+    <Viewbox>
+        <Grid Width="34" Height="34">
+            <Path Data="M17,3A14,14,0,1,1,16.999,3z" Stroke="#EAEAEA" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeThickness="1.5" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <Path Name="myCycleProcessBar" Data="M17,3 A14,14 0 0 1 16,3 " Stroke="#0066BF" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeThickness="1.5" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <Label Name="lbValue" Content="50%" HorizontalAlignment="Center" Visibility="Hidden" VerticalAlignment="Center" FontSize="9" />
+        </Grid>
+    </Viewbox>
+</UserControl>

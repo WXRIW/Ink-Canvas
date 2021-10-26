@@ -88,6 +88,9 @@
     <Compile Include="ChangeLogWindow.xaml.cs">
       <DependentUpon>ChangeLogWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CycleProcessBar.xaml.cs">
+      <DependentUpon>CycleProcessBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RestoreHiddenSlidesWindow.xaml.cs">
       <DependentUpon>RestoreHiddenSlidesWindow.xaml</DependentUpon>
     </Compile>
@@ -95,12 +98,19 @@
     <Compile Include="SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CountdownTimerWindow.xaml.cs">
+      <DependentUpon>CountdownTimerWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WelcomeWindow.xaml.cs">
       <DependentUpon>WelcomeWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="ChangeLogWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CycleProcessBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -120,6 +130,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CountdownTimerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
