@@ -46,9 +46,8 @@ namespace Ink_Canvas
 
             //Version 2.1.2-release
             TextBlockChangeLog.Text = "" +
-                "1. 添加“截屏”功能\n" +
-                "2. 修复部分问题\n" +
-                "3. 为部分网络环境下的二中专版预留环境\n";
+                "1. 添加“计时器”功能\n" +
+                "2. 添加“抽奖”功能\n";
             TextBlockSuggestionTitle.Visibility = Visibility.Collapsed;
             //TextBlockSuggestion.Text = "老师讲评试卷可以点击右侧的背景和深色按钮，即可启动黑板功能（同样支持用笔来擦除），\n双指可以缩放和拖动，左边也会有工具栏方便画图形。";
 

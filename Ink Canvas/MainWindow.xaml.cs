@@ -290,7 +290,7 @@ namespace Ink_Canvas
                                 catch { }
                                 if (!lastVersion.Contains(version.ToString()))
                                 {
-                                    //new ChangeLogWindow().ShowDialog();
+                                    new ChangeLogWindow().ShowDialog();
                                     lastVersion += "\n" + version.ToString();
                                     File.WriteAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini", lastVersion.Trim());
                                 }
@@ -679,7 +679,7 @@ namespace Ink_Canvas
                         if (isPresentationHaveBlackSpace)
                         {
                             BtnExit.Foreground = Brushes.White;
-                            SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
+                            SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
                             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                         }
                         else
@@ -718,7 +718,7 @@ namespace Ink_Canvas
                             if (isPresentationHaveBlackSpace)
                             {
                                 BtnExit.Foreground = Brushes.White;
-                                SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
+                                SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
                                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                             }
                             else
@@ -1469,7 +1469,7 @@ namespace Ink_Canvas
                         {
                             //Light
                             BtnExit.Foreground = Brushes.White;
-                            SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
+                            SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
                             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                             //BtnExit.Background = new SolidColorBrush(StringToColor("#AACCCCCC"));
                         }
@@ -3085,11 +3085,13 @@ namespace Ink_Canvas
 
         private void BtnCountdownTimer_Click(object sender, RoutedEventArgs e)
         {
+            StackPanelToolButtons.Visibility = Visibility.Collapsed;
             new CountdownTimerWindow().ShowDialog();
         }
 
         private void BtnRand_Click(object sender, RoutedEventArgs e)
         {
+            StackPanelToolButtons.Visibility = Visibility.Collapsed;
             new RandWindow().ShowDialog();
         }
 
