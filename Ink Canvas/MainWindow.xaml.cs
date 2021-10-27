@@ -1797,6 +1797,12 @@ namespace Ink_Canvas
 
         #region Appearance
 
+
+        private void SideControlOpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
+
         private void ToggleSwitchShowButtonExit_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
@@ -3084,7 +3090,7 @@ namespace Ink_Canvas
 
         private void BtnRand_Click(object sender, RoutedEventArgs e)
         {
-
+            new RandWindow().ShowDialog();
         }
 
         #endregion Tools

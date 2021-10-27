@@ -170,11 +170,24 @@
                             <ui:SimpleStackPanel Spacing="12">
                                 <ui:ToggleSwitch Name="ToggleSwitchTransparentButtonBackground" Header="按钮背景半透明" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchTransparentButtonBackground_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowButtonExit" Header="显示“退出”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonExit_Toggled"/>
-                                <Button Content="立即退出" Width="120" FontFamily="Microsoft YaHei UI" Click="BtnExit_Click" Margin="0,0,0,10"/>
+                                <Button Content="立即退出" Width="120" Visibility="Collapsed" FontFamily="Microsoft YaHei UI" Click="BtnExit_Click" Margin="0,0,0,10"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowButtonEraser" Header="显示“橡皮”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonEraser_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowButtonHideControl" Header="显示“⇅ (显示或隐藏控制按钮)”按钮" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonHideControl_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowButtonLRSwitch" Header="显示“⇆ (左右切换)”按钮" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonLRSwitch_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowButtonModeFinger" Header="显示“手指模式”切换按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonModeFinger_Toggled"/>
+                                <StackPanel Visibility="Collapsed" Orientation="Horizontal">
+                                    <Slider x:Name="SideControlOpacitySlider"
+                                            HorizontalAlignment="Left"
+                                            Minimum="1" Maximum="100"
+                                            Width="320" FontFamily="Microsoft YaHei UI" 
+                                            ui:ControlHelper.Header="控制栏透明度"
+                                            IsSnapToTickEnabled="True" Value="100"
+                                            TickFrequency="10" TickPlacement="Both"
+                                            ValueChanged="SideControlOpacitySlider_ValueChanged"/>
+                                    <TextBlock Text="{Binding Value, ElementName=SideControlOpacitySlider, Mode=OneWay}"
+                                               VerticalAlignment="Bottom" Margin="10,0,0,8"
+                                               FontSize="14" Width="25" HorizontalAlignment="Center"/>
+                                </StackPanel>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="重置">
