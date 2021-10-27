@@ -48,6 +48,7 @@ namespace Ink_Canvas
         {
             InitializeComponent();
             BorderSettings.Visibility = Visibility.Collapsed;
+            StackPanelToolButtons.Visibility = Visibility.Collapsed;
 
             InitTimers();
         }
@@ -951,6 +952,19 @@ namespace Ink_Canvas
             {
                 ViewBoxStackPanelMain.HorizontalAlignment = HorizontalAlignment.Right;
                 ViewBoxStackPanelShapes.HorizontalAlignment = HorizontalAlignment.Left;
+            }
+        }
+
+
+        private void StackPanel_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (((StackPanel)sender).Visibility == Visibility.Visible)
+            {
+                GridForLeftSideReservedSpace.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                GridForLeftSideReservedSpace.Visibility = Visibility.Visible;
             }
         }
 
@@ -3013,18 +3027,6 @@ namespace Ink_Canvas
         int lastNotificationShowTime = 0;
         int notificationShowTime = 2500;
 
-        private void StackPanel_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (((StackPanel)sender).Visibility == Visibility.Visible)
-            {
-                GridForLeftSideReservedSpace.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                GridForLeftSideReservedSpace.Visibility = Visibility.Visible;
-            }
-        }
-
         private void ShowNotification(string notice, bool isShowImmediately = true)
         {
             lastNotificationShowTime = Environment.TickCount;
@@ -3060,6 +3062,32 @@ namespace Ink_Canvas
         }
 
         #endregion
+
+        #region Tools
+
+        private void BtnTools_Click(object sender, RoutedEventArgs e)
+        {
+            if (StackPanelToolButtons.Visibility == Visibility.Visible)
+            {
+                StackPanelToolButtons.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                StackPanelToolButtons.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void BtnCountdownTimer_Click(object sender, RoutedEventArgs e)
+        {
+            new CountdownTimerWindow().ShowDialog();
+        }
+
+        private void BtnRand_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        #endregion Tools
     }
 
     #region Test for pen

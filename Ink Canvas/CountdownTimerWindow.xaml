@@ -8,18 +8,20 @@
         xmlns:processbars="clr-namespace:Ink_Canvas.ProcessBars"
         ui:ThemeManager.RequestedTheme="Light" Topmost="True" Background="Transparent"
         mc:Ignorable="d" WindowStyle="None" AllowsTransparency="True"
-        Title="Ink Canvas 画板 - 计时器" Height="500" Width="800">
-    <Border Background="#F0F3F9" CornerRadius="10">
+        Loaded="Window_Loaded" Closing="Window_Closing" WindowStartupLocation="CenterScreen"
+        Title="Ink Canvas 画板 - 计时器" Height="700" Width="1100">
+    <Border Background="#F0F3F9" CornerRadius="10" BorderThickness="1" BorderBrush="#0066BF" Margin="60">
         <Grid>
             <Viewbox Margin="20,20,20,20">
                 <Grid Height="180" Width="200">
-                    <processbars:CycleProcessBar CurrentValue="0" Width="150" VerticalAlignment="Top"/>
+                    <processbars:CycleProcessBar x:Name="ProcessBarTime" CurrentValue="0" Width="150" VerticalAlignment="Top"/>
                     <ui:SimpleStackPanel Orientation="Horizontal" Height="28.5" Margin="0,0,0,25"
-                                     VerticalAlignment="Center"
-                                     HorizontalAlignment="Center">
+                                         VerticalAlignment="Center"
+                                         HorizontalAlignment="Center">
                         <TextBlock Name="TextBlockHour" FontFamily="Segeo UI"
-                               Margin="0,0,0,0" Visibility="Collapsed"
-                               Text="00" FontSize="26"/>
+                                   Margin="0,0,0,0" Visibility="Collapsed"
+                                   Foreground="#5B5D5F"
+                                   Text="00" FontSize="26"/>
                         <ItemsControl Name="TextControlHour" ItemsSource="{Binding ElementName=TextBlockHour, Path=Text}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -30,41 +32,43 @@
                                 <DataTemplate>
                                     <Grid Width="14">
                                         <TextBlock Text="{Binding}" HorizontalAlignment="Center" FontWeight="SemiBold"
-                                               Foreground="{Binding ElementName=TextBlockHour, Path=Foreground}"
-                                               FontFamily="{Binding ElementName=TextBlockHour, Path=FontFamily}"
-                                               FontSize="{Binding ElementName=TextBlockHour, Path=FontSize}"/>
+                                                   Foreground="{Binding ElementName=TextBlockHour, Path=Foreground}"
+                                                   FontFamily="{Binding ElementName=TextBlockHour, Path=FontFamily}"
+                                                   FontSize="{Binding ElementName=TextBlockHour, Path=FontSize}"/>
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Grid Name="GridAdjustHour" Visibility="Collapsed" Margin="-29,-25,0,-25" Width="29">
+                        <Grid Name="GridAdjustHour" Visibility="Visible" Margin="-29,-30,0,-30" Width="29">
                             <ui:SimpleStackPanel Spacing="2">
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_1">
                                     <TextBlock Text="+5" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click">
                                     <TextBlock Text="+1" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
                             </ui:SimpleStackPanel>
                             <ui:SimpleStackPanel Spacing="2" VerticalAlignment="Bottom">
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button  Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_2">
                                     <TextBlock Text="-1" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_3">
                                     <TextBlock Text="-5" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
                             </ui:SimpleStackPanel>
                         </Grid>
                         <TextBlock Text=":"
-                               FontFamily="{Binding ElementName=TextBlockHour, Path=FontFamily}"
-                               Margin="0,-2.5,0,0"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Top"
-                               FontSize="{Binding ElementName=TextBlockHour, Path=FontSize}"
-                               FontWeight="DemiBold"/>
+                                   FontFamily="{Binding ElementName=TextBlockHour, Path=FontFamily}"
+                                   Margin="0,-2.5,0,0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Top"
+                                   Foreground="{Binding ElementName=TextBlockHour, Path=Foreground}"
+                                   FontSize="{Binding ElementName=TextBlockHour, Path=FontSize}"
+                                   FontWeight="DemiBold"/>
                         <TextBlock Name="TextBlockMinute" FontFamily="{Binding ElementName=TextBlockHour, Path=FontFamily}"
-                               Margin="0,0,0,0" Visibility="Collapsed"
-                               Text="01" FontSize="26"/>
+                                   Margin="0,0,0,0" Visibility="Collapsed"
+                                   Foreground="{Binding ElementName=TextBlockHour, Path=Foreground}"
+                                   Text="01" FontSize="26"/>
                         <ItemsControl Name="TextControlMinute" ItemsSource="{Binding ElementName=TextBlockMinute, Path=Text}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -75,50 +79,55 @@
                                 <DataTemplate>
                                     <Grid Width="14">
                                         <TextBlock Text="{Binding}" HorizontalAlignment="Center" FontWeight="SemiBold"
-                                       Foreground="{Binding ElementName=TextBlockMinute, Path=Foreground}"
-                                       FontFamily="{Binding ElementName=TextBlockMinute, Path=FontFamily}"
-                                       FontSize="{Binding ElementName=TextBlockMinute, Path=FontSize}"/>
+                                                   Foreground="{Binding ElementName=TextBlockMinute, Path=Foreground}"
+                                                   FontFamily="{Binding ElementName=TextBlockMinute, Path=FontFamily}"
+                                                   FontSize="{Binding ElementName=TextBlockMinute, Path=FontSize}"/>
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Grid Visibility="{Binding ElementName=GridAdjustHour, Path=Visibility}" Margin="-29,-25,0,-25" Width="29">
+                        <Grid Visibility="{Binding ElementName=GridAdjustHour, Path=Visibility}" Margin="-29,-30,0,-30" Width="29">
                             <ui:SimpleStackPanel Spacing="2">
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_5">
                                     <TextBlock Text="+5" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_4">
                                     <TextBlock Text="+1" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
                             </ui:SimpleStackPanel>
                             <ui:SimpleStackPanel Spacing="2" VerticalAlignment="Bottom">
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_6">
                                     <TextBlock Text="-1" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_7">
                                     <TextBlock Text="-5" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
                             </ui:SimpleStackPanel>
-                            <Border x:Name="BtnTimeSetOkay" Background="#FBFBFD" Height="20" Width="20" CornerRadius="100"
-                                VerticalAlignment="Bottom" Margin="0,0,0,-25">
+                            <Border x:Name="BtnTimeSetOkay" MouseUp="Grid_MouseUp"
+                                    Background="#0066BF"
+                                    Height="20" Width="20"
+                                    CornerRadius="100"
+                                    VerticalAlignment="Bottom" Margin="0,0,0,-35">
                                 <Border.Effect>
                                     <DropShadowEffect Direction="0" ShadowDepth="0" Opacity="0.1" BlurRadius="3"/>
                                 </Border.Effect>
                                 <Viewbox Margin="5.5">
-                                    <ui:SymbolIcon Symbol="Accept" Foreground="Black"/>
+                                    <ui:SymbolIcon Symbol="Save" Foreground="White"/>
                                 </Viewbox>
                             </Border>
                         </Grid>
                         <TextBlock Text=":"
-                               FontFamily="{Binding ElementName=TextBlockHour, Path=FontFamily}"
-                               Margin="0,-2.5,0,0"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Top"
-                               FontSize="{Binding ElementName=TextBlockHour, Path=FontSize}"
-                               FontWeight="DemiBold"/>
+                                   FontFamily="{Binding ElementName=TextBlockHour, Path=FontFamily}"
+                                   Margin="0,-2.5,0,0"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Top"
+                                   Foreground="{Binding ElementName=TextBlockHour, Path=Foreground}"
+                                   FontSize="{Binding ElementName=TextBlockHour, Path=FontSize}"
+                                   FontWeight="DemiBold"/>
                         <TextBlock Name="TextBlockSecond" FontFamily="{Binding ElementName=TextBlockHour, Path=FontFamily}"
-                               Margin="0,0,0,0" Visibility="Collapsed"
-                               Text="00" FontSize="26"/>
+                                   Margin="0,0,0,0" Visibility="Collapsed"
+                                   Foreground="{Binding ElementName=TextBlockHour, Path=Foreground}"
+                                   Text="00" FontSize="26"/>
                         <ItemsControl Name="TextControlSecond" ItemsSource="{Binding ElementName=TextBlockSecond, Path=Text}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -136,46 +145,90 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Grid Visibility="{Binding ElementName=GridAdjustHour, Path=Visibility}" Margin="-29,-25,0,-25" Width="29">
+                        <Grid Margin="-96.8,0,0,0" Width="96.8" Background="Transparent" MouseUp="Grid_MouseUp"/>
+                        <Grid Visibility="{Binding ElementName=GridAdjustHour, Path=Visibility}" Margin="-29,-30,0,-30" Width="29">
                             <ui:SimpleStackPanel Spacing="2">
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_8">
                                     <TextBlock Text="+5" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_9">
                                     <TextBlock Text="+1" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
                             </ui:SimpleStackPanel>
                             <ui:SimpleStackPanel Spacing="2" VerticalAlignment="Bottom">
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_10">
                                     <TextBlock Text="-1" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
-                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}">
+                                <Button Height="13" Width="{Binding ElementName=GridAdjustHour, Path=ActualWidth}" Click="Button_Click_11">
                                     <TextBlock Text="-5" Margin="-10" FontSize="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Button>
                             </ui:SimpleStackPanel>
                         </Grid>
                     </ui:SimpleStackPanel>
-
-                    <ui:SimpleStackPanel Spacing="10" Orientation="Horizontal" Height="30" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                        <Border x:Name="BtnStart" Background="#0066BF" Height="20" Width="20" CornerRadius="100">
-                            <Viewbox Margin="5">
-                                <ui:SymbolIcon Symbol="Play" Foreground="White"/>
-                            </Viewbox>
-                        </Border>
-                        <Border x:Name="BtnReset" Background="#FBFBFD" Height="20" Width="20" CornerRadius="100">
-                            <Border.Effect>
-                                <DropShadowEffect Direction="0" ShadowDepth="0" Opacity="0.1" BlurRadius="3"/>
-                            </Border.Effect>
-                            <Viewbox Margin="5.5">
-                                <ui:SymbolIcon Symbol="Refresh"  Foreground="Black"/>
-                            </Viewbox>
-                        </Border>
+                    <Border x:Name="BorderStopTime" Background="#E8EAF0" Margin="0,23,0,0"
+                            Height="18" CornerRadius="9"
+                            VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <ui:SimpleStackPanel Margin="3,0" Spacing="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Image>
+                                <Image.Source>
+                                    <DrawingImage>
+                                        <DrawingImage.Drawing>
+                                            <DrawingGroup ClipGeometry="M0,0 V64 H64 V0 H0 Z">
+                                                <DrawingGroup Opacity="1">
+                                                    <GeometryDrawing Brush="#FF231F20" Geometry="F1 M64,64z M0,0z M45.5,41L45.5,43.25 36.5,43.25C36.5,43.871 36.383,44.454 36.148,44.999 35.913,45.544 35.591,46.021 35.181,46.432 34.771,46.843 34.293,47.164 33.748,47.399 33.203,47.634 32.621,47.75 32,47.75 31.379,47.75 30.796,47.633 30.251,47.398 29.706,47.163 29.229,46.841 28.818,46.431 28.407,46.021 28.086,45.543 27.851,44.998 27.616,44.453 27.5,43.871 27.5,43.25L18.5,43.25 18.5,41 20.75,41 20.75,27.5C20.75,26.469 20.885,25.473 21.154,24.512 21.423,23.551 21.801,22.655 22.288,21.823 22.775,20.991 23.36,20.232 24.046,19.547 24.732,18.862 25.49,18.276 26.322,17.789 27.154,17.302 28.051,16.925 29.011,16.655 29.971,16.385 30.969,16.25 32,16.25 33.031,16.25 34.027,16.385 34.988,16.654 35.949,16.923 36.845,17.301 37.677,17.788 38.509,18.275 39.268,18.86 39.953,19.546 40.638,20.232 41.224,20.99 41.711,21.822 42.198,22.654 42.575,23.551 42.845,24.511 43.115,25.471 43.249,26.468 43.249,27.499L43.249,41 45.5,41z M41,41L41,27.5C41,26.258 40.763,25.092 40.288,24.002 39.813,22.912 39.169,21.96 38.354,21.146 37.539,20.332 36.587,19.687 35.498,19.212 34.409,18.737 33.242,18.5 32,18.5 30.758,18.5 29.592,18.737 28.502,19.212 27.412,19.687 26.46,20.331 25.646,21.146 24.832,21.961 24.187,22.913 23.712,24.002 23.237,25.091 23,26.258 23,27.5L23,41 41,41z M32,45.5C32.316,45.5 32.609,45.441 32.879,45.324 33.149,45.207 33.386,45.046 33.591,44.841 33.796,44.636 33.957,44.399 34.074,44.129 34.191,43.859 34.25,43.567 34.25,43.25L29.75,43.25C29.75,43.566 29.809,43.859 29.926,44.129 30.043,44.399 30.204,44.636 30.409,44.841 30.614,45.046 30.851,45.207 31.121,45.324 31.391,45.441 31.684,45.5 32,45.5z" />
+                                                </DrawingGroup>
+                                            </DrawingGroup>
+                                        </DrawingImage.Drawing>
+                                    </DrawingImage>
+                                </Image.Source>
+                            </Image>
+                            <TextBlock Name="TextBlockStopTime" Text="12:30 PM" FontSize="9" Margin="-1,-1,4,0" VerticalAlignment="Center"/>
+                        </ui:SimpleStackPanel>
+                    </Border>
+                    <ui:SimpleStackPanel Visibility="{Binding ElementName=ProcessBarTime, Path=Visibility}" Spacing="10" Orientation="Horizontal" Height="30" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                        <Grid>
+                            <Border x:Name="BtnStart" MouseUp="BtnStart_MouseUp" Background="#0066BF" Height="20" Width="20" CornerRadius="100">
+                                <Viewbox Margin="5">
+                                    <ui:SymbolIcon Name="SymbolIconStart" Symbol="Play" Foreground="White"/>
+                                </Viewbox>
+                            </Border>
+                            <Border x:Name="BtnStartCover" Visibility="Collapsed" Background="#BFBFBF" Height="20" Width="20" CornerRadius="100">
+                                <Viewbox Margin="5">
+                                    <ui:SymbolIcon Symbol="{Binding ElementName=SymbolIconStart, Path=Symbol}" Foreground="White"/>
+                                </Viewbox>
+                            </Border>
+                        </Grid>
+                        <Grid>
+                            <Border x:Name="BtnReset" MouseUp="BtnReset_MouseUp" Background="#FBFBFD" Height="20" Width="20" CornerRadius="100">
+                                <Border.Effect>
+                                    <DropShadowEffect Direction="0" ShadowDepth="0" Opacity="0.15" BlurRadius="3"/>
+                                </Border.Effect>
+                                <Viewbox Margin="5.5">
+                                    <ui:SymbolIcon Symbol="Refresh" Foreground="Black"/>
+                                </Viewbox>
+                            </Border>
+                            <Border x:Name="BtnResetCover" Background="#F3F5F9" Height="20" Width="20" CornerRadius="100">
+                                <Viewbox Margin="5.5">
+                                    <ui:SymbolIcon Symbol="Refresh" Foreground="#9D9D9E"/>
+                                </Viewbox>
+                            </Border>
+                        </Grid>
                     </ui:SimpleStackPanel>
                 </Grid>
             </Viewbox>
             <Viewbox Margin="20,20,20,20" HorizontalAlignment="Right">
-                <Grid Height="180">
-                    <Border x:Name="BtnFullscreen" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                <ui:SimpleStackPanel Height="180" Orientation="Horizontal">
+                    <Border x:Name="BtnFullscreen" MouseUp="BtnFullscreen_MouseUp" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                        Margin="5"
+                        Background="#FBFBFD" Height="20" Width="20" CornerRadius="100">
+                        <Border.Effect>
+                            <DropShadowEffect Direction="0" ShadowDepth="0" Opacity="0.1" BlurRadius="3"/>
+                        </Border.Effect>
+                        <Viewbox Margin="5.5">
+                            <ui:SymbolIcon Name="SymbolIconFullscreen" Symbol="FullScreen" Foreground="Black"/>
+                        </Viewbox>
+                    </Border>
+                    <Border x:Name="BtnClose" MouseUp="BtnClose_MouseUp" HorizontalAlignment="Right" VerticalAlignment="Bottom"
                         Margin="5"
                         Background="#E32A34" Height="20" Width="20" CornerRadius="100">
                         <Border.Effect>
@@ -185,8 +238,9 @@
                             <ui:SymbolIcon Symbol="Clear"  Foreground="White"/>
                         </Viewbox>
                     </Border>
-                </Grid>
+                </ui:SimpleStackPanel>
             </Viewbox>
+            <MediaElement  Visibility="Collapsed" HorizontalAlignment="Left" Height="100" VerticalAlignment="Top" Width="100"/>
         </Grid>
     </Border>
 </Window>
