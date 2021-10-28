@@ -34,6 +34,7 @@ using System.Windows.Input.StylusPlugIns;
 using MessageBox = System.Windows.MessageBox;
 using System.Drawing.Imaging;
 using System.Windows.Media.Animation;
+using System.Windows.Ink.AnalysisCore;
 
 namespace Ink_Canvas
 {
@@ -2725,9 +2726,73 @@ namespace Ink_Canvas
 
         #region Simulate Pen Pressure
 
+        StrokeCollection newStrokes = new StrokeCollection();
+
         //此函数中的所有代码版权所有 WXRIW，在其他项目中使用前必须提前联系（wxriw@outlook.com），谢谢！
         private void inkCanvas_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
+            try
+            {
+                newStrokes.Add(e.Stroke);
+                if (newStrokes.Count > 4) newStrokes.RemoveAt(0);
+                var result = RecognizeShape(newStrokes);
+
+                //InkDrawingNode result = ShapeRecogniser.Instance.Recognition(strokes);
+                if (result.InkDrawingNode.GetShapeName() == "Circle")
+                {
+                    var shape = result.InkDrawingNode.GetShape();
+                    if (shape.Width > 75 && shape.Height > 75)
+                    {
+                        Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
+                        Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
+                        var pointList = GenerateEclipseGeometry(iniP, endP);
+                        var point = new StylusPointCollection(pointList);
+                        var stroke = new Stroke(point)
+                        {
+                            DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                        };
+                        inkCanvas.Strokes.Add(stroke);
+                        inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                        newStrokes.Remove(result.InkDrawingNode.Strokes);
+                    }
+                }
+                else if (result.InkDrawingNode.GetShapeName().Contains("Triangle"))
+                {
+                    var shape = result.InkDrawingNode.GetShape();
+                    var p = result.InkDrawingNode.HotPoints;
+                    if ((Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) >= 75 || Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 3)
+                    {
+                        //纠正垂直与水平关系
+                        var newPoints = FixPointsDirection(p[0], p[1]);
+                        p[0] = newPoints[0];
+                        p[1] = newPoints[1];
+                        newPoints = FixPointsDirection(p[0], p[2]);
+                        p[0] = newPoints[0];
+                        p[2] = newPoints[1];
+                        newPoints = FixPointsDirection(p[1], p[2]);
+                        p[1] = newPoints[0];
+                        p[2] = newPoints[1];
+
+                        var pointList = p.ToList();
+                        pointList.Add(p[0]);
+                        var point = new StylusPointCollection(pointList);
+                        var stroke = new Stroke(point)
+                        {
+                            DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                        };
+                        inkCanvas.Strokes.Add(stroke);
+                        inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                        newStrokes.Remove(result.InkDrawingNode.Strokes);
+                    }
+                }
+                Label.Visibility = Visibility.Visible;
+                Label.Content = result.InkDrawingNode.GetShapeName();
+            }
+            catch
+            {
+
+            }
+
             // 检查是否是压感笔书写
             foreach (StylusPoint stylusPoint in e.Stroke.StylusPoints)
             {
@@ -2886,6 +2951,42 @@ namespace Ink_Canvas
             return (Math.Sqrt((point1.X - point2.X) * (point1.X - point2.X) + (point1.Y - point2.Y) * (point1.Y - point2.Y))
                 + Math.Sqrt((point3.X - point2.X) * (point3.X - point2.X) + (point3.Y - point2.Y) * (point3.Y - point2.Y)))
                 / 20;
+        }
+
+        public Point[] FixPointsDirection(Point p1, Point p2)
+        {
+            if (Math.Abs(p1.X - p2.X) / Math.Abs(p1.Y - p2.Y) > 8)
+            {
+                //水平
+                double x = Math.Abs(p1.Y - p2.Y) / 2;
+                if (p1.Y > p2.Y)
+                {
+                    p1.Y -= x;
+                    p2.Y += x;
+                }
+                else
+                {
+                    p1.Y += x;
+                    p2.Y -= x;
+                }
+            }
+            else if(Math.Abs(p1.Y - p2.Y) / Math.Abs(p1.X - p2.X) > 8)
+            {
+                //垂直
+                double x = Math.Abs(p1.X - p2.X) / 2;
+                if (p1.X > p2.X)
+                {
+                    p1.X -= x;
+                    p2.X += x;
+                }
+                else
+                {
+                    p1.X += x;
+                    p2.X -= x;
+                }
+            }
+
+            return new Point[2] { p1, p2 };
         }
 
         #endregion Simulate Pen Pressure
@@ -3096,8 +3197,156 @@ namespace Ink_Canvas
         }
 
         #endregion Tools
+
+
+
+        //识别形状
+        public static ShapeRecognizeResult RecognizeShape(StrokeCollection strokes)
+        {
+            if (strokes == null || strokes.Count == 0)
+                return default;
+
+            var analyzer = new InkAnalyzer();
+            analyzer.AddStrokes(strokes);
+            analyzer.SetStrokesType(strokes, System.Windows.Ink.StrokeType.Drawing);
+
+            AnalysisAlternate analysisAlternate = null;
+            var sfsaf = analyzer.Analyze();
+            if (sfsaf.Successful)
+            {
+                var alternates = analyzer.GetAlternates();
+                if (alternates.Count > 0)
+                {
+                    analysisAlternate = alternates[0];
+                }
+            }
+
+            analyzer.Dispose();
+
+            if (analysisAlternate != null && analysisAlternate.AlternateNodes.Count > 0)
+            {
+                var node = analysisAlternate.AlternateNodes[0] as InkDrawingNode;
+                
+                return new ShapeRecognizeResult(node.Centroid, node.HotPoints, analysisAlternate, node);
+            }
+
+            return default;
+        }
     }
 
+    //Recognizer 的实现
+
+    public enum RecognizeLanguage
+    {
+        SimplifiedChinese = 0x0804,
+        TraditionalChinese = 0x7c03,
+        English = 0x0809
+    }
+
+    public class ShapeRecognizeResult
+    {
+        public ShapeRecognizeResult(Point centroid, PointCollection hotPoints, AnalysisAlternate analysisAlternate, InkDrawingNode node)
+        {
+            Centroid = centroid;
+            HotPoints = hotPoints;
+            AnalysisAlternate = analysisAlternate;
+            InkDrawingNode = node;
+        }
+
+        public AnalysisAlternate AnalysisAlternate { get; }
+
+        public Point Centroid { get; }
+
+        public PointCollection HotPoints { get; }
+
+        public InkDrawingNode InkDrawingNode { get; }
+    }
+
+    /// <summary>
+    /// 图形识别类
+    /// </summary>
+    //public class ShapeRecogniser
+    //{
+    //    public InkAnalyzer _inkAnalyzer = null;
+
+    //    private ShapeRecogniser()
+    //    {
+    //        this._inkAnalyzer = new InkAnalyzer
+    //        {
+    //            AnalysisModes = AnalysisModes.AutomaticReconciliationEnabled
+    //        };
+    //    }
+
+    //    /// <summary>
+    //    /// 根据笔迹集合返回图形名称字符串
+    //    /// </summary>
+    //    /// <param name="strokeCollection"></param>
+    //    /// <returns></returns>
+    //    public InkDrawingNode Recognition(StrokeCollection strokeCollection)
+    //    {
+    //        if (strokeCollection == null)
+    //        {
+    //            //MessageBox.Show("dddddd");
+    //            return null;
+    //        }
+
+    //        InkDrawingNode result = null;
+    //        try
+    //        {
+    //            this._inkAnalyzer.AddStrokes(strokeCollection);
+    //            if (this._inkAnalyzer.Analyze().Successful)
+    //            {
+    //                result = _internalAnalyzer(this._inkAnalyzer);
+    //                this._inkAnalyzer.RemoveStrokes(strokeCollection);
+    //            }
+    //        }
+    //        catch (System.Exception ex)
+    //        {
+    //            //result = ex.Message;
+    //            System.Diagnostics.Debug.WriteLine(ex.Message);
+    //        }
+
+    //        return result;
+    //    }
+
+    //    /// <summary>
+    //    /// 实现笔迹的分析，返回图形对应的字符串
+    //    /// 你在实际的应用中根据返回的字符串来生成对应的Shape
+    //    /// </summary>
+    //    /// <param name="ink"></param>
+    //    /// <returns></returns>
+    //    private InkDrawingNode _internalAnalyzer(InkAnalyzer ink)
+    //    {
+    //        try
+    //        {
+    //            ContextNodeCollection nodecollections = ink.FindNodesOfType(ContextNodeType.InkDrawing);
+    //            foreach (ContextNode node in nodecollections)
+    //            {
+    //                InkDrawingNode drawingNode = node as InkDrawingNode;
+    //                if (drawingNode != null)
+    //                {
+    //                    return drawingNode;//.GetShapeName();
+    //                }
+    //            }
+    //        }
+    //        catch (System.Exception ex)
+    //        {
+    //            System.Diagnostics.Debug.WriteLine(ex.Message);
+    //        }
+
+    //        return null;
+    //    }
+
+
+    //    private static ShapeRecogniser instance = null;
+    //    public static ShapeRecogniser Instance
+    //    {
+    //        get
+    //        {
+    //            return instance == null ? (instance = new ShapeRecogniser()) : instance;
+    //        }
+    //    }
+    //}
     #region Test for pen
     // A StylusPlugin that renders ink with a linear gradient brush effect.
     class CustomDynamicRenderer : DynamicRenderer
