@@ -558,6 +558,38 @@ namespace Ink_Canvas
             {
                 Settings.Automation = new Automation();
             }
+
+            if (Settings.Advanced != null)
+            {
+                if (Settings.Advanced.IsSpecialScreen)
+                {
+                    ToggleSwitchIsSpecialScreen.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchIsSpecialScreen.IsOn = false;
+                }
+            }
+            else 
+            {
+                Settings.Advanced = new Advanced();
+            }
+
+            if (Settings.InkToShape != null)
+            {
+                if (Settings.InkToShape.IsInkToShapeEnabled)
+                {
+                    ToggleSwitchEnableInkToShape.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchEnableInkToShape.IsOn = false;
+                }
+            }
+            else
+            {
+                Settings.InkToShape = new InkToShape();
+            }
         }
 
         #endregion Definations and Loading
@@ -1129,7 +1161,7 @@ namespace Ink_Canvas
         {
             iniP = e.GetTouchPoint(inkCanvas).Position;
 
-            double boundsWidth = e.GetTouchPoint(null).Bounds.Width;
+            double boundsWidth = GetTouchBoundWidth(e);
             if (boundsWidth > BoundsWidth)
             {
                 isLastTouchEraser = true;
@@ -1152,6 +1184,13 @@ namespace Ink_Canvas
                 if (forceEraser) return;
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             }
+        }
+
+        public double GetTouchBoundWidth(TouchEventArgs e)
+        {
+            double value = e.GetTouchPoint(null).Bounds.Width;
+            if (Settings.Advanced.IsSpecialScreen) value /= 5.0;
+            return value;
         }
 
         //记录触摸设备ID
@@ -2070,6 +2109,33 @@ namespace Ink_Canvas
         }
         #endregion
 
+        #region Ink To Shape
+
+        private void ToggleSwitchEnableInkToShape_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.InkToShape.IsInkToShapeEnabled = ToggleSwitchEnableInkToShape.IsOn;
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchEnableEllipse_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+        }
+
+        #endregion
+
+        #region Advanced
+
+        private void ToggleSwitchIsSpecialScreen_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Advanced.IsSpecialScreen = ToggleSwitchIsSpecialScreen.IsOn;
+            SaveSettingsToFile();
+        }
+
+        #endregion
+
         public static void SaveSettingsToFile()
         {
             string text = JsonConvert.SerializeObject(Settings, Formatting.Indented);
@@ -2731,115 +2797,118 @@ namespace Ink_Canvas
         //此函数中的所有代码版权所有 WXRIW，在其他项目中使用前必须提前联系（wxriw@outlook.com），谢谢！
         private void inkCanvas_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
         {
-            try
+            if (Settings.InkToShape.IsInkToShapeEnabled)
             {
-                newStrokes.Add(e.Stroke);
-                if (newStrokes.Count > 4) newStrokes.RemoveAt(0);
-                var newS = newStrokes.Clone();
-                for (int i = 0; i < newStrokes.Count; i++)
+                try
                 {
-                    if (!inkCanvas.Strokes.Contains(newStrokes[i])) newStrokes.RemoveAt(i--);
-                }
-                //inkCanvas.Select(newStrokes);
-                Label.Content = newStrokes.Count.ToString();
-                var result = RecognizeShape(newStrokes);
-                Label.Content = newStrokes.Count.ToString() + "\n" + result.InkDrawingNode.GetShapeName();
-                //InkDrawingNode result = ShapeRecogniser.Instance.Recognition(strokes);
-                if (result.InkDrawingNode.GetShapeName() == "Circle")
-                {
-                    var shape = result.InkDrawingNode.GetShape();
-                    if (shape.Width > 75 && shape.Height > 75)
+                    newStrokes.Add(e.Stroke);
+                    if (newStrokes.Count > 4) newStrokes.RemoveAt(0);
+                    var newS = newStrokes.Clone();
+                    for (int i = 0; i < newStrokes.Count; i++)
                     {
-                        Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
-                        Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
-                        var pointList = GenerateEclipseGeometry(iniP, endP);
-                        var point = new StylusPointCollection(pointList);
-                        var stroke = new Stroke(point)
-                        {
-                            DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                        };
-                        SetNewBackupOfStroke();
-                        inkCanvas.Strokes.Add(stroke);
-                        inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                        //newStrokes.Remove(result.InkDrawingNode.Strokes);
-                        newStrokes = new StrokeCollection();
+                        if (!inkCanvas.Strokes.Contains(newStrokes[i])) newStrokes.RemoveAt(i--);
                     }
-                }
-                else if (result.InkDrawingNode.GetShapeName().Contains("Triangle"))
-                {
-                    var shape = result.InkDrawingNode.GetShape();
-                    var p = result.InkDrawingNode.HotPoints;
-                    if ((Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) >= 75 || Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 3)
+                    //inkCanvas.Select(newStrokes);
+                    Label.Content = newStrokes.Count.ToString();
+                    var result = RecognizeShape(newStrokes);
+                    Label.Content = newStrokes.Count.ToString() + "\n" + result.InkDrawingNode.GetShapeName();
+                    //InkDrawingNode result = ShapeRecogniser.Instance.Recognition(strokes);
+                    if (result.InkDrawingNode.GetShapeName() == "Circle")
                     {
-                        //纠正垂直与水平关系
-                        var newPoints = FixPointsDirection(p[0], p[1]);
-                        p[0] = newPoints[0];
-                        p[1] = newPoints[1];
-                        newPoints = FixPointsDirection(p[0], p[2]);
-                        p[0] = newPoints[0];
-                        p[2] = newPoints[1];
-                        newPoints = FixPointsDirection(p[1], p[2]);
-                        p[1] = newPoints[0];
-                        p[2] = newPoints[1];
-
-                        var pointList = p.ToList();
-                        pointList.Add(p[0]);
-                        var point = new StylusPointCollection(pointList);
-                        var stroke = new Stroke(point)
+                        var shape = result.InkDrawingNode.GetShape();
+                        if (shape.Width > 75 && shape.Height > 75)
                         {
-                            DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                        };
-                        SetNewBackupOfStroke();
-                        inkCanvas.Strokes.Add(stroke);
-                        inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                        //newStrokes.Remove(result.InkDrawingNode.Strokes);
-                        newStrokes = new StrokeCollection();
+                            Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
+                            Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
+                            var pointList = GenerateEclipseGeometry(iniP, endP);
+                            var point = new StylusPointCollection(pointList);
+                            var stroke = new Stroke(point)
+                            {
+                                DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                            };
+                            SetNewBackupOfStroke();
+                            inkCanvas.Strokes.Add(stroke);
+                            inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                            //newStrokes.Remove(result.InkDrawingNode.Strokes);
+                            newStrokes = new StrokeCollection();
+                        }
                     }
-                }
-                else if (result.InkDrawingNode.GetShapeName().Contains("Rectangle") ||
-                         result.InkDrawingNode.GetShapeName().Contains("Diamond") ||
-                         result.InkDrawingNode.GetShapeName().Contains("Parallelogram") ||
-                         result.InkDrawingNode.GetShapeName().Contains("Square"))
-                {
-                    var shape = result.InkDrawingNode.GetShape();
-                    var p = result.InkDrawingNode.HotPoints;
-                    if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) >= 75 || Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 4)
+                    else if (result.InkDrawingNode.GetShapeName().Contains("Triangle"))
                     {
-                        //纠正垂直与水平关系
-                        var newPoints = FixPointsDirection(p[0], p[1]);
-                        p[0] = newPoints[0];
-                        p[1] = newPoints[1];
-                        newPoints = FixPointsDirection(p[1], p[2]);
-                        p[1] = newPoints[0];
-                        p[2] = newPoints[1];
-                        newPoints = FixPointsDirection(p[2], p[3]);
-                        p[2] = newPoints[0];
-                        p[3] = newPoints[1];
-                        newPoints = FixPointsDirection(p[3], p[0]);
-                        p[3] = newPoints[0];
-                        p[0] = newPoints[1];
-
-                        var pointList = p.ToList();
-                        pointList.Add(p[0]);
-                        var point = new StylusPointCollection(pointList);
-                        var stroke = new Stroke(point)
+                        var shape = result.InkDrawingNode.GetShape();
+                        var p = result.InkDrawingNode.HotPoints;
+                        if ((Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) >= 75 || Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 3)
                         {
-                            DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                        };
-                        SetNewBackupOfStroke();
-                        inkCanvas.Strokes.Add(stroke);
-                        inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                        //newStrokes.Remove(result.InkDrawingNode.Strokes);
-                        newStrokes = new StrokeCollection();
-                    }
-                }
-                //Label.Visibility = Visibility.Visible;
-                //Label.Content = result.InkDrawingNode.GetShapeName();
-            }
-            catch (Exception ex)
-            {
-                //Label.Content = ex.Message + Environment.NewLine + ex.StackTrace;
+                            //纠正垂直与水平关系
+                            var newPoints = FixPointsDirection(p[0], p[1]);
+                            p[0] = newPoints[0];
+                            p[1] = newPoints[1];
+                            newPoints = FixPointsDirection(p[0], p[2]);
+                            p[0] = newPoints[0];
+                            p[2] = newPoints[1];
+                            newPoints = FixPointsDirection(p[1], p[2]);
+                            p[1] = newPoints[0];
+                            p[2] = newPoints[1];
 
+                            var pointList = p.ToList();
+                            pointList.Add(p[0]);
+                            var point = new StylusPointCollection(pointList);
+                            var stroke = new Stroke(point)
+                            {
+                                DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                            };
+                            SetNewBackupOfStroke();
+                            inkCanvas.Strokes.Add(stroke);
+                            inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                            //newStrokes.Remove(result.InkDrawingNode.Strokes);
+                            newStrokes = new StrokeCollection();
+                        }
+                    }
+                    else if (result.InkDrawingNode.GetShapeName().Contains("Rectangle") ||
+                             result.InkDrawingNode.GetShapeName().Contains("Diamond") ||
+                             result.InkDrawingNode.GetShapeName().Contains("Parallelogram") ||
+                             result.InkDrawingNode.GetShapeName().Contains("Square"))
+                    {
+                        var shape = result.InkDrawingNode.GetShape();
+                        var p = result.InkDrawingNode.HotPoints;
+                        if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) >= 75 || Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 4)
+                        {
+                            //纠正垂直与水平关系
+                            var newPoints = FixPointsDirection(p[0], p[1]);
+                            p[0] = newPoints[0];
+                            p[1] = newPoints[1];
+                            newPoints = FixPointsDirection(p[1], p[2]);
+                            p[1] = newPoints[0];
+                            p[2] = newPoints[1];
+                            newPoints = FixPointsDirection(p[2], p[3]);
+                            p[2] = newPoints[0];
+                            p[3] = newPoints[1];
+                            newPoints = FixPointsDirection(p[3], p[0]);
+                            p[3] = newPoints[0];
+                            p[0] = newPoints[1];
+
+                            var pointList = p.ToList();
+                            pointList.Add(p[0]);
+                            var point = new StylusPointCollection(pointList);
+                            var stroke = new Stroke(point)
+                            {
+                                DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                            };
+                            SetNewBackupOfStroke();
+                            inkCanvas.Strokes.Add(stroke);
+                            inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                            //newStrokes.Remove(result.InkDrawingNode.Strokes);
+                            newStrokes = new StrokeCollection();
+                        }
+                    }
+                    //Label.Visibility = Visibility.Visible;
+                    //Label.Content = result.InkDrawingNode.GetShapeName();
+                }
+                catch (Exception ex)
+                {
+                    //Label.Content = ex.Message + Environment.NewLine + ex.StackTrace;
+
+                }
             }
 
             // 检查是否是压感笔书写
@@ -3262,25 +3331,13 @@ namespace Ink_Canvas
 
         #endregion Tools
 
-
+        #region Ink To Shape
 
         //识别形状
         public ShapeRecognizeResult RecognizeShape(StrokeCollection strokes)
         {
             if (strokes == null || strokes.Count == 0)
                 return default;
-
-            //if (strokes.Count >= 2)
-            //{
-            //    StrokeCollection newStrokes = new StrokeCollection();
-            //    for (int i = strokes.Count - 1; i >= 0; i--)
-            //    {
-            //        newStrokes.Add(strokes[i]);
-            //    }
-            //    strokes = newStrokes;
-            //}
-            Label.Visibility = Visibility.Visible;
-            Label.Content = strokes.Count;
 
             var analyzer = new InkAnalyzer();
             analyzer.AddStrokes(strokes);
@@ -3351,8 +3408,11 @@ namespace Ink_Canvas
             }
             return false;
         }
+
+        #endregion
     }
 
+    #region Ink To Shape (Class)
     //Recognizer 的实现
 
     public enum RecognizeLanguage
@@ -3466,6 +3526,9 @@ namespace Ink_Canvas
     //        }
     //    }
     //}
+
+    #endregion
+
     #region Test for pen
     // A StylusPlugin that renders ink with a linear gradient brush effect.
     class CustomDynamicRenderer : DynamicRenderer

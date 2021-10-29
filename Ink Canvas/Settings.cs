@@ -9,6 +9,8 @@ namespace Ink_Canvas
 {
     public class Settings
     {
+        [JsonProperty("advanced")]
+        public Advanced Advanced { get; set; } = new Advanced();
         [JsonProperty("appearance")]
         public Appearance Appearance { get; set; } = new Appearance();
         [JsonProperty("automation")]
@@ -19,6 +21,8 @@ namespace Ink_Canvas
         public Canvas Canvas { get; set; } = new Canvas();
         [JsonProperty("gesture")]
         public Gesture Gesture { get; set; } = new Gesture();
+        [JsonProperty("inkToShape")]
+        public InkToShape InkToShape { get; set; } = new InkToShape();
         [JsonProperty("startup")]
         public Startup Startup { get; set; } = new Startup();
     }
@@ -79,5 +83,17 @@ namespace Ink_Canvas
         public bool IsAutoKillPptService { get; set; } = false;
         [JsonProperty("isAutoKillEasiNote")]
         public bool IsAutoKillEasiNote { get; set; } = false;
+    }
+
+    public class Advanced
+    {
+        [JsonProperty("isSpecialScreen")]
+        public bool IsSpecialScreen { get; set; } = false;
+    }
+    
+    public class InkToShape
+    {
+        [JsonProperty("isInkToShapeEnabled")]
+        public bool IsInkToShapeEnabled { get; set; } = true;
     }
 }

@@ -169,8 +169,8 @@
                         <GroupBox Header="墨迹识别 (Beta)">
                             <ui:SimpleStackPanel Spacing="12">
                                 <TextBlock Text="墨迹识别功能目前处于开发阶段，目前可实现自动识别圆、三角形、&#x000A;矩形，并自动转换为规范图形。" Foreground="#666666"/>
-                                <ui:ToggleSwitch Name="ToggleSwitchEnableInkToShape" Header="启用墨迹识别" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerRotation_Toggled"/>
-                                <ui:ToggleSwitch Name="ToggleSwitchEnable" Header="圆：仅识别和转换正圆" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerGestureInPresentationMode_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchEnableInkToShape" Header="启用墨迹识别" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableInkToShape_Toggled" IsOn="True"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchEnableEllipse" Header="圆：仅识别和转换正圆" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableEllipse_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="外观">
@@ -195,6 +195,12 @@
                                                VerticalAlignment="Bottom" Margin="10,0,0,8"
                                                FontSize="14" Width="25" HorizontalAlignment="Center"/>
                                 </StackPanel>
+                            </ui:SimpleStackPanel>
+                        </GroupBox>
+                        <GroupBox Header="高级">
+                            <ui:SimpleStackPanel Spacing="12">
+                                <TextBlock Text="可在手指触摸画板时显示圆形橡皮或手掌触摸画板时显示的橡皮比&#x000A;手掌大很多时开启" Foreground="#666666"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchIsSpecialScreen" Header="特殊屏幕模式" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchIsSpecialScreen_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="重置">
