@@ -1197,7 +1197,7 @@ namespace Ink_Canvas
             dec.Remove(e.TouchDevice.Id);
             if (dec.Count == 0)
             {
-                if (lastTouchDownStrokeCollection != inkCanvas.Strokes)
+                if (lastTouchDownStrokeCollection.Count() != inkCanvas.Strokes.Count())
                 {
                     int whiteboardIndex = CurrentWhiteboardIndex;
                     if (currentMode == 0)
@@ -2735,8 +2735,15 @@ namespace Ink_Canvas
             {
                 newStrokes.Add(e.Stroke);
                 if (newStrokes.Count > 4) newStrokes.RemoveAt(0);
+                var newS = newStrokes.Clone();
+                for (int i = 0; i < newStrokes.Count; i++)
+                {
+                    if (!inkCanvas.Strokes.Contains(newStrokes[i])) newStrokes.RemoveAt(i--);
+                }
+                //inkCanvas.Select(newStrokes);
+                Label.Content = newStrokes.Count.ToString();
                 var result = RecognizeShape(newStrokes);
-
+                Label.Content = newStrokes.Count.ToString() + "\n" + result.InkDrawingNode.GetShapeName();
                 //InkDrawingNode result = ShapeRecogniser.Instance.Recognition(strokes);
                 if (result.InkDrawingNode.GetShapeName() == "Circle")
                 {
@@ -2751,9 +2758,11 @@ namespace Ink_Canvas
                         {
                             DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                         };
+                        SetNewBackupOfStroke();
                         inkCanvas.Strokes.Add(stroke);
                         inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                        newStrokes.Remove(result.InkDrawingNode.Strokes);
+                        //newStrokes.Remove(result.InkDrawingNode.Strokes);
+                        newStrokes = new StrokeCollection();
                     }
                 }
                 else if (result.InkDrawingNode.GetShapeName().Contains("Triangle"))
@@ -2780,16 +2789,56 @@ namespace Ink_Canvas
                         {
                             DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                         };
+                        SetNewBackupOfStroke();
                         inkCanvas.Strokes.Add(stroke);
                         inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                        newStrokes.Remove(result.InkDrawingNode.Strokes);
+                        //newStrokes.Remove(result.InkDrawingNode.Strokes);
+                        newStrokes = new StrokeCollection();
                     }
                 }
-                Label.Visibility = Visibility.Visible;
-                Label.Content = result.InkDrawingNode.GetShapeName();
+                else if (result.InkDrawingNode.GetShapeName().Contains("Rectangle") ||
+                         result.InkDrawingNode.GetShapeName().Contains("Diamond") ||
+                         result.InkDrawingNode.GetShapeName().Contains("Parallelogram") ||
+                         result.InkDrawingNode.GetShapeName().Contains("Square"))
+                {
+                    var shape = result.InkDrawingNode.GetShape();
+                    var p = result.InkDrawingNode.HotPoints;
+                    if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) >= 75 || Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 4)
+                    {
+                        //纠正垂直与水平关系
+                        var newPoints = FixPointsDirection(p[0], p[1]);
+                        p[0] = newPoints[0];
+                        p[1] = newPoints[1];
+                        newPoints = FixPointsDirection(p[1], p[2]);
+                        p[1] = newPoints[0];
+                        p[2] = newPoints[1];
+                        newPoints = FixPointsDirection(p[2], p[3]);
+                        p[2] = newPoints[0];
+                        p[3] = newPoints[1];
+                        newPoints = FixPointsDirection(p[3], p[0]);
+                        p[3] = newPoints[0];
+                        p[0] = newPoints[1];
+
+                        var pointList = p.ToList();
+                        pointList.Add(p[0]);
+                        var point = new StylusPointCollection(pointList);
+                        var stroke = new Stroke(point)
+                        {
+                            DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                        };
+                        SetNewBackupOfStroke();
+                        inkCanvas.Strokes.Add(stroke);
+                        inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                        //newStrokes.Remove(result.InkDrawingNode.Strokes);
+                        newStrokes = new StrokeCollection();
+                    }
+                }
+                //Label.Visibility = Visibility.Visible;
+                //Label.Content = result.InkDrawingNode.GetShapeName();
             }
-            catch
+            catch (Exception ex)
             {
+                //Label.Content = ex.Message + Environment.NewLine + ex.StackTrace;
 
             }
 
@@ -2898,8 +2947,6 @@ namespace Ink_Canvas
                         if (lastTouchDownTime < lastTouchUpTime)
                         {
                             double k = (lastTouchUpTime - lastTouchDownTime) / (n + 1); // 每个点之间间隔 k 毫秒
-                            Label.Visibility = Visibility.Visible;
-                            Label.Content = k.ToString();
                             x = (int)(1000 / k); // 取 1000 ms 内的点
                         }
 
@@ -2944,6 +2991,23 @@ namespace Ink_Canvas
                     }
                     break;
             }
+        }
+
+        private void SetNewBackupOfStroke()
+        {
+            lastTouchDownStrokeCollection = inkCanvas.Strokes.Clone();
+            int whiteboardIndex = CurrentWhiteboardIndex;
+            if (currentMode == 0)
+            {
+                whiteboardIndex = 0;
+            }
+            strokeCollections[whiteboardIndex] = lastTouchDownStrokeCollection;
+
+            BtnUndo.IsEnabled = true;
+            BtnUndo.Visibility = Visibility.Visible;
+
+            BtnRedo.IsEnabled = false;
+            BtnRedo.Visibility = Visibility.Collapsed;
         }
 
         public double GetPointSpeed(Point point1, Point point2, Point point3)
@@ -3201,22 +3265,67 @@ namespace Ink_Canvas
 
 
         //识别形状
-        public static ShapeRecognizeResult RecognizeShape(StrokeCollection strokes)
+        public ShapeRecognizeResult RecognizeShape(StrokeCollection strokes)
         {
             if (strokes == null || strokes.Count == 0)
                 return default;
+
+            //if (strokes.Count >= 2)
+            //{
+            //    StrokeCollection newStrokes = new StrokeCollection();
+            //    for (int i = strokes.Count - 1; i >= 0; i--)
+            //    {
+            //        newStrokes.Add(strokes[i]);
+            //    }
+            //    strokes = newStrokes;
+            //}
+            Label.Visibility = Visibility.Visible;
+            Label.Content = strokes.Count;
 
             var analyzer = new InkAnalyzer();
             analyzer.AddStrokes(strokes);
             analyzer.SetStrokesType(strokes, System.Windows.Ink.StrokeType.Drawing);
 
             AnalysisAlternate analysisAlternate = null;
+            int strokesCount = strokes.Count;
             var sfsaf = analyzer.Analyze();
             if (sfsaf.Successful)
             {
                 var alternates = analyzer.GetAlternates();
                 if (alternates.Count > 0)
                 {
+                    while ((!alternates[0].Strokes.Contains(strokes.Last()) ||
+                        !IsContainShapeType(((InkDrawingNode)alternates[0].AlternateNodes[0]).GetShapeName()))
+                        && strokesCount >= 2)
+                    {
+                        analyzer.RemoveStroke(strokes[strokes.Count - strokesCount]);
+                        strokesCount--;
+                        sfsaf = analyzer.Analyze();
+                        if (sfsaf.Successful)
+                        {
+                            alternates = analyzer.GetAlternates();
+                        }
+                    }
+                    //Label.Visibility = Visibility.Visible;
+                    //int i = 0;
+                    //string name = ((InkDrawingNode)alternates[i].AlternateNodes[0]).GetShapeName();
+                    //string names = alternates.Count.ToString() + Environment.NewLine;
+                    //names += name + Environment.NewLine;
+                    //while (name != "Triangle" && name != "Circle" &&
+                    //       name != "Rectangle" && name != "Diamond" && name != "Parallelogram" && name != "Square")
+                    //{
+                    //    i++;
+                    //    if (i == alternates.Count)
+                    //    {
+                    //        analyzer.Dispose();
+                    //        Label.Content = names;
+                    //        return default;
+                    //    }
+                    //    name = ((InkDrawingNode)alternates[i].AlternateNodes[0]).GetShapeName();
+                    //    names += name + Environment.NewLine;
+                    //}
+                    //Label.Content = names;
+                    //analysisAlternate = alternates[i];
                     analysisAlternate = alternates[0];
                 }
             }
@@ -3226,11 +3335,21 @@ namespace Ink_Canvas
             if (analysisAlternate != null && analysisAlternate.AlternateNodes.Count > 0)
             {
                 var node = analysisAlternate.AlternateNodes[0] as InkDrawingNode;
-                
                 return new ShapeRecognizeResult(node.Centroid, node.HotPoints, analysisAlternate, node);
             }
 
             return default;
+        }
+
+        public bool IsContainShapeType(string name)
+        {
+            if (name.Contains("Triangle") || name.Contains("Circle") ||
+                name.Contains("Rectangle") || name.Contains("Diamond") ||
+                name.Contains("Parallelogram") || name.Contains("Square"))
+            {
+                return true;
+            }
+            return false;
         }
     }
 
