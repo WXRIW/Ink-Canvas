@@ -2487,9 +2487,20 @@ namespace Ink_Canvas
 
         #region Selection Gestures
 
+        bool isGridInkCanvasSelectionCoverMouseDown = false;
+        private void GridInkCanvasSelectionCover_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            isGridInkCanvasSelectionCoverMouseDown = true;
+            //GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+        }
+
         private void GridInkCanvasSelectionCover_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+            if (isGridInkCanvasSelectionCoverMouseDown)
+            {
+                isGridInkCanvasSelectionCoverMouseDown = false;
+                GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void BtnSelect_Click(object sender, RoutedEventArgs e)
@@ -2505,7 +2516,6 @@ namespace Ink_Canvas
             if (inkCanvas.GetSelectedStrokes().Count == 0)
             {
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
-
             }
             else
             {

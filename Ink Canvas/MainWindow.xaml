@@ -53,7 +53,10 @@
                 </DrawingAttributes>
             </InkCanvas.DefaultDrawingAttributes>-->
         </InkCanvas>
-        <Grid Name="GridInkCanvasSelectionCover" MouseUp="GridInkCanvasSelectionCover_MouseUp" IsManipulationEnabled="True"
+        <Grid Name="GridInkCanvasSelectionCover"
+              MouseDown="GridInkCanvasSelectionCover_MouseDown"
+              MouseUp="GridInkCanvasSelectionCover_MouseUp"
+              IsManipulationEnabled="True"
               ManipulationStarting="GridInkCanvasSelectionCover_ManipulationStarting"
               ManipulationCompleted="GridInkCanvasSelectionCover_ManipulationCompleted"
               ManipulationDelta="GridInkCanvasSelectionCover_ManipulationDelta"
