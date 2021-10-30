@@ -121,6 +121,7 @@
       <DependentUpon>CycleProcessBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\InkRecognizeHelper.cs" />
+    <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="RandWindow.xaml.cs">
       <DependentUpon>RandWindow.xaml</DependentUpon>
     </Compile>

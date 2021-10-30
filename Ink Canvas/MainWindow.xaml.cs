@@ -1156,7 +1156,7 @@ namespace Ink_Canvas
 
         int lastTouchDownTime = 0, lastTouchUpTime = 0;
 
-        bool isTouchDown = false; Point iniP = new Point(0, 0);
+        Point iniP = new Point(0, 0);
         bool isLastTouchEraser = false;
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
         {
@@ -1273,7 +1273,7 @@ namespace Ink_Canvas
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             }
         }
-        private MatrixTransform imageTransform;
+
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
             if ((dec.Count >= 2 && (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible || StackPanelPPTButtons.Visibility == Visibility.Collapsed)) || isSingleFingerDragMode)
@@ -1305,6 +1305,17 @@ namespace Ink_Canvas
                     {
                         stroke.Transform(m, false);
 
+                        foreach (Circle circle in circles)
+                        {
+                            if (stroke == circle.Stroke)
+                            {
+                                circle.R = GetDistance(circle.Stroke.StylusPoints[0].ToPoint(), circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].ToPoint()) / 2;
+                                circle.Centroid = new Point((circle.Stroke.StylusPoints[0].X + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].X) / 2,
+                                                            (circle.Stroke.StylusPoints[0].Y + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].Y) / 2);
+                                break;
+                            }
+                        }
+
                         try
                         {
                             stroke.DrawingAttributes.Width *= md.Scale.X;
@@ -1325,6 +1336,12 @@ namespace Ink_Canvas
                             stroke.DrawingAttributes.Height *= md.Scale.Y;
                         }
                         catch { }
+                    }
+                    foreach (Circle circle in circles)
+                    {
+                        circle.R = GetDistance(circle.Stroke.StylusPoints[0].ToPoint(), circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].ToPoint()) / 2;
+                        circle.Centroid = new Point((circle.Stroke.StylusPoints[0].X + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].X) / 2,
+                                                    (circle.Stroke.StylusPoints[0].Y + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].Y) / 2);
                     }
                 }
             }
@@ -1692,7 +1709,7 @@ namespace Ink_Canvas
                             inkCanvas.Strokes = new System.Windows.Ink.StrokeCollection(memoryStreams[Wn.View.CurrentShowPosition]);
                         }
                     }
-                    catch (Exception ex)
+                    catch
                     { }
                 });
                 previousSlideID = Wn.View.CurrentShowPosition;
@@ -1738,11 +1755,9 @@ namespace Ink_Canvas
                     pptApplication.SlideShowWindows[1].View.Next();
                 })).Start();
             }
-            catch (Exception ex)
+            catch
             {
-                //BtnCheckPPT.Visibility = Visibility.Visible;
                 StackPanelPPTControls.Visibility = Visibility.Collapsed;
-                //MessageBox.Show(ex.ToString());
             }
         }
 
@@ -2639,7 +2654,6 @@ namespace Ink_Canvas
 
         StrokeCollection[] strokeCollections = new StrokeCollection[100];
         bool[] whiteboadLastModeIsRedo = new bool[100];
-        int currentStrokeCollectionIndex = 0;
         StrokeCollection lastTouchDownStrokeCollection = new StrokeCollection();
 
         int CurrentWhiteboardIndex = 1;
@@ -2819,10 +2833,13 @@ namespace Ink_Canvas
                     {
                         if (!inkCanvas.Strokes.Contains(newStrokes[i])) newStrokes.RemoveAt(i--);
                     }
-                    Label.Visibility = Visibility.Visible;
+                    for (int i = 0; i < circles.Count; i++)
+                    {
+                        if (!inkCanvas.Strokes.Contains(circles[i].Stroke)) circles.RemoveAt(i);
+                    }
                     var result = InkRecognizeHelper.RecognizeShape(newStrokes);
-                    Label.Content = newStrokes.Count.ToString() + "\n" + result.InkDrawingNode.GetShapeName();
-                    //InkDrawingNode result = ShapeRecogniser.Instance.Recognition(strokes);
+                    Label.Visibility = Visibility.Visible;
+                    Label.Content = circles.Count.ToString() + "\n" + result.InkDrawingNode.GetShapeName();
                     if (result.InkDrawingNode.GetShapeName() == "Circle")
                     {
                         var shape = result.InkDrawingNode.GetShape();
@@ -2877,7 +2894,6 @@ namespace Ink_Canvas
                             SetNewBackupOfStroke();
                             inkCanvas.Strokes.Add(stroke);
                             inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                            //newStrokes.Remove(result.InkDrawingNode.Strokes);
                             newStrokes = new StrokeCollection();
                         }
                     }
@@ -2888,10 +2904,8 @@ namespace Ink_Canvas
                         //shape1.Fill = Brushes.Gray;
                         //Canvas.Children.Add(shape1);
                         var p = result.InkDrawingNode.HotPoints;
-                        //double a = Math.Max(shape.Width, shape.Height) / 2; //长半轴
-                        //double b = Math.Min(shape.Width, shape.Height) / 2; //短半轴
-                        double a = GetDistance(p[0], p[2]); //长半轴
-                        double b = GetDistance(p[1], p[3]); //短半轴
+                        double a = GetDistance(p[0], p[2]) / 2; //长半轴
+                        double b = GetDistance(p[1], p[3]) / 2; //短半轴
                         if (a < b)
                         {
                             double t = a;
@@ -2917,9 +2931,11 @@ namespace Ink_Canvas
                                     iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
                                     endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
 
+                                    Label.Content = "同心" + a.ToString() + ", " + circle.R;
                                     //再判断是否与圆相切
-                                    if (Math.Abs(a - circle.R) / a < 0.15)
+                                    if (Math.Abs(a - circle.R) / a < 0.2)
                                     {
+                                        Label.Content = "相切";
                                         if (shape.Width >= shape.Height)
                                         {
                                             iniP.X = result.Centroid.X - circle.R;
@@ -2994,7 +3010,6 @@ namespace Ink_Canvas
                             SetNewBackupOfStroke();
                             inkCanvas.Strokes.Add(stroke);
                             inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                            //newStrokes.Remove(result.InkDrawingNode.Strokes);
                             newStrokes = new StrokeCollection();
                         }
                     }
@@ -3025,7 +3040,6 @@ namespace Ink_Canvas
                             SetNewBackupOfStroke();
                             inkCanvas.Strokes.Add(stroke);
                             inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                            //newStrokes.Remove(result.InkDrawingNode.Strokes);
                             newStrokes = new StrokeCollection();
                         }
                     }
@@ -3062,18 +3076,11 @@ namespace Ink_Canvas
                             SetNewBackupOfStroke();
                             inkCanvas.Strokes.Add(stroke);
                             inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                            //newStrokes.Remove(result.InkDrawingNode.Strokes);
                             newStrokes = new StrokeCollection();
                         }
                     }
-                    //Label.Visibility = Visibility.Visible;
-                    //Label.Content = result.InkDrawingNode.GetShapeName();
                 }
-                catch (Exception ex)
-                {
-                    //Label.Content = ex.Message + Environment.NewLine + ex.StackTrace;
-
-                }
+                catch { }
             }
 
             // 检查是否是压感笔书写
