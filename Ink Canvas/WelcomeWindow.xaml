@@ -14,7 +14,7 @@
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <Label Content="欢迎在马鞍山二中使用 Ink Canvas 画板" FontSize="20" Margin="10,10,0,0"/>
-        <Image Source="Logo.png" Grid.Row="1" HorizontalAlignment="Right" Margin="20"/>
+        <Image Source="Resources/Logo.png" Grid.Row="1" HorizontalAlignment="Right" Margin="20"/>
         <ui:SimpleStackPanel Grid.Row="1" Margin="30,10,0,0">
             <CheckBox Name="CheckBoxSetAsRecommendation" FontFamily="Microsoft YaHei UI" Content="配置为推荐设置" IsChecked="True"/>
             <CheckBox Name="CheckBoxRunAtStartup" FontFamily="Microsoft YaHei UI" Content="开机时运行" IsChecked="True"/>

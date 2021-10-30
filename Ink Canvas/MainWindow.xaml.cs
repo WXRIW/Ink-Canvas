@@ -35,6 +35,7 @@ using MessageBox = System.Windows.MessageBox;
 using System.Drawing.Imaging;
 using System.Windows.Media.Animation;
 using System.Windows.Ink.AnalysisCore;
+using Ink_Canvas.Helpers;
 
 namespace Ink_Canvas
 {
@@ -2800,9 +2801,10 @@ namespace Ink_Canvas
 
         #endregion Whiteboard Controls
 
-        #region Simulate Pen Pressure
+        #region Simulate Pen Pressure & Ink To Shape
 
         StrokeCollection newStrokes = new StrokeCollection();
+        List<Circle> circles = new List<Circle>();
 
         //此函数中的所有代码版权所有 WXRIW，在其他项目中使用前必须提前联系（wxriw@outlook.com），谢谢！
         private void inkCanvas_StrokeCollected(object sender, InkCanvasStrokeCollectedEventArgs e)
@@ -2819,14 +2821,51 @@ namespace Ink_Canvas
                         if (!inkCanvas.Strokes.Contains(newStrokes[i])) newStrokes.RemoveAt(i--);
                     }
                     Label.Visibility = Visibility.Visible;
-                    var result = RecognizeShape(newStrokes);
+                    var result = InkRecognizeHelper.RecognizeShape(newStrokes);
                     Label.Content = newStrokes.Count.ToString() + "\n" + result.InkDrawingNode.GetShapeName();
                     //InkDrawingNode result = ShapeRecogniser.Instance.Recognition(strokes);
                     if (result.InkDrawingNode.GetShapeName() == "Circle")
                     {
                         var shape = result.InkDrawingNode.GetShape();
-                        if (shape.Width > 75 && shape.Height > 75)
+                        if (shape.Width > 75)
                         {
+                            foreach (Circle circle in circles)
+                            {
+                                //判断是否画同心圆
+                                if (Math.Abs(result.Centroid.X - circle.Centroid.X) / shape.Width < 0.12 &&
+                                    Math.Abs(result.Centroid.Y - circle.Centroid.Y) / shape.Width < 0.12)
+                                {
+                                    result.Centroid = circle.Centroid;
+                                    break;
+                                }
+                                else
+                                {
+                                    double d = (result.Centroid.X - circle.Centroid.X) * (result.Centroid.X - circle.Centroid.X) +
+                                       (result.Centroid.Y - circle.Centroid.Y) * (result.Centroid.Y - circle.Centroid.Y);
+                                    d = Math.Sqrt(d);
+                                    //判断是否画外切圆
+                                    double x = shape.Width / 2.0 + circle.R - d;
+                                    if (Math.Abs(x) / shape.Width < 0.1)
+                                    {
+                                        double sinTheta = (result.Centroid.Y - circle.Centroid.Y) / d;
+                                        double cosTheta = (result.Centroid.X - circle.Centroid.X) / d;
+                                        double newX = result.Centroid.X + x * cosTheta;
+                                        double newY = result.Centroid.Y + x * sinTheta;
+                                        result.Centroid = new Point(newX, newY);
+                                    }
+                                    //判断是否画外切圆
+                                    x = Math.Abs(circle.R - shape.Width / 2.0) - d;
+                                    if (Math.Abs(x) / shape.Width < 0.1)
+                                    {
+                                        double sinTheta = (result.Centroid.Y - circle.Centroid.Y) / d;
+                                        double cosTheta = (result.Centroid.X - circle.Centroid.X) / d;
+                                        double newX = result.Centroid.X + x * cosTheta;
+                                        double newY = result.Centroid.Y + x * sinTheta;
+                                        result.Centroid = new Point(newX, newY);
+                                    }
+                                }
+                            }
+
                             Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
                             Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
                             var pointList = GenerateEclipseGeometry(iniP, endP);
@@ -2835,6 +2874,7 @@ namespace Ink_Canvas
                             {
                                 DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                             };
+                            circles.Add(new Circle(result.Centroid, shape.Width / 2.0, stroke));
                             SetNewBackupOfStroke();
                             inkCanvas.Strokes.Add(stroke);
                             inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
@@ -2846,10 +2886,58 @@ namespace Ink_Canvas
                     {
                         var shape = result.InkDrawingNode.GetShape();
                         var p = result.InkDrawingNode.HotPoints;
-                        if (true || (Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) >= 75 || Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 3)
+                        double a = Math.Max(shape.Width, shape.Height) / 2; //长半轴
+                        double b = Math.Min(shape.Width, shape.Height) / 2; //短半轴
+                        if (shape.Width > 75 || shape.Height > 75 && result.InkDrawingNode.HotPoints.Count == 3)
                         {
                             Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
                             Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
+
+                            foreach (Circle circle in circles)
+                            {
+                                //判断是否画同心椭圆
+                                if (Math.Abs(result.Centroid.X - circle.Centroid.X) / a < 0.2 &&
+                                    Math.Abs(result.Centroid.Y - circle.Centroid.Y) / a < 0.2)
+                                {
+                                    result.Centroid = circle.Centroid;
+                                    iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
+                                    endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
+
+                                    //再判断是否与圆相切
+                                    if (Math.Abs(a - circle.R) / a < 0.15)
+                                    {
+                                        if (shape.Width >= shape.Height)
+                                        {
+                                            iniP.X = result.Centroid.X - circle.R;
+                                            endP.X = result.Centroid.X + circle.R;
+                                            iniP.Y = result.Centroid.Y - b;
+                                            endP.Y = result.Centroid.Y + b;
+                                        }
+                                        else
+                                        {
+                                            iniP.Y = result.Centroid.Y - circle.R;
+                                            endP.Y = result.Centroid.Y + circle.R;
+                                            iniP.X = result.Centroid.X - a;
+                                            endP.X = result.Centroid.X + a;
+                                        }
+                                    }
+                                    break;
+                                }
+                                else if (Math.Abs(result.Centroid.X - circle.Centroid.X) / a < 0.2)
+                                {
+                                    double sinTheta = Math.Abs(circle.Centroid.Y - result.Centroid.Y) / circle.R;
+                                    double cosTheta = Math.Sqrt(1 - sinTheta * sinTheta);
+                                    double newA = circle.R * cosTheta;
+                                    Label.Content = (a / b).ToString();
+                                    if (Math.Abs(newA - circle.R) / a < 0.2)
+                                    {
+                                        iniP.X = circle.Centroid.X - newA;
+                                        endP.X = circle.Centroid.X + newA;
+                                        iniP.Y = result.Centroid.Y - b;
+                                        endP.Y = result.Centroid.Y + b;
+                                    }
+                                }
+                            }
 
                             //纠正垂直与水平关系
                             var newPoints = FixPointsDirection(p[0], p[2]);
@@ -3171,7 +3259,7 @@ namespace Ink_Canvas
             return new Point[2] { p1, p2 };
         }
 
-        #endregion Simulate Pen Pressure
+        #endregion
 
         #region Functions
 
@@ -3379,204 +3467,7 @@ namespace Ink_Canvas
         }
 
         #endregion Tools
-
-        #region Ink To Shape
-
-        //识别形状
-        public ShapeRecognizeResult RecognizeShape(StrokeCollection strokes)
-        {
-            if (strokes == null || strokes.Count == 0)
-                return default;
-
-            var analyzer = new InkAnalyzer();
-            analyzer.AddStrokes(strokes);
-            analyzer.SetStrokesType(strokes, System.Windows.Ink.StrokeType.Drawing);
-
-            AnalysisAlternate analysisAlternate = null;
-            int strokesCount = strokes.Count;
-            var sfsaf = analyzer.Analyze();
-            if (sfsaf.Successful)
-            {
-                var alternates = analyzer.GetAlternates();
-                if (alternates.Count > 0)
-                {
-                    while ((!alternates[0].Strokes.Contains(strokes.Last()) ||
-                        !IsContainShapeType(((InkDrawingNode)alternates[0].AlternateNodes[0]).GetShapeName()))
-                        && strokesCount >= 2)
-                    {
-                        analyzer.RemoveStroke(strokes[strokes.Count - strokesCount]);
-                        strokesCount--;
-                        sfsaf = analyzer.Analyze();
-                        if (sfsaf.Successful)
-                        {
-                            alternates = analyzer.GetAlternates();
-                        }
-                    }
-                    //Label.Visibility = Visibility.Visible;
-                    //int i = 0;
-                    //string name = ((InkDrawingNode)alternates[i].AlternateNodes[0]).GetShapeName();
-                    //string names = alternates.Count.ToString() + Environment.NewLine;
-                    //names += name + Environment.NewLine;
-                    //while (name != "Triangle" && name != "Circle" &&
-                    //       name != "Rectangle" && name != "Diamond" && name != "Parallelogram" && name != "Square")
-                    //{
-                    //    i++;
-                    //    if (i == alternates.Count)
-                    //    {
-                    //        analyzer.Dispose();
-                    //        Label.Content = names;
-                    //        return default;
-                    //    }
-                    //    name = ((InkDrawingNode)alternates[i].AlternateNodes[0]).GetShapeName();
-                    //    names += name + Environment.NewLine;
-                    //}
-                    //Label.Content = names;
-                    //analysisAlternate = alternates[i];
-                    analysisAlternate = alternates[0];
-                }
-            }
-
-            analyzer.Dispose();
-
-            if (analysisAlternate != null && analysisAlternate.AlternateNodes.Count > 0)
-            {
-                var node = analysisAlternate.AlternateNodes[0] as InkDrawingNode;
-                return new ShapeRecognizeResult(node.Centroid, node.HotPoints, analysisAlternate, node);
-            }
-
-            return default;
-        }
-
-        public bool IsContainShapeType(string name)
-        {
-            if (name.Contains("Triangle") || name.Contains("Circle") ||
-                name.Contains("Rectangle") || name.Contains("Diamond") ||
-                name.Contains("Parallelogram") || name.Contains("Square"))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        #endregion
     }
-
-    #region Ink To Shape (Class)
-    //Recognizer 的实现
-
-    public enum RecognizeLanguage
-    {
-        SimplifiedChinese = 0x0804,
-        TraditionalChinese = 0x7c03,
-        English = 0x0809
-    }
-
-    public class ShapeRecognizeResult
-    {
-        public ShapeRecognizeResult(Point centroid, PointCollection hotPoints, AnalysisAlternate analysisAlternate, InkDrawingNode node)
-        {
-            Centroid = centroid;
-            HotPoints = hotPoints;
-            AnalysisAlternate = analysisAlternate;
-            InkDrawingNode = node;
-        }
-
-        public AnalysisAlternate AnalysisAlternate { get; }
-
-        public Point Centroid { get; }
-
-        public PointCollection HotPoints { get; }
-
-        public InkDrawingNode InkDrawingNode { get; }
-    }
-
-    /// <summary>
-    /// 图形识别类
-    /// </summary>
-    //public class ShapeRecogniser
-    //{
-    //    public InkAnalyzer _inkAnalyzer = null;
-
-    //    private ShapeRecogniser()
-    //    {
-    //        this._inkAnalyzer = new InkAnalyzer
-    //        {
-    //            AnalysisModes = AnalysisModes.AutomaticReconciliationEnabled
-    //        };
-    //    }
-
-    //    /// <summary>
-    //    /// 根据笔迹集合返回图形名称字符串
-    //    /// </summary>
-    //    /// <param name="strokeCollection"></param>
-    //    /// <returns></returns>
-    //    public InkDrawingNode Recognition(StrokeCollection strokeCollection)
-    //    {
-    //        if (strokeCollection == null)
-    //        {
-    //            //MessageBox.Show("dddddd");
-    //            return null;
-    //        }
-
-    //        InkDrawingNode result = null;
-    //        try
-    //        {
-    //            this._inkAnalyzer.AddStrokes(strokeCollection);
-    //            if (this._inkAnalyzer.Analyze().Successful)
-    //            {
-    //                result = _internalAnalyzer(this._inkAnalyzer);
-    //                this._inkAnalyzer.RemoveStrokes(strokeCollection);
-    //            }
-    //        }
-    //        catch (System.Exception ex)
-    //        {
-    //            //result = ex.Message;
-    //            System.Diagnostics.Debug.WriteLine(ex.Message);
-    //        }
-
-    //        return result;
-    //    }
-
-    //    /// <summary>
-    //    /// 实现笔迹的分析，返回图形对应的字符串
-    //    /// 你在实际的应用中根据返回的字符串来生成对应的Shape
-    //    /// </summary>
-    //    /// <param name="ink"></param>
-    //    /// <returns></returns>
-    //    private InkDrawingNode _internalAnalyzer(InkAnalyzer ink)
-    //    {
-    //        try
-    //        {
-    //            ContextNodeCollection nodecollections = ink.FindNodesOfType(ContextNodeType.InkDrawing);
-    //            foreach (ContextNode node in nodecollections)
-    //            {
-    //                InkDrawingNode drawingNode = node as InkDrawingNode;
-    //                if (drawingNode != null)
-    //                {
-    //                    return drawingNode;//.GetShapeName();
-    //                }
-    //            }
-    //        }
-    //        catch (System.Exception ex)
-    //        {
-    //            System.Diagnostics.Debug.WriteLine(ex.Message);
-    //        }
-
-    //        return null;
-    //    }
-
-
-    //    private static ShapeRecogniser instance = null;
-    //    public static ShapeRecogniser Instance
-    //    {
-    //        get
-    //        {
-    //            return instance == null ? (instance = new ShapeRecogniser()) : instance;
-    //        }
-    //    }
-    //}
-
-    #endregion
 
     #region Test for pen
     // A StylusPlugin that renders ink with a linear gradient brush effect.
