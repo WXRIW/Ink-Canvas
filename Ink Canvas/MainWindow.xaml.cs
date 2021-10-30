@@ -604,7 +604,7 @@ namespace Ink_Canvas
 
         private void BtnRestart_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(System.Windows.Forms.Application.ExecutablePath);
+            Process.Start(System.Windows.Forms.Application.ExecutablePath, "-m");
 
             Application.Current.Shutdown();
         }

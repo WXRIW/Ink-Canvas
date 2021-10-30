@@ -15,6 +15,8 @@ namespace Ink_Canvas
     {
         System.Threading.Mutex mutex;
 
+        public static string[] StartArgs = null;
+
         public App()
         {
             this.Startup += new StartupEventHandler(App_Startup);
@@ -25,12 +27,11 @@ namespace Ink_Canvas
             bool ret;
             mutex = new System.Threading.Mutex(true, "Ink_Canvas", out ret);
 
-            if (!ret)
+            if (!ret && !e.Args.Contains("-m")) //-m multiple
             {
                 MessageBox.Show("已有一个程序实例正在运行");
                 Environment.Exit(0);
             }
-
         }
     }
 }
