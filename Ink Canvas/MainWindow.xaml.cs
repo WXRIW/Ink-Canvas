@@ -2134,11 +2134,6 @@ namespace Ink_Canvas
             SaveSettingsToFile();
         }
 
-        private void ToggleSwitchEnableEllipse_Toggled(object sender, RoutedEventArgs e)
-        {
-            if (!isLoaded) return;
-        }
-
         #endregion
 
         #region Advanced
@@ -2838,7 +2833,7 @@ namespace Ink_Canvas
                         if (!inkCanvas.Strokes.Contains(circles[i].Stroke)) circles.RemoveAt(i);
                     }
                     var result = InkRecognizeHelper.RecognizeShape(newStrokes);
-                    Label.Visibility = Visibility.Visible;
+                    //Label.Visibility = Visibility.Visible;
                     Label.Content = circles.Count.ToString() + "\n" + result.InkDrawingNode.GetShapeName();
                     if (result.InkDrawingNode.GetShapeName() == "Circle")
                     {
@@ -2931,11 +2926,9 @@ namespace Ink_Canvas
                                     iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
                                     endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
 
-                                    Label.Content = "同心" + a.ToString() + ", " + circle.R;
                                     //再判断是否与圆相切
                                     if (Math.Abs(a - circle.R) / a < 0.2)
                                     {
-                                        Label.Content = "相切";
                                         if (shape.Width >= shape.Height)
                                         {
                                             iniP.X = result.Centroid.X - circle.R;
