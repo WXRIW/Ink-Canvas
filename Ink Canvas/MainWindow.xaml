@@ -168,9 +168,9 @@
                         </GroupBox>
                         <GroupBox Header="墨迹识别 (Beta)">
                             <ui:SimpleStackPanel Spacing="12">
-                                <TextBlock Text="墨迹识别功能目前处于开发阶段，目前可实现自动识别圆、三角形、&#x000A;矩形，并自动转换为规范图形。" Foreground="#666666"/>
+                                <TextBlock Text="墨迹识别功能目前处于开发阶段，目前可实现智能识别圆、三角形、&#x000A;矩形，并自动转换为规范图形。" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchEnableInkToShape" Header="启用墨迹识别" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableInkToShape_Toggled" IsOn="True"/>
-                                <ui:ToggleSwitch Name="ToggleSwitchEnableEllipse" Header="圆：仅识别和转换正圆" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableEllipse_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchEnableEllipse" Header="圆：启用椭圆的识别和转换" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableEllipse_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="外观">

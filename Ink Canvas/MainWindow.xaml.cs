@@ -2808,8 +2808,7 @@ namespace Ink_Canvas
                     {
                         if (!inkCanvas.Strokes.Contains(newStrokes[i])) newStrokes.RemoveAt(i--);
                     }
-                    //inkCanvas.Select(newStrokes);
-                    Label.Content = newStrokes.Count.ToString();
+                    Label.Visibility = Visibility.Visible;
                     var result = RecognizeShape(newStrokes);
                     Label.Content = newStrokes.Count.ToString() + "\n" + result.InkDrawingNode.GetShapeName();
                     //InkDrawingNode result = ShapeRecogniser.Instance.Recognition(strokes);
@@ -2826,6 +2825,46 @@ namespace Ink_Canvas
                             {
                                 DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                             };
+                            SetNewBackupOfStroke();
+                            inkCanvas.Strokes.Add(stroke);
+                            inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                            //newStrokes.Remove(result.InkDrawingNode.Strokes);
+                            newStrokes = new StrokeCollection();
+                        }
+                    }
+                    else if (result.InkDrawingNode.GetShapeName().Contains("Ellipse"))
+                    {
+                        var shape = result.InkDrawingNode.GetShape();
+                        var p = result.InkDrawingNode.HotPoints;
+                        if (true || (Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) >= 75 || Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 3)
+                        {
+                            Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
+                            Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
+
+                            //纠正垂直与水平关系
+                            var newPoints = FixPointsDirection(p[0], p[2]);
+                            p[0] = newPoints[0];
+                            p[2] = newPoints[1];
+                            newPoints = FixPointsDirection(p[1], p[3]);
+                            p[1] = newPoints[0];
+                            p[3] = newPoints[1];
+
+                            var pointList = GenerateEclipseGeometry(iniP, endP);
+                            //var pointList = p.ToList();
+                            //pointList.Add(p[0]);
+                            var point = new StylusPointCollection(pointList);
+                            var stroke = new Stroke(point)
+                            {
+                                DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                            };
+
+                            Matrix m = new Matrix();
+                            FrameworkElement fe = e.Source as FrameworkElement;
+                            double tanTheta = (p[2].Y - p[0].Y) / (p[2].X - p[0].X);
+                            double theta = Math.Atan(tanTheta);
+                            m.RotateAt(theta * 180.0 / Math.PI, result.Centroid.X, result.Centroid.Y);
+                            stroke.Transform(m, false);
+
                             SetNewBackupOfStroke();
                             inkCanvas.Strokes.Add(stroke);
                             inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
