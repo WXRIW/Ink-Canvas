@@ -122,6 +122,9 @@
     </Compile>
     <Compile Include="Helpers\InkRecognizeHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
+    <Compile Include="NamesInputWindow.xaml.cs">
+      <DependentUpon>NamesInputWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RandWindow.xaml.cs">
       <DependentUpon>RandWindow.xaml</DependentUpon>
     </Compile>
@@ -159,6 +162,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="NamesInputWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="RandWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
