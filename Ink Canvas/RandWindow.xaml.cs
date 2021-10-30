@@ -173,6 +173,11 @@ namespace Ink_Canvas
 
                 PeopleCount = Names.Count();
                 TextBlockPeopleCount.Text = PeopleCount.ToString();
+                if (PeopleCount == 0)
+                {
+                    PeopleCount = 60;
+                    TextBlockPeopleCount.Text = "点击此处以导入名单";
+                }
             }
         }
 
