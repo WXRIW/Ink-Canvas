@@ -31,6 +31,9 @@
         <Grid Name="GridBackgroundCoverHolder">
             <Grid Name="GridBackgroundCover" Visibility="Hidden" Background="#FFF2F2F2"/>
         </Grid>
+        <Canvas Name="Canvas">
+            
+        </Canvas>
         <Label Name="Label" Visibility="Collapsed" Content="0"/>
         <InkCanvas x:Name="inkCanvas" Background="Transparent" Cursor="Pen" ForceCursor="False"
                    TouchUp="Main_Grid_TouchUp" TouchDown="Main_Grid_TouchDown"

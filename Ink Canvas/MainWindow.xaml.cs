@@ -2637,7 +2637,6 @@ namespace Ink_Canvas
 
         #region Whiteboard Controls
 
-
         StrokeCollection[] strokeCollections = new StrokeCollection[100];
         bool[] whiteboadLastModeIsRedo = new bool[100];
         int currentStrokeCollectionIndex = 0;
@@ -2885,9 +2884,24 @@ namespace Ink_Canvas
                     else if (result.InkDrawingNode.GetShapeName().Contains("Ellipse"))
                     {
                         var shape = result.InkDrawingNode.GetShape();
+                        //var shape1 = result.InkDrawingNode.GetShape();
+                        //shape1.Fill = Brushes.Gray;
+                        //Canvas.Children.Add(shape1);
                         var p = result.InkDrawingNode.HotPoints;
-                        double a = Math.Max(shape.Width, shape.Height) / 2; //长半轴
-                        double b = Math.Min(shape.Width, shape.Height) / 2; //短半轴
+                        //double a = Math.Max(shape.Width, shape.Height) / 2; //长半轴
+                        //double b = Math.Min(shape.Width, shape.Height) / 2; //短半轴
+                        double a = GetDistance(p[0], p[2]); //长半轴
+                        double b = GetDistance(p[1], p[3]); //短半轴
+                        if (a < b)
+                        {
+                            double t = a;
+                            a = b;
+                            b = t;
+                        }
+
+                        result.Centroid = new Point((p[0].X + p[2].X) / 2, (p[0].Y + p[2].Y) / 2);
+                        bool needRotation = true;
+
                         if (shape.Width > 75 || shape.Height > 75 && result.InkDrawingNode.HotPoints.Count == 3)
                         {
                             Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
@@ -2928,13 +2942,26 @@ namespace Ink_Canvas
                                     double sinTheta = Math.Abs(circle.Centroid.Y - result.Centroid.Y) / circle.R;
                                     double cosTheta = Math.Sqrt(1 - sinTheta * sinTheta);
                                     double newA = circle.R * cosTheta;
-                                    Label.Content = (a / b).ToString();
-                                    if (Math.Abs(newA - circle.R) / a < 0.2)
+                                    if (Math.Abs(newA - circle.R) / a < 0.35 && a / b > 3)
                                     {
                                         iniP.X = circle.Centroid.X - newA;
                                         endP.X = circle.Centroid.X + newA;
-                                        iniP.Y = result.Centroid.Y - b;
-                                        endP.Y = result.Centroid.Y + b;
+                                        iniP.Y = result.Centroid.Y - newA / 5;
+                                        endP.Y = result.Centroid.Y + newA / 5;
+                                    }
+                                }
+                                else if (Math.Abs(result.Centroid.Y - circle.Centroid.Y) / a < 0.2)
+                                {
+                                    double cosTheta = Math.Abs(circle.Centroid.X - result.Centroid.X) / circle.R;
+                                    double sinTheta = Math.Sqrt(1 - cosTheta * cosTheta);
+                                    double newA = circle.R * sinTheta;
+                                    if (Math.Abs(newA - circle.R) / a < 0.35 && a / b > 3)
+                                    {
+                                        iniP.X = result.Centroid.X - newA / 5;
+                                        endP.X = result.Centroid.X + newA / 5;
+                                        iniP.Y = circle.Centroid.Y - newA;
+                                        endP.Y = circle.Centroid.Y + newA;
+                                        needRotation = false;
                                     }
                                 }
                             }
@@ -2948,20 +2975,21 @@ namespace Ink_Canvas
                             p[3] = newPoints[1];
 
                             var pointList = GenerateEclipseGeometry(iniP, endP);
-                            //var pointList = p.ToList();
-                            //pointList.Add(p[0]);
                             var point = new StylusPointCollection(pointList);
                             var stroke = new Stroke(point)
                             {
                                 DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                             };
 
-                            Matrix m = new Matrix();
-                            FrameworkElement fe = e.Source as FrameworkElement;
-                            double tanTheta = (p[2].Y - p[0].Y) / (p[2].X - p[0].X);
-                            double theta = Math.Atan(tanTheta);
-                            m.RotateAt(theta * 180.0 / Math.PI, result.Centroid.X, result.Centroid.Y);
-                            stroke.Transform(m, false);
+                            if (needRotation)
+                            {
+                                Matrix m = new Matrix();
+                                FrameworkElement fe = e.Source as FrameworkElement;
+                                double tanTheta = (p[2].Y - p[0].Y) / (p[2].X - p[0].X);
+                                double theta = Math.Atan(tanTheta);
+                                m.RotateAt(theta * 180.0 / Math.PI, result.Centroid.X, result.Centroid.Y);
+                                stroke.Transform(m, false);
+                            }
 
                             SetNewBackupOfStroke();
                             inkCanvas.Strokes.Add(stroke);
@@ -3214,6 +3242,11 @@ namespace Ink_Canvas
 
             BtnRedo.IsEnabled = false;
             BtnRedo.Visibility = Visibility.Collapsed;
+        }
+
+        public double GetDistance(Point point1, Point point2)
+        {
+            return Math.Sqrt((point1.X - point2.X) * (point1.X - point2.X) + (point1.Y - point2.Y) * (point1.Y - point2.Y));
         }
 
         public double GetPointSpeed(Point point1, Point point2, Point point3)
