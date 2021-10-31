@@ -99,7 +99,7 @@
                                 <DrawingImage.Drawing>
                                     <DrawingGroup ClipGeometry="M0,0 V64 H64 V0 H0 Z">
                                         <DrawingGroup Opacity="1">
-                                            <GeometryDrawing Brush="#FF231F20" Geometry="F1 M64,64z M0,0z M32,26.41L16.566,41.844 14.439,39.717 32,22.156 49.561,39.717 47.434,41.844 32,26.41z" />
+                                            <GeometryDrawing Brush="{Binding ElementName=BtnExit, Path=Foreground}" Geometry="F1 M64,64z M0,0z M32,26.41L16.566,41.844 14.439,39.717 32,22.156 49.561,39.717 47.434,41.844 32,26.41z" />
                                         </DrawingGroup>
                                     </DrawingGroup>
                                 </DrawingImage.Drawing>
@@ -133,7 +133,7 @@
                                 <DrawingImage.Drawing>
                                     <DrawingGroup ClipGeometry="M0,0 V64 H64 V0 H0 Z">
                                         <DrawingGroup Opacity="1">
-                                            <GeometryDrawing Brush="#FF231F20" Geometry="F1 M64,64z M0,0z M32,26.41L16.566,41.844 14.439,39.717 32,22.156 49.561,39.717 47.434,41.844 32,26.41z" />
+                                            <GeometryDrawing Brush="{Binding ElementName=BtnExit, Path=Foreground}" Geometry="F1 M64,64z M0,0z M32,26.41L16.566,41.844 14.439,39.717 32,22.156 49.561,39.717 47.434,41.844 32,26.41z" />
                                         </DrawingGroup>
                                     </DrawingGroup>
                                 </DrawingImage.Drawing>
