@@ -31,9 +31,7 @@
         <Grid Name="GridBackgroundCoverHolder">
             <Grid Name="GridBackgroundCover" Visibility="Hidden" Background="#FFF2F2F2"/>
         </Grid>
-        <Canvas Name="Canvas">
-            
-        </Canvas>
+        <Canvas Name="Canvas"/>
         <Label Name="Label" Visibility="Collapsed" Content="0"/>
         <InkCanvas x:Name="inkCanvas" Background="Transparent" Cursor="Pen" ForceCursor="False"
                    TouchUp="Main_Grid_TouchUp" TouchDown="Main_Grid_TouchDown"
@@ -81,24 +79,68 @@
                     Background="{Binding ElementName=BtnExit, Path=Background}">
                     <ui:SymbolIcon Symbol="Add" />
                 </Button>
-                <Button Name="BtnWhiteBoardSwitchPrevious" Content="&lt;" FontFamily="Symbol"
+                <Button Name="BtnWhiteBoardSwitchPrevious" FontFamily="Symbol"
                     Width="50" Height="48" FontSize="25" Click="BtnWhiteBoardSwitchPrevious_Click"
                     Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
                     Background="{Binding ElementName=BtnExit, Path=Background}"
-                    VerticalContentAlignment="Top"
-                    IsEnabled="False"/>
+                    VerticalContentAlignment="Center"
+                    IsEnabled="False" IsEnabledChanged="Btn_IsEnabledChanged">
+                    <Image RenderTransformOrigin="0.5,0.5" Opacity="0.25">
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="-90"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+                        <Image.Source>
+                            <DrawingImage>
+                                <DrawingImage.Drawing>
+                                    <DrawingGroup ClipGeometry="M0,0 V64 H64 V0 H0 Z">
+                                        <DrawingGroup Opacity="1">
+                                            <GeometryDrawing Brush="#FF231F20" Geometry="F1 M64,64z M0,0z M32,26.41L16.566,41.844 14.439,39.717 32,22.156 49.561,39.717 47.434,41.844 32,26.41z" />
+                                        </DrawingGroup>
+                                    </DrawingGroup>
+                                </DrawingImage.Drawing>
+                            </DrawingImage>
+                        </Image.Source>
+                    </Image>
+                </Button>
                 <Border Height="48" CornerRadius="2" Margin="3,0">
                     <TextBlock Name="TextBlockWhiteBoardIndexInfo"
                                Text="1 / 1"
                                Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
                                VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Microsoft YaHei UI" FontSize="18"/>
                 </Border>
-                <Button Name="BtnWhiteBoardSwitchNext" Content="&gt;" FontFamily="Symbol"
+                <Button Name="BtnWhiteBoardSwitchNext" FontFamily="Symbol"
                     Width="50" Height="48" FontSize="25" Click="BtnWhiteBoardSwitchNext_Click"
                     Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
                     Background="{Binding ElementName=BtnExit, Path=Background}"
-                    VerticalContentAlignment="Top"
-                    IsEnabled="False"/>
+                    VerticalContentAlignment="Center"
+                    IsEnabled="False" IsEnabledChanged="Btn_IsEnabledChanged">
+                    <Image RenderTransformOrigin="0.5,0.5" Opacity="0.25">
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="90"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+                        <Image.Source>
+                            <DrawingImage>
+                                <DrawingImage.Drawing>
+                                    <DrawingGroup ClipGeometry="M0,0 V64 H64 V0 H0 Z">
+                                        <DrawingGroup Opacity="1">
+                                            <GeometryDrawing Brush="#FF231F20" Geometry="F1 M64,64z M0,0z M32,26.41L16.566,41.844 14.439,39.717 32,22.156 49.561,39.717 47.434,41.844 32,26.41z" />
+                                        </DrawingGroup>
+                                    </DrawingGroup>
+                                </DrawingImage.Drawing>
+                            </DrawingImage>
+                        </Image.Source>
+                    </Image>
+                </Button>
                 <Button Name="BtnWhiteBoardDelete" Click="BtnWhiteBoardDelete_Click"
                     FontFamily="Microsoft YaHei UI" Width="50" Height="48" FontSize="26"
                     Foreground="{Binding ElementName=BtnExit, Path=Foreground}"

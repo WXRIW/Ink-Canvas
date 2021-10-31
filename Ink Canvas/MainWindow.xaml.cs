@@ -52,6 +52,15 @@ namespace Ink_Canvas
             BorderSettings.Visibility = Visibility.Collapsed;
             StackPanelToolButtons.Visibility = Visibility.Collapsed;
 
+            if (App.StartArgs.Contains("-b")) //-b border
+            {
+                AllowsTransparency = false;
+                WindowStyle = WindowStyle.SingleBorderWindow;
+                ResizeMode = ResizeMode.CanResize;
+                Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
+                Topmost = false;
+            }
+
             InitTimers();
         }
 
@@ -2485,11 +2494,11 @@ namespace Ink_Canvas
             {
                 if (((Button)sender).IsEnabled)
                 {
-                    ((StackPanel)((Button)sender).Content).Opacity = 1;
+                    ((UIElement)((Button)sender).Content).Opacity = 1;
                 }
                 else
                 {
-                    ((StackPanel)((Button)sender).Content).Opacity = 0.2;
+                    ((UIElement)((Button)sender).Content).Opacity = 0.25;
                 }
             }
             catch { }

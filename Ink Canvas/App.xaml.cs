@@ -32,6 +32,8 @@ namespace Ink_Canvas
                 MessageBox.Show("已有一个程序实例正在运行");
                 Environment.Exit(0);
             }
+
+            StartArgs = e.Args;
         }
     }
 }
