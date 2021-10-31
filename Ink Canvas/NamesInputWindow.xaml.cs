@@ -25,17 +25,20 @@ namespace Ink_Canvas
             InitializeComponent();
         }
 
+        string originText = "";
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             if (File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Names.txt"))
             {
                 TextBoxNames.Text = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Names.txt");
+                originText = TextBoxNames.Text;
             }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Names.txt") != TextBoxNames.Text)
+            if (originText != TextBoxNames.Text)
             {
                 var result = MessageBox.Show("是否保存？", "名单导入", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)

@@ -66,17 +66,18 @@ namespace Ink_Canvas
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    int rand = random.Next(1, PeopleCount);
+                    int rand = random.Next(1, PeopleCount + 1);
                     while (rands.Contains(rand))
                     {
-                        rand = random.Next(1, PeopleCount);
+                        rand = random.Next(1, PeopleCount + 1);
                     }
                     rands.Add(rand);
+                    if (rands.Count >= PeopleCount) rands = new List<int>();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         if (Names.Count != 0)
                         {
-                            LabelOutput.Content = Names[rand];
+                            LabelOutput.Content = Names[rand - 1];
                         }
                         else
                         {
@@ -92,17 +93,18 @@ namespace Ink_Canvas
                 {
                     for (int i = 0; i < TotalCount; i++)
                     {
-                        int rand = random.Next(1, PeopleCount);
+                        int rand = random.Next(1, PeopleCount + 1);
                         while (rands.Contains(rand))
                         {
-                            rand = random.Next(1, PeopleCount);
+                            rand = random.Next(1, PeopleCount + 1);
                         }
                         rands.Add(rand);
+                        if (rands.Count >= PeopleCount) rands = new List<int>();
 
                         if (Names.Count != 0)
                         {
-                            outputs.Add(Names[rand]);
-                            outputString += Names[rand] + Environment.NewLine;
+                            outputs.Add(Names[rand - 1]);
+                            outputString += Names[rand - 1] + Environment.NewLine;
                         }
                         else
                         {
