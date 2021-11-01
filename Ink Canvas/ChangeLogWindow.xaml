@@ -6,17 +6,18 @@
         xmlns:local="clr-namespace:Ink_Canvas" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False"
         xmlns:ui="http://schemas.modernwpf.com/2019" FontFamily="Microsoft YaHei UI" Topmost="True"
         mc:Ignorable="d" ui:WindowHelper.UseModernWindowStyle="True" Loaded="Window_Loaded" Closed="Window_Closed"
-        Title="" Height="280" Width="500">
+        Title="" Height="250" Width="500">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-        <Label Content="新功能更新！" FontFamily="Microsoft YaHei UI" FontSize="26" Margin="20,0"/>
+        <Label Content="紧急修复更新！" FontFamily="Microsoft YaHei UI" FontSize="26" Margin="20,0"/>
         <StackPanel Grid.Row="1">
             <TextBlock Name="TextBlockChangeLogTitle" Text="更新日志" FontSize="18" FontWeight="Bold" Margin="35,10,35,0"/>
-            <TextBlock Name="TextBlockChangeLog" Text="" TextWrapping="Wrap" FontSize="14" Margin="55,5"/>
+            <TextBlock Name="TextBlockChangeLog" Text="修复无法使用墨迹识别功能的问题。" TextWrapping="Wrap" FontSize="14" Margin="55,5"/>
+            <TextBlock Name="TextBlockChangeLog1" Text="修复墨迹识别功能中部分误识别问题。" TextWrapping="Wrap" FontSize="14" Margin="55,5"/>
             <TextBlock Name="TextBlockSuggestionTitle" Text="建议" FontSize="18" FontWeight="Bold" Margin="35,10,35,0"/>
             <TextBlock Name="TextBlockSuggestion" Text="" TextWrapping="Wrap" FontSize="14" Margin="55,5"/>
         </StackPanel>

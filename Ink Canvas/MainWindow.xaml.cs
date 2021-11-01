@@ -3019,7 +3019,8 @@ namespace Ink_Canvas
                     {
                         var shape = result.InkDrawingNode.GetShape();
                         var p = result.InkDrawingNode.HotPoints;
-                        if ((Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) >= 75 || Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 3)
+                        if ((Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) - Math.Min(Math.Min(p[0].X, p[1].X), p[2].X) >= 75 ||
+                            Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) - Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 3)
                         {
                             //纠正垂直与水平关系
                             var newPoints = FixPointsDirection(p[0], p[1]);
@@ -3052,7 +3053,8 @@ namespace Ink_Canvas
                     {
                         var shape = result.InkDrawingNode.GetShape();
                         var p = result.InkDrawingNode.HotPoints;
-                        if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) >= 75 || Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 4)
+                        if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) - Math.Min(Math.Min(Math.Min(p[0].X, p[1].X), p[2].X), p[3].X) >= 75 ||
+                            Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) - Math.Min(Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 4)
                         {
                             //纠正垂直与水平关系
                             var newPoints = FixPointsDirection(p[0], p[1]);
