@@ -61,6 +61,21 @@ namespace Ink_Canvas
                 Topmost = false;
             }
 
+            if (!App.StartArgs.Contains("-o")) //-old ui
+            {
+                GroupBoxAppearance.Visibility = Visibility.Collapsed;
+                ViewBoxStackPanelMain.Visibility = Visibility.Collapsed;
+                ViewBoxStackPanelShapes.Visibility = Visibility.Collapsed;
+                HideSubPanels();
+
+                ViewboxFloatingBar.Margin = new Thickness((SystemParameters.WorkArea.Width - 284) / 2, SystemParameters.WorkArea.Height - 80, -2000, -200);
+            }
+            else
+            {
+                ViewboxFloatingBar.Visibility = Visibility.Collapsed;
+                GridForRecoverOldUI.Visibility = Visibility.Collapsed;
+            }
+
             InitTimers();
         }
 
@@ -649,6 +664,7 @@ namespace Ink_Canvas
         private void BtnClear_Click(object sender, RoutedEventArgs e)
         {
             forceEraser = false;
+            BorderClearInDelete.Visibility = Visibility.Collapsed;
 
             if (inkCanvas.Strokes.Count != 0)
             {
@@ -982,6 +998,17 @@ namespace Ink_Canvas
                 StackPanelPPTButtons.Visibility = Visibility.Visible;
                 BtnHideInkCanvas.Content = "显示\n画板";
             }
+
+            if (Main_Grid.Background == Brushes.Transparent)
+            {
+                StackPanelCanvasControls.Visibility = Visibility.Collapsed;
+                StackPanelCanvacMain.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                StackPanelCanvasControls.Visibility = Visibility.Visible;
+                StackPanelCanvacMain.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void BtnSwitchSide_Click(object sender, RoutedEventArgs e)
@@ -1039,6 +1066,7 @@ namespace Ink_Canvas
             ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
             ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
             ViewboxBtnColorYellowContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorWhiteContent.Visibility = Visibility.Collapsed;
             switch (inkColor)
             {
                 case 0:
@@ -1055,6 +1083,9 @@ namespace Ink_Canvas
                     break;
                 case 4:
                     ViewboxBtnColorYellowContent.Visibility = Visibility.Visible;
+                    break;
+                case 5:
+                    ViewboxBtnColorWhiteContent.Visibility = Visibility.Visible;
                     break;
             }
         }
@@ -1169,6 +1200,8 @@ namespace Ink_Canvas
         bool isLastTouchEraser = false;
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
         {
+            BorderClearInDelete.Visibility = Visibility.Collapsed;
+
             iniP = e.GetTouchPoint(inkCanvas).Position;
 
             double boundsWidth = GetTouchBoundWidth(e);
@@ -1525,7 +1558,7 @@ namespace Ink_Canvas
             {
                 //调整颜色
                 double screenRatio = SystemParameters.PrimaryScreenWidth / SystemParameters.PrimaryScreenHeight;
-                if (Math.Abs(screenRatio - 16.0 / 9) <= 0.01)
+                if (Math.Abs(screenRatio - 16.0 / 9) <= -0.01)
                 {
                     if (Wn.Presentation.PageSetup.SlideWidth / Wn.Presentation.PageSetup.SlideHeight < 1.65)
                     {
@@ -1547,13 +1580,16 @@ namespace Ink_Canvas
                         }
                     }
                 }
-                else if(screenRatio == 256 / 135)
+                else if(screenRatio == -256 / 135)
                 {
 
                 }
 
                 slidescount = Wn.Presentation.Slides.Count;
                 memoryStreams = new MemoryStream[slidescount + 2];
+
+                pointDesktop = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
+                pointPPT = new Point(-1, -1);
 
                 StackPanelPPTControls.Visibility = Visibility.Visible;
                 BtnPPTSlideShow.Visibility = Visibility.Collapsed;
@@ -1596,6 +1632,15 @@ namespace Ink_Canvas
                 BtnUndo.Visibility = Visibility.Visible;
 
                 inkCanvas.Strokes.Clear();
+
+                new Thread(new ThreadStart(() =>
+                {
+                    Thread.Sleep(100);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
+                    });
+                })).Start();
             });
             previousSlideID = Wn.View.CurrentShowPosition;
         }
@@ -1671,6 +1716,11 @@ namespace Ink_Canvas
                 if (Main_Grid.Background != Brushes.Transparent)
                 {
                     BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                }
+                
+                if (pointDesktop != new Point(-1, -1))
+                {
+                    ViewboxFloatingBar.Margin = new Thickness(pointDesktop.X, pointDesktop.Y, -2000, -200);
                 }
             });
         }
@@ -3019,8 +3069,8 @@ namespace Ink_Canvas
                     {
                         var shape = result.InkDrawingNode.GetShape();
                         var p = result.InkDrawingNode.HotPoints;
-                        if ((Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) - Math.Min(Math.Min(p[0].X, p[1].X), p[2].X) >= 75 ||
-                            Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) - Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 3)
+                        if ((Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) - Math.Min(Math.Min(p[0].X, p[1].X), p[2].X) >= 100 ||
+                            Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) - Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y) >= 100) && result.InkDrawingNode.HotPoints.Count == 3)
                         {
                             //纠正垂直与水平关系
                             var newPoints = FixPointsDirection(p[0], p[1]);
@@ -3053,8 +3103,8 @@ namespace Ink_Canvas
                     {
                         var shape = result.InkDrawingNode.GetShape();
                         var p = result.InkDrawingNode.HotPoints;
-                        if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) - Math.Min(Math.Min(Math.Min(p[0].X, p[1].X), p[2].X), p[3].X) >= 75 ||
-                            Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) - Math.Min(Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 75) && result.InkDrawingNode.HotPoints.Count == 4)
+                        if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) - Math.Min(Math.Min(Math.Min(p[0].X, p[1].X), p[2].X), p[3].X) >= 100 ||
+                            Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) - Math.Min(Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 100) && result.InkDrawingNode.HotPoints.Count == 4)
                         {
                             //纠正垂直与水平关系
                             var newPoints = FixPointsDirection(p[0], p[1]);
@@ -3142,7 +3192,8 @@ namespace Ink_Canvas
                         int n = e.Stroke.StylusPoints.Count - 1;
                         double pressure = 0.1;
                         int x = 10;
-                        if(n >= x)
+                        if (n == 1) return;
+                        if (n >= x)
                         {
                             for (int i = 0; i < n - x; i++)
                             {
@@ -3511,6 +3562,293 @@ namespace Ink_Canvas
         }
 
         #endregion Tools
+
+        #region Float Bar
+
+        private void HideSubPanels()
+        {
+            BorderClearInDelete.Visibility = Visibility.Collapsed;
+            BorderTools.Visibility = Visibility.Collapsed;
+        }
+
+        private void BorderPenColorBlack_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnColorBlack_Click(BtnColorBlack, null);
+            HideSubPanels();
+        }
+
+        private void BorderPenColorRed_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnColorRed_Click(BtnColorRed, null);
+            HideSubPanels();
+        }
+
+        private void BorderPenColorGreen_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnColorGreen_Click(BtnColorGreen, null);
+            HideSubPanels();
+        }
+
+        private void BorderPenColorBlue_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnColorBlue_Click(BtnColorBlue, null);
+            HideSubPanels();
+        }
+
+        private void BorderPenColorYellow_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnColorYellow_Click(BtnColorYellow, null);
+            HideSubPanels();
+        }
+
+        private void BorderPenColorWhite_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
+            inkColor = 5;
+            ColorSwitchCheck();
+            HideSubPanels();
+        }
+
+        private void SymbolIconUndo_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnUndo_Click(BtnUndo, null);
+            HideSubPanels();
+        }
+
+        private void SymbolIconRedo_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnRedo_Click(BtnRedo, null);
+            HideSubPanels();
+        }
+
+        private void SymbolIconCursor_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (currentMode != 0)
+            {
+                ImageBlackboard_MouseUp(null, null);
+            }
+            else
+            {
+                BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+            }
+        }
+
+        private void SymbolIconDelete_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (inkCanvas.Strokes.Count > 0)
+            {
+                BtnClear_Click(BtnClear, null);
+            }
+            else
+            {
+                if (currentMode == 0 && BtnPPTSlideShowEnd.Visibility != Visibility.Visible)
+                {
+                    BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                }
+            }
+        }
+
+        private void SymbolIconSettings_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnSettings_Click(BtnSettings, null);
+            HideSubPanels();
+        }
+
+        private void SymbolIconSelect_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnSelect_Click(BtnSelect, null);
+
+            ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorYellowContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorWhiteContent.Visibility = Visibility.Collapsed;
+
+            HideSubPanels();
+        }
+
+        private void SymbolIconScreenshot_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnScreenshot_Click(BtnScreenshot, null);
+        }
+
+        Point pointDesktop = new Point(-1, -1); //用于记录上次进入PPT或白板时的坐标
+        Point pointPPT = new Point(-1, -1); //用于记录上次在PPT中打开白板时的坐标
+
+        private void ImageBlackboard_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (currentMode == 0)
+            {
+                //进入黑板
+                if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
+                {
+                    pointDesktop = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
+                }
+                else
+                {
+                    pointPPT = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
+                }
+                ViewboxFloatingBar.Margin = new Thickness(10, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
+            }
+            else
+            {
+                //关闭黑板
+                if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
+                {
+                    if (pointDesktop != new Point(-1, -1))
+                    {
+                        ViewboxFloatingBar.Margin = new Thickness(pointDesktop.X, pointDesktop.Y, -2000, -200);
+                        pointDesktop = new Point(-1, -1);
+                    }
+                }
+                else
+                {
+                    new Thread(new ThreadStart(() =>
+                    {
+                        Thread.Sleep(100);
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
+                        });
+                    })).Start();
+                }
+            }
+
+            BtnSwitch_Click(BtnSwitch, null);
+
+            if (currentMode == 0 && inkCanvas.Strokes.Count == 0 && BtnPPTSlideShowEnd.Visibility != Visibility.Visible)
+            {
+                BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+            }
+
+            BtnExit.Foreground = Brushes.White;
+            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+        }
+
+        private void ImageCountdownTimer_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BorderTools.Visibility = Visibility.Collapsed;
+            BtnCountdownTimer_Click(BtnCountdownTimer, null);
+        }
+
+        private void SymbolIconRand_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BorderTools.Visibility = Visibility.Collapsed;
+            BtnRand_Click(BtnRand, null);
+        }
+
+        private void SymbolIconTools_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (BorderTools.Visibility == Visibility.Visible)
+            {
+                BorderTools.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                BorderTools.Visibility = Visibility.Visible;
+            }
+        }
+
+        #region Drag
+
+        bool isDragDropInEffect = false;
+        Point pos = new Point();
+        Point downPos = new Point();
+
+        void Element_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragDropInEffect)
+            {
+                FrameworkElement currEle = sender as FrameworkElement;
+                double xPos = e.GetPosition(null).X - pos.X + currEle.Margin.Left;
+                double yPos = e.GetPosition(null).Y - pos.Y + currEle.Margin.Top;
+                currEle.Margin = new Thickness(xPos, yPos, 0, 0);
+                pos = e.GetPosition(null);
+            }
+        }
+
+        void Element_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+            FrameworkElement fEle = sender as FrameworkElement;
+            isDragDropInEffect = true;
+            pos = e.GetPosition(null);
+            fEle.CaptureMouse();
+            fEle.Cursor = Cursors.Hand;
+        }
+
+        void Element_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (isDragDropInEffect)
+            {
+                FrameworkElement ele = sender as FrameworkElement;
+                isDragDropInEffect = false;
+                ele.ReleaseMouseCapture();
+            }
+        }
+
+
+        void SymbolIconEmoji_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragDropInEffect)
+            {
+                double xPos = e.GetPosition(null).X - pos.X + ViewboxFloatingBar.Margin.Left;
+                double yPos = e.GetPosition(null).Y - pos.Y + ViewboxFloatingBar.Margin.Top;
+                ViewboxFloatingBar.Margin = new Thickness(xPos, yPos, -2000, -200);
+                pos = e.GetPosition(null);
+            }
+        }
+
+        void SymbolIconEmoji_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            isDragDropInEffect = true;
+            pos = e.GetPosition(null);
+            downPos = e.GetPosition(null);
+            GridForFloatingBarDraging.Visibility = Visibility.Visible;
+
+            SymbolIconEmoji.Symbol = ModernWpf.Controls.Symbol.Emoji;
+        }
+
+        void SymbolIconEmoji_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            isDragDropInEffect = false;
+
+            if (downPos.X == e.GetPosition(null).X && downPos.Y == e.GetPosition(null).Y)
+            {
+                if (BorderFloatingBarMainControls.Visibility == Visibility.Visible)
+                {
+                    BorderFloatingBarMainControls.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    BorderFloatingBarMainControls.Visibility = Visibility.Visible;
+                }
+            }
+
+            GridForFloatingBarDraging.Visibility = Visibility.Collapsed;
+            SymbolIconEmoji.Symbol = ModernWpf.Controls.Symbol.Emoji2;
+        }
+
+        #endregion
+
+
+        private void GridPPTControlPrevious_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnPPTSlidesUp_Click(BtnPPTSlidesUp, null);
+        }
+
+        private void GridPPTControlNext_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
+        }
+
+        private void ImagePPTControlEnd_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BtnPPTSlideShowEnd_Click(BtnPPTSlideShowEnd, null);
+        }
+
+        #endregion
     }
 
     #region Test for pen
