@@ -648,6 +648,9 @@
         
         <Viewbox Name="ViewboxFloatingBar" Margin="100,10,-2000,-200" 
                  HorizontalAlignment="Left" Height="50" VerticalAlignment="Top">
+            <Viewbox.LayoutTransform>
+                <ScaleTransform x:Name="ViewboxFloatingBarScaleTransform" ScaleX="1" ScaleY="1"/>
+            </Viewbox.LayoutTransform>
             <ui:SimpleStackPanel Orientation="Horizontal">
                 <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666" MouseDown="SymbolIconEmoji_MouseDown" MouseUp="SymbolIconEmoji_MouseUp">
                     <ui:SimpleStackPanel Margin="0,5,0,5" Spacing="10" Orientation="Horizontal"

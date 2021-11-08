@@ -6,22 +6,22 @@
         xmlns:local="clr-namespace:Ink_Canvas" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False"
         xmlns:ui="http://schemas.modernwpf.com/2019" FontFamily="Microsoft YaHei UI" Topmost="True"
         mc:Ignorable="d" ui:WindowHelper.UseModernWindowStyle="True" Loaded="Window_Loaded" Closed="Window_Closed"
-        Title="" Height="300" Width="600">
+        Title="" Height="280" Width="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-        <Label Content="Ink Canvas 画板焕然一新！" FontFamily="Microsoft YaHei UI" FontSize="26" Margin="20,0"/>
-        <StackPanel Grid.Row="1" Visibility="Collapsed">
+        <Label Content="紧急修复更新！" FontFamily="Microsoft YaHei UI" FontSize="26" Margin="20,0"/>
+        <StackPanel Grid.Row="1" Visibility="Visible">
             <TextBlock Name="TextBlockChangeLogTitle" Text="更新日志" FontSize="18" FontWeight="Bold" Margin="35,10,35,0"/>
-            <TextBlock Name="TextBlockChangeLog" Text="修复无法使用墨迹识别功能的问题。" TextWrapping="Wrap" FontSize="14" Margin="55,5"/>
-            <TextBlock Name="TextBlockChangeLog1" Text="修复墨迹识别功能中部分误识别问题。" TextWrapping="Wrap" FontSize="14" Margin="55,5"/>
+            <TextBlock Name="TextBlockChangeLog" Text="修复一堆 Bug。" TextWrapping="Wrap" FontSize="14" Margin="55,5"/>
+            <TextBlock Name="TextBlockChangeLog1" Visibility="Collapsed" Text="修复墨迹识别功能中部分误识别问题。" TextWrapping="Wrap" FontSize="14" Margin="55,5"/>
             <TextBlock Name="TextBlockSuggestionTitle" Text="建议" FontSize="18" FontWeight="Bold" Margin="35,10,35,0"/>
-            <TextBlock Name="TextBlockSuggestion" Text="" TextWrapping="Wrap" FontSize="14" Margin="55,5"/>
+            <TextBlock Name="TextBlockSuggestion" Text="建议配置屏幕为：3840×2160 (缩放: 250%)，或1920×1080 (缩放: 125%)，以获得最佳体验。" TextWrapping="Wrap" FontSize="14" Margin="55,5"/>
         </StackPanel>
-        <Grid Grid.Row="1" Margin="50,0">
+        <Grid Grid.Row="1" Margin="50,0" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>

@@ -1633,6 +1633,8 @@ namespace Ink_Canvas
 
                 inkCanvas.Strokes.Clear();
 
+                BorderFloatingBarMainControls.Visibility = Visibility.Visible;
+
                 new Thread(new ThreadStart(() =>
                 {
                     Thread.Sleep(100);
@@ -3603,7 +3605,7 @@ namespace Ink_Canvas
 
         private void BorderPenColorWhite_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
+            inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFEFEFE");
             inkColor = 5;
             ColorSwitchCheck();
             HideSubPanels();
@@ -3630,6 +3632,21 @@ namespace Ink_Canvas
             else
             {
                 BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+
+                if (BtnPPTSlideShowEnd.Visibility == Visibility.Visible)
+                {
+                    if (ViewboxFloatingBar.Margin == new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200))
+                    {
+                        new Thread(new ThreadStart(() =>
+                        {
+                            Thread.Sleep(100);
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
+                            });
+                        })).Start();
+                    }
+                }
             }
         }
 
