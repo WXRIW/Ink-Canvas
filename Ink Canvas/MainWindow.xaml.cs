@@ -694,6 +694,7 @@ namespace Ink_Canvas
 
         private void CancelSingleFingerDragMode()
         {
+            Label.Content = "isSingleFingerDragMode=" + isSingleFingerDragMode.ToString();
             if (isSingleFingerDragMode)
             {
                 BtnFingerDragMode_Click(BtnFingerDragMode, null);
@@ -3663,7 +3664,11 @@ namespace Ink_Canvas
 
         private void SymbolIconDelete_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (inkCanvas.Strokes.Count > 0)
+            if (inkCanvas.GetSelectedStrokes().Count > 0)
+            {
+                inkCanvas.Strokes.Remove(inkCanvas.GetSelectedStrokes());
+            }
+            else if (inkCanvas.Strokes.Count > 0)
             {
                 BtnClear_Click(BtnClear, null);
             }

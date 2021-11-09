@@ -560,4 +560,123 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <DrawingImage
+		x:Key="ImageSource.RubberNormal">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Brush>
+                            <SolidColorBrush
+								Color="#FFD8D8D8"
+								Opacity="0" />
+                        </GeometryDrawing.Brush>
+                        <GeometryDrawing.Pen>
+                            <Pen
+								Thickness="1"
+								StartLineCap="Flat"
+								EndLineCap="Flat"
+								LineJoin="Miter">
+                                <Pen.Brush>
+                                    <SolidColorBrush
+										Color="#FF979797"
+										Opacity="0" />
+                                </Pen.Brush>
+                            </Pen>
+                        </GeometryDrawing.Pen>
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry
+								FillRule="EvenOdd"
+								Figures="M31,31L32,31 32,32 31,32 31,31z M0,0L1,0 1,1 0,1 0,0z" />
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <DrawingGroup
+						Transform="-0.707106781186548,-0.707106781186547,-0.707106781186547,0.707106781186548,31.056349186104,11.9644658752538">
+                        <DrawingGroup.Children>
+                            <GeometryDrawing
+								Brush="{x:Null}">
+                                <GeometryDrawing.Pen>
+                                    <Pen
+										Brush="#FF666666"
+										Thickness="2"
+										StartLineCap="Flat"
+										EndLineCap="Flat"
+										LineJoin="Miter" />
+                                </GeometryDrawing.Pen>
+                                <GeometryDrawing.Geometry>
+                                    <RectangleGeometry
+										RadiusX="1"
+										RadiusY="1"
+										Rect="0.6643,1,16,25" />
+                                </GeometryDrawing.Geometry>
+                            </GeometryDrawing>
+                            <GeometryDrawing
+								Brush="{x:Null}">
+                                <GeometryDrawing.Pen>
+                                    <Pen
+										Brush="#FF666666"
+										Thickness="2"
+										StartLineCap="Flat"
+										EndLineCap="Flat"
+										LineJoin="Miter" />
+                                </GeometryDrawing.Pen>
+                                <GeometryDrawing.Geometry>
+                                    <PathGeometry
+										FillRule="EvenOdd"
+										Figures="M1.26445359,18C0.708679757,18,0.699035945,18,1.26445359,18L15.7355464,18C16.2913202,18,16.3009641,18,15.7355464,18L1.26445359,18z" />
+                                </GeometryDrawing.Geometry>
+                            </GeometryDrawing>
+                        </DrawingGroup.Children>
+                    </DrawingGroup>
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage
+		x:Key="ImageSource.RubberSelected">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing>
+                        <GeometryDrawing.Brush>
+                            <SolidColorBrush
+								Color="#FFD8D8D8"
+								Opacity="0" />
+                        </GeometryDrawing.Brush>
+                        <GeometryDrawing.Pen>
+                            <Pen
+								Thickness="1"
+								StartLineCap="Flat"
+								EndLineCap="Flat"
+								LineJoin="Miter">
+                                <Pen.Brush>
+                                    <SolidColorBrush
+										Color="#FF979797"
+										Opacity="0" />
+                                </Pen.Brush>
+                            </Pen>
+                        </GeometryDrawing.Pen>
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry
+								FillRule="EvenOdd"
+								Figures="M31,31L32,31 32,32 31,32 31,31z M0,0L1,0 1,1 0,1 0,0z" />
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <DrawingGroup
+						Transform="-0.707106781186548,-0.707106781186547,-0.707106781186547,0.707106781186548,31.4055917955108,13.0208154846605">
+                        <DrawingGroup.Children>
+                            <GeometryDrawing
+								Brush="#FF666666">
+                                <GeometryDrawing.Geometry>
+                                    <PathGeometry
+										FillRule="EvenOdd"
+										Figures="M16.7928932,16.2426407L16.7928932,0.788350252C16.7928932,0.248156103,16.3447877,-0.207106781,15.7920216,-0.207106781L1.79376488,-0.207106781C1.23752408,-0.207106781,0.792893219,0.238574513,0.792893219,0.788350252L0.792893219,16.2426407 16.7928932,16.2426407z M16.7928932,18.2426407L16.7928932,23.7974362C16.7928932,24.3472119,16.3482624,24.7928932,15.7920216,24.7928932L1.79376488,24.7928932C1.24099872,24.7928932,0.792893219,24.3376303,0.792893219,23.7974362L0.792893219,18.2426407 16.7928932,18.2426407z" />
+                                </GeometryDrawing.Geometry>
+                            </GeometryDrawing>
+                        </DrawingGroup.Children>
+                    </DrawingGroup>
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 </ResourceDictionary>
