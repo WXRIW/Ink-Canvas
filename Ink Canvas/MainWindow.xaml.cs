@@ -2691,6 +2691,17 @@ namespace Ink_Canvas
                     inkCanvas.Select(new StrokeCollection());
                 }
             }
+            else if (inkCanvas.GetSelectedStrokes().Count == 0)
+            {
+                GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                GridInkCanvasSelectionCover.Visibility = Visibility.Visible;
+                //GridInkCanvasSelectionCover.Height = inkCanvas.GetSelectionBounds().Height;
+                //GridInkCanvasSelectionCover.Width = inkCanvas.GetSelectionBounds().Width;
+                //GridInkCanvasSelectionCover.Margin = new Thickness(inkCanvas.GetSelectionBounds().Left, inkCanvas.GetSelectionBounds().Top, 0, 0);
+            }
             ////手势完成后切回之前的状态
             //if (dec.Count > 1)
             //{
@@ -3864,6 +3875,11 @@ namespace Ink_Canvas
         {
             BtnPPTSlideShowEnd_Click(BtnPPTSlideShowEnd, null);
         }
+
+        #endregion
+
+        #region Multi-finger Inking
+
 
         #endregion
     }
