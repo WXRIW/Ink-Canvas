@@ -120,6 +120,9 @@
     <Compile Include="ChangeLogWindow.xaml.cs">
       <DependentUpon>ChangeLogWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ClickSensitiveGrid.xaml.cs">
+      <DependentUpon>ClickSensitiveGrid.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CycleProcessBar.xaml.cs">
       <DependentUpon>CycleProcessBar.xaml</DependentUpon>
     </Compile>
@@ -145,6 +148,10 @@
       <DependentUpon>WelcomeWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="ChangeLogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ClickSensitiveGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

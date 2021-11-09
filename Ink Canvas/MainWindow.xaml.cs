@@ -3636,7 +3636,7 @@ namespace Ink_Canvas
             HideSubPanels();
         }
 
-        private void SymbolIconCursor_MouseUp(object sender, MouseButtonEventArgs e)
+        private void SymbolIconCursor_Click(object sender, RoutedEventArgs e)
         {
             if (currentMode != 0)
             {
@@ -3682,7 +3682,7 @@ namespace Ink_Canvas
             }
         }
 
-        private void SymbolIconSettings_MouseUp(object sender, MouseButtonEventArgs e)
+        private void SymbolIconSettings_Click(object sender, RoutedEventArgs e)
         {
             BtnSettings_Click(BtnSettings, null);
             HideSubPanels();

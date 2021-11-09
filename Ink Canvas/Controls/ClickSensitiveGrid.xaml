@@ -1,0 +1,8 @@
+﻿<Grid x:Class="Ink_Canvas.ClickSensitiveGrid"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Ink_Canvas"
+             mc:Ignorable="d" MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp" >
+</Grid>

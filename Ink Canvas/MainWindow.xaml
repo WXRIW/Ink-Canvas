@@ -655,7 +655,7 @@
                 <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666" MouseDown="SymbolIconEmoji_MouseDown" MouseUp="SymbolIconEmoji_MouseUp">
                     <ui:SimpleStackPanel Margin="0,5,0,5" Spacing="10" Orientation="Horizontal"
                                          HorizontalAlignment="Center">
-                        <ui:SymbolIcon Name="SymbolIconEmoji" Symbol="Emoji2" Foreground="#666666"/>
+                            <ui:SymbolIcon Name="SymbolIconEmoji" Symbol="Emoji2" Foreground="#666666"/>
                     </ui:SimpleStackPanel>
                 </Border>
                 <Border Margin="5,0,0,0" Visibility="Visible" Height="36" Name="BorderFloatingBarMainControls" Background="#9FFFFFFF" CornerRadius="5" BorderThickness="1" BorderBrush="#BF666666">
@@ -663,11 +663,15 @@
                         <ui:SimpleStackPanel Name="StackPanelCanvacMain" Margin="10,5,0,5" Spacing="10" Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
                             <Grid Height="24" Width="0">
                             </Grid>
-                            <ui:SymbolIcon Symbol="Edit" Margin="-10,0,0,0" Foreground="#666666" MouseUp="SymbolIconCursor_MouseUp"/>
-                            <ui:SymbolIcon Symbol="Setting" Foreground="#666666" MouseUp="SymbolIconSettings_MouseUp"/>
+                            <local:ClickSensitiveGrid Click="SymbolIconCursor_Click" Margin="-10,0,0,0">
+                                <ui:SymbolIcon Symbol="Edit" Foreground="#666666"/>
+                            </local:ClickSensitiveGrid>
+                            <ui:SymbolIcon Symbol="Setting" Foreground="#666666" MouseUp="SymbolIconSettings_Click"/>
                         </ui:SimpleStackPanel>
                         <ui:SimpleStackPanel Name="StackPanelCanvasControls" Visibility="Visible" Margin="10,5,0,5" Spacing="10" Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
-                            <ui:SymbolIcon Symbol="TouchPointer" MouseUp="SymbolIconCursor_MouseUp" Foreground="#666666"/>
+                            <local:ClickSensitiveGrid Click="SymbolIconCursor_Click">
+                                <ui:SymbolIcon Symbol="TouchPointer" Foreground="#666666"/>
+                            </local:ClickSensitiveGrid>
                             <ui:SimpleStackPanel Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}" Spacing="8" Margin="0,1">
                                 <Border Name="BorderPenColorBlack" Background="{Binding ElementName=BtnColorBlack, Path=Background}" MouseUp="BorderPenColorBlack_MouseUp" CornerRadius="100"
                                     Width="{Binding ElementName=BorderPenColorBlack, Path=ActualHeight}">
