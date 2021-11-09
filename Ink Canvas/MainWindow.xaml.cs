@@ -76,6 +76,8 @@ namespace Ink_Canvas
                 GridForRecoverOldUI.Visibility = Visibility.Collapsed;
             }
 
+            if (File.Exists("debug.ini")) Label.Visibility = Visibility.Visible;
+
             InitTimers();
         }
 
