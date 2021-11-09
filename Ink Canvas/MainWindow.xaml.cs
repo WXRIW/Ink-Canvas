@@ -1635,6 +1635,7 @@ namespace Ink_Canvas
                 inkCanvas.Strokes.Clear();
 
                 BorderFloatingBarMainControls.Visibility = Visibility.Visible;
+                BorderPenColorRed_MouseUp(BorderPenColorRed, null);
 
                 new Thread(new ThreadStart(() =>
                 {
@@ -3723,6 +3724,7 @@ namespace Ink_Canvas
                     pointPPT = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
                 }
                 ViewboxFloatingBar.Margin = new Thickness(10, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
+                BorderPenColorWhite_MouseUp(BorderPenColorWhite, null);
             }
             else
             {
@@ -3746,6 +3748,7 @@ namespace Ink_Canvas
                         });
                     })).Start();
                 }
+                BorderPenColorRed_MouseUp(BorderPenColorRed, null);
             }
 
             BtnSwitch_Click(BtnSwitch, null);
