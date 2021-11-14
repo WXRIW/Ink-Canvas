@@ -1235,7 +1235,7 @@ namespace Ink_Canvas
         public double GetTouchBoundWidth(TouchEventArgs e)
         {
             double value = e.GetTouchPoint(null).Bounds.Width;
-            if (Settings.Advanced.IsSpecialScreen) value /= 5.0;
+            if (Settings.Advanced.IsSpecialScreen) value /= 4.0;
             return value;
         }
 
