@@ -29,7 +29,7 @@
     </Window.CommandBindings>
     <Grid x:Name="Main_Grid" Background="#01FFFFFF" PreviewKeyDown="Main_Grid_PreviewKeyDown">
         <Grid Name="GridBackgroundCoverHolder">
-            <Grid Name="GridBackgroundCover" Visibility="Hidden" Background="#1F1F1F"/>
+            <Grid Name="GridBackgroundCover" Visibility="Visible" Background="#1F1F1F"/>
         </Grid>
         <Canvas Name="Canvas"/>
         <Label Name="Label" Visibility="Collapsed" Content="0"/>
@@ -86,11 +86,47 @@
             </Grid>
         </Grid>
         <Grid Visibility="{Binding ElementName=GridBackgroundCoverHolder, Path=Visibility}">
+            <Viewbox Visibility="{Binding ElementName=GridBackgroundCover, Path=Visibility}" Opacity="0.7" Margin="10" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+                    <Border Width="36" Height="36" MouseUp="BtnWhiteBoardAdd_Click" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                        <Viewbox Margin="8">
+                            <ui:SymbolIcon Symbol="Add" Foreground="#FF666666" />
+                        </Viewbox>
+                    </Border>
+                    <Border Width="36" MouseUp="BtnWhiteBoardSwitchPrevious_Click" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                        <Grid Margin="6">
+                            <Image Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideSelected}"/>
+                            <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
+                        </Grid>
+                    </Border>
+                    <Border Height="36" CornerRadius="2" Margin="0,0">
+                        <TextBlock Text="{Binding ElementName=TextBlockWhiteBoardIndexInfo, Path=Text}"
+                                   Foreground="White"
+                                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   FontFamily="Microsoft YaHei UI" FontSize="12"/>
+                    </Border>
+                    <Border Width="36" MouseUp="BtnWhiteBoardSwitchNext_Click" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                        <Grid Margin="6">
+                            <Image Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideSelected}"/>
+                            <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
+                        </Grid>
+                    </Border>
+                </ui:SimpleStackPanel>
+            </Viewbox>
+            <Viewbox Visibility="{Binding ElementName=GridBackgroundCover, Path=Visibility}" Opacity="0.7" Margin="10" Height="50" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+                    <Border Width="36" Height="36" MouseUp="BorderMultiTouchMode_MouseUp" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                        <Viewbox Margin="8">
+                            <ui:SymbolIcon Name="SymbolIconMultiTouchMode" Symbol="People" Foreground="#FF666666" />
+                        </Viewbox>
+                    </Border>
+                </ui:SimpleStackPanel>
+            </Viewbox>
             <ui:SimpleStackPanel Spacing="10" Orientation="Horizontal"
                              VerticalAlignment="Bottom"
                              HorizontalAlignment="Right"
                              Height="50" Margin="10"
-                             Visibility="{Binding ElementName=GridBackgroundCover, Path=Visibility}">
+                             Visibility="Collapsed">
                 <Button Name="BtnWhiteBoardAdd" FontFamily="Microsoft YaHei UI"
                     Width="50" Height="48" FontSize="26" Click="BtnWhiteBoardAdd_Click"
                     Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
@@ -224,6 +260,7 @@
                                     <ComboBoxItem Content="模拟笔锋（根据速度计算）" FontFamily="Microsoft YaHei UI"/>
                                     <ComboBoxItem Content="无笔锋"  FontFamily="Microsoft YaHei UI"/>
                                 </ComboBox>
+                                <ui:ToggleSwitch Header="手指模式" IsOn="{Binding ElementName=ToggleSwitchModeFinger, Path=IsOn}" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="手势">
@@ -260,6 +297,11 @@
                                                VerticalAlignment="Bottom" Margin="10,0,0,8"
                                                FontSize="14" Width="25" HorizontalAlignment="Center"/>
                                 </StackPanel>
+                            </ui:SimpleStackPanel>
+                        </GroupBox>
+                        <GroupBox Name="GroupBoxAppearanceNewUI" Header="外观">
+                            <ui:SimpleStackPanel Spacing="12">
+                                <ui:ToggleSwitch Header="显示“橡皮”按钮" IsOn="{Binding ElementName=ToggleSwitchShowButtonEraser, Path=IsOn}" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="高级">
@@ -615,14 +657,14 @@
             <Grid Visibility="{Binding ElementName=StackPanelPPTControls, Path=Visibility}">
                 <Viewbox Name="ViewboxPPTSidesControl" Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}" Opacity="0.7" Margin="10" Height="50" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                     <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
-                        <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
-                            <Grid Margin="6" MouseUp="GridPPTControlPrevious_MouseUp">
+                        <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                            <Grid Margin="6">
                                 <Image Name="ImagePPTControlPreviousPressed" Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideSelected}"/>
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
-                        <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
-                            <Grid Margin="6" MouseUp="GridPPTControlNext_MouseUp">
+                        <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                            <Grid Margin="6">
                                 <Image Name="ImagePPTControlNextPressed" Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideSelected}"/>
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
                             </Grid>
@@ -631,13 +673,13 @@
                 </Viewbox>
                 <Viewbox Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}" Opacity="{Binding ElementName=ViewboxPPTSidesControl, Path=Opacity}" Margin="10" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                     <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
-                        <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
-                            <Grid Margin="6" MouseUp="GridPPTControlPrevious_MouseUp">
+                        <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                            <Grid Margin="6">
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
-                        <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
-                            <Grid Margin="6" MouseUp="GridPPTControlNext_MouseUp">
+                        <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                            <Grid Margin="6">
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
                             </Grid>
                         </Border>
@@ -710,6 +752,18 @@
                                     </Viewbox>
                                 </Border>
                             </ui:SimpleStackPanel>
+                            <Grid Width="20" Height="24" Margin="0,0,-2,0" MouseUp="ImageEraser_MouseUp" Visibility="{Binding ElementName=BtnErase, Path=Visibility}">
+                                <Image Margin="-2" Source="{DynamicResource ImageSource.RubberNormal}" RenderTransformOrigin="0.5,0.5">
+                                    <Image.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform/>
+                                            <SkewTransform/>
+                                            <RotateTransform Angle="-45"/>
+                                            <TranslateTransform/>
+                                        </TransformGroup>
+                                    </Image.RenderTransform>
+                                </Image>
+                            </Grid>
                             <Grid Margin="0,0,0,0" Width="20">
                                 <ui:SymbolIcon Symbol="Delete" Foreground="#666666" MouseUp="SymbolIconDelete_MouseUp"/>
                                 <Border x:Name="BorderClearInDelete" Visibility="Collapsed" Background="White" BorderBrush="#BF666666" BorderThickness="1"
@@ -735,7 +789,7 @@
                             </Viewbox>
                         </ui:SimpleStackPanel>
                         <ui:SimpleStackPanel Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
-                            <Grid Width="20" Height="24" Margin="2,0,12,2">
+                            <Grid Width="20" Height="24" Margin="2,0,12,1">
                                 <Image Margin="-8" MouseUp="ImageBlackboard_MouseUp">
                                     <Image.Source>
                                         <DrawingImage>
