@@ -89,6 +89,7 @@ namespace Ink_Canvas
 
         private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (isTimerRunning) return;
             if (ProcessBarTime.Visibility == Visibility.Visible && isTimerRunning == false)
             {
                 ProcessBarTime.Visibility = Visibility.Collapsed;
