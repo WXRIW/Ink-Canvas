@@ -29,7 +29,7 @@
     </Window.CommandBindings>
     <Grid x:Name="Main_Grid" Background="#01FFFFFF" PreviewKeyDown="Main_Grid_PreviewKeyDown">
         <Grid Name="GridBackgroundCoverHolder">
-            <Grid Name="GridBackgroundCover" Visibility="Visible" Background="#1F1F1F"/>
+            <Grid Name="GridBackgroundCover" Visibility="Hidden" Background="#1F1F1F"/>
         </Grid>
         <Canvas Name="Canvas"/>
         <Label Name="Label" Visibility="Collapsed" Content="0"/>

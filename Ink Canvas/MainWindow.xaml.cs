@@ -3951,6 +3951,9 @@ namespace Ink_Canvas
             else
             {
                 //关闭黑板
+
+                if (isInMultiTouchMode) BorderMultiTouchMode_MouseUp(null, null);
+
                 if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
                 {
                     if (pointDesktop != new Point(-1, -1))
