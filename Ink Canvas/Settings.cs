@@ -56,7 +56,7 @@ namespace Ink_Canvas
     public class Startup
     {
         [JsonProperty("isAutoHideCanvas")]
-        public bool IsAutoHideCanvas { get; set; } = false;
+        public bool IsAutoHideCanvas { get; set; } = true;
         [JsonProperty("isAutoEnterModeFinger")]
         public bool IsAutoEnterModeFinger { get; set; } = false;
     }

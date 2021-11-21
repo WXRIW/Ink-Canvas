@@ -409,6 +409,11 @@ namespace Ink_Canvas
             }
             else
             {
+                if (isStartup)
+                {
+                    BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                    BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                }
                 ToggleSwitchAutoHideCanvas.IsOn = false;
             }
 
