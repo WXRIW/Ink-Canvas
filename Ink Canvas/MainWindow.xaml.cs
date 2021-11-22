@@ -1793,6 +1793,11 @@ namespace Ink_Canvas
                 BorderFloatingBarMainControls.Visibility = Visibility.Visible;
                 BorderPenColorRed_MouseUp(BorderPenColorRed, null);
 
+                if (Settings.Behavior.IsShowCanvasAtNewSlideShow == false)
+                {
+                    BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+                }
+
                 new Thread(new ThreadStart(() =>
                 {
                     Thread.Sleep(100);
