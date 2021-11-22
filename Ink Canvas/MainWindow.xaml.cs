@@ -3064,7 +3064,7 @@ namespace Ink_Canvas
                             if (!inkCanvas.Strokes.Contains(circles[i].Stroke)) circles.RemoveAt(i);
                         }
                         var strokeReco = new StrokeCollection();
-                        for (int i = 0; i < newStrokes.Count; i++)
+                        for (int i = newStrokes.Count - 1; i >= 0; i--)
                         {
                             strokeReco.Add(newStrokes[i]);
                             var result = InkRecognizeHelper.RecognizeShape(strokeReco);
@@ -3542,15 +3542,15 @@ namespace Ink_Canvas
             var newPoint = new StylusPointCollection();
             newPoint.Add(new StylusPoint(points[0].X, points[0].Y, (float)0.4));
             var cPoint = GetCenterPoint(points[0], points[1]);
-            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.85));
+            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.8));
             newPoint.Add(new StylusPoint(points[1].X, points[1].Y, (float)0.4));
             newPoint.Add(new StylusPoint(points[1].X, points[1].Y, (float)0.4));
             cPoint = GetCenterPoint(points[1], points[2]);
-            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.85));
+            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.8));
             newPoint.Add(new StylusPoint(points[2].X, points[2].Y, (float)0.4));
             newPoint.Add(new StylusPoint(points[2].X, points[2].Y, (float)0.4));
             cPoint = GetCenterPoint(points[2], points[0]);
-            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.85));
+            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.8));
             newPoint.Add(new StylusPoint(points[0].X, points[0].Y, (float)0.4));
             return newPoint;
         }
@@ -3560,19 +3560,19 @@ namespace Ink_Canvas
             var newPoint = new StylusPointCollection();
             newPoint.Add(new StylusPoint(points[0].X, points[0].Y, (float)0.4));
             var cPoint = GetCenterPoint(points[0], points[1]);
-            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.85));
+            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.8));
             newPoint.Add(new StylusPoint(points[1].X, points[1].Y, (float)0.4));
             newPoint.Add(new StylusPoint(points[1].X, points[1].Y, (float)0.4));
             cPoint = GetCenterPoint(points[1], points[2]);
-            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.85));
+            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.8));
             newPoint.Add(new StylusPoint(points[2].X, points[2].Y, (float)0.4));
             newPoint.Add(new StylusPoint(points[2].X, points[2].Y, (float)0.4));
             cPoint = GetCenterPoint(points[2], points[3]);
-            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.85));
+            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.8));
             newPoint.Add(new StylusPoint(points[3].X, points[3].Y, (float)0.4));
             newPoint.Add(new StylusPoint(points[3].X, points[3].Y, (float)0.4));
             cPoint = GetCenterPoint(points[3], points[0]);
-            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.85));
+            newPoint.Add(new StylusPoint(cPoint.X, cPoint.Y, (float)0.8));
             newPoint.Add(new StylusPoint(points[0].X, points[0].Y, (float)0.4));
             return newPoint;
         }
