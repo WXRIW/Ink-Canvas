@@ -1069,6 +1069,7 @@ namespace Ink_Canvas
             drawingShapeMode = 0;
             inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             CancelSingleFingerDragMode();
+            forceEraser = false;
 
             // 改变选中提示
             ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
@@ -3069,254 +3070,252 @@ namespace Ink_Canvas
                             if (!inkCanvas.Strokes.Contains(circles[i].Stroke)) circles.RemoveAt(i);
                         }
                         var strokeReco = new StrokeCollection();
+                        var result = InkRecognizeHelper.RecognizeShape(strokeReco);
                         for (int i = newStrokes.Count - 1; i >= 0; i--)
                         {
                             strokeReco.Add(newStrokes[i]);
-                            var result = InkRecognizeHelper.RecognizeShape(strokeReco);
+                            result = InkRecognizeHelper.RecognizeShape(strokeReco);
+                            if (result.InkDrawingNode.GetShapeName() == "Circle" || result.InkDrawingNode.GetShapeName() == "Ellipse") break;
                             //Label.Visibility = Visibility.Visible;
                             Label.Content = circles.Count.ToString() + "\n" + result.InkDrawingNode.GetShapeName();
-                            if (result.InkDrawingNode.GetShapeName() == "Circle")
+                        }
+                        if (result.InkDrawingNode.GetShapeName() == "Circle")
+                        {
+                            var shape = result.InkDrawingNode.GetShape();
+                            if (shape.Width > 75)
                             {
-                                var shape = result.InkDrawingNode.GetShape();
-                                if (shape.Width > 75)
+                                foreach (Circle circle in circles)
                                 {
-                                    foreach (Circle circle in circles)
+                                    //判断是否画同心圆
+                                    if (Math.Abs(result.Centroid.X - circle.Centroid.X) / shape.Width < 0.12 &&
+                                        Math.Abs(result.Centroid.Y - circle.Centroid.Y) / shape.Width < 0.12)
                                     {
-                                        //判断是否画同心圆
-                                        if (Math.Abs(result.Centroid.X - circle.Centroid.X) / shape.Width < 0.12 &&
-                                            Math.Abs(result.Centroid.Y - circle.Centroid.Y) / shape.Width < 0.12)
+                                        result.Centroid = circle.Centroid;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        double d = (result.Centroid.X - circle.Centroid.X) * (result.Centroid.X - circle.Centroid.X) +
+                                           (result.Centroid.Y - circle.Centroid.Y) * (result.Centroid.Y - circle.Centroid.Y);
+                                        d = Math.Sqrt(d);
+                                        //判断是否画外切圆
+                                        double x = shape.Width / 2.0 + circle.R - d;
+                                        if (Math.Abs(x) / shape.Width < 0.1)
                                         {
-                                            result.Centroid = circle.Centroid;
-                                            break;
+                                            double sinTheta = (result.Centroid.Y - circle.Centroid.Y) / d;
+                                            double cosTheta = (result.Centroid.X - circle.Centroid.X) / d;
+                                            double newX = result.Centroid.X + x * cosTheta;
+                                            double newY = result.Centroid.Y + x * sinTheta;
+                                            result.Centroid = new Point(newX, newY);
                                         }
-                                        else
+                                        //判断是否画外切圆
+                                        x = Math.Abs(circle.R - shape.Width / 2.0) - d;
+                                        if (Math.Abs(x) / shape.Width < 0.1)
                                         {
-                                            double d = (result.Centroid.X - circle.Centroid.X) * (result.Centroid.X - circle.Centroid.X) +
-                                               (result.Centroid.Y - circle.Centroid.Y) * (result.Centroid.Y - circle.Centroid.Y);
-                                            d = Math.Sqrt(d);
-                                            //判断是否画外切圆
-                                            double x = shape.Width / 2.0 + circle.R - d;
-                                            if (Math.Abs(x) / shape.Width < 0.1)
-                                            {
-                                                double sinTheta = (result.Centroid.Y - circle.Centroid.Y) / d;
-                                                double cosTheta = (result.Centroid.X - circle.Centroid.X) / d;
-                                                double newX = result.Centroid.X + x * cosTheta;
-                                                double newY = result.Centroid.Y + x * sinTheta;
-                                                result.Centroid = new Point(newX, newY);
-                                            }
-                                            //判断是否画外切圆
-                                            x = Math.Abs(circle.R - shape.Width / 2.0) - d;
-                                            if (Math.Abs(x) / shape.Width < 0.1)
-                                            {
-                                                double sinTheta = (result.Centroid.Y - circle.Centroid.Y) / d;
-                                                double cosTheta = (result.Centroid.X - circle.Centroid.X) / d;
-                                                double newX = result.Centroid.X + x * cosTheta;
-                                                double newY = result.Centroid.Y + x * sinTheta;
-                                                result.Centroid = new Point(newX, newY);
-                                            }
+                                            double sinTheta = (result.Centroid.Y - circle.Centroid.Y) / d;
+                                            double cosTheta = (result.Centroid.X - circle.Centroid.X) / d;
+                                            double newX = result.Centroid.X + x * cosTheta;
+                                            double newY = result.Centroid.Y + x * sinTheta;
+                                            result.Centroid = new Point(newX, newY);
                                         }
                                     }
-
-                                    Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
-                                    Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
-                                    var pointList = GenerateEclipseGeometry(iniP, endP);
-                                    var point = new StylusPointCollection(pointList);
-                                    var stroke = new Stroke(point)
-                                    {
-                                        DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                                    };
-                                    circles.Add(new Circle(result.Centroid, shape.Width / 2.0, stroke));
-                                    SetNewBackupOfStroke();
-                                    inkCanvas.Strokes.Add(stroke);
-                                    inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                                    newStrokes = new StrokeCollection();
-                                    break;
                                 }
+
+                                Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
+                                Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
+                                var pointList = GenerateEclipseGeometry(iniP, endP);
+                                var point = new StylusPointCollection(pointList);
+                                var stroke = new Stroke(point)
+                                {
+                                    DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                                };
+                                circles.Add(new Circle(result.Centroid, shape.Width / 2.0, stroke));
+                                SetNewBackupOfStroke();
+                                inkCanvas.Strokes.Add(stroke);
+                                inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                newStrokes = new StrokeCollection();
                             }
-                            else if (result.InkDrawingNode.GetShapeName().Contains("Ellipse"))
+                        }
+                        else if (result.InkDrawingNode.GetShapeName().Contains("Ellipse"))
+                        {
+                            var shape = result.InkDrawingNode.GetShape();
+                            //var shape1 = result.InkDrawingNode.GetShape();
+                            //shape1.Fill = Brushes.Gray;
+                            //Canvas.Children.Add(shape1);
+                            var p = result.InkDrawingNode.HotPoints;
+                            double a = GetDistance(p[0], p[2]) / 2; //长半轴
+                            double b = GetDistance(p[1], p[3]) / 2; //短半轴
+                            if (a < b)
                             {
-                                var shape = result.InkDrawingNode.GetShape();
-                                //var shape1 = result.InkDrawingNode.GetShape();
-                                //shape1.Fill = Brushes.Gray;
-                                //Canvas.Children.Add(shape1);
-                                var p = result.InkDrawingNode.HotPoints;
-                                double a = GetDistance(p[0], p[2]) / 2; //长半轴
-                                double b = GetDistance(p[1], p[3]) / 2; //短半轴
-                                if (a < b)
+                                double t = a;
+                                a = b;
+                                b = t;
+                            }
+
+                            result.Centroid = new Point((p[0].X + p[2].X) / 2, (p[0].Y + p[2].Y) / 2);
+                            bool needRotation = true;
+
+                            if (shape.Width > 75 || shape.Height > 75 && result.InkDrawingNode.HotPoints.Count == 3)
+                            {
+                                Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
+                                Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
+
+                                foreach (Circle circle in circles)
                                 {
-                                    double t = a;
-                                    a = b;
-                                    b = t;
-                                }
-
-                                result.Centroid = new Point((p[0].X + p[2].X) / 2, (p[0].Y + p[2].Y) / 2);
-                                bool needRotation = true;
-
-                                if (shape.Width > 75 || shape.Height > 75 && result.InkDrawingNode.HotPoints.Count == 3)
-                                {
-                                    Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
-                                    Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
-
-                                    foreach (Circle circle in circles)
+                                    //判断是否画同心椭圆
+                                    if (Math.Abs(result.Centroid.X - circle.Centroid.X) / a < 0.2 &&
+                                        Math.Abs(result.Centroid.Y - circle.Centroid.Y) / a < 0.2)
                                     {
-                                        //判断是否画同心椭圆
-                                        if (Math.Abs(result.Centroid.X - circle.Centroid.X) / a < 0.2 &&
-                                            Math.Abs(result.Centroid.Y - circle.Centroid.Y) / a < 0.2)
-                                        {
-                                            result.Centroid = circle.Centroid;
-                                            iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
-                                            endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
+                                        result.Centroid = circle.Centroid;
+                                        iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
+                                        endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
 
-                                            //再判断是否与圆相切
-                                            if (Math.Abs(a - circle.R) / a < 0.2)
-                                            {
-                                                if (shape.Width >= shape.Height)
-                                                {
-                                                    iniP.X = result.Centroid.X - circle.R;
-                                                    endP.X = result.Centroid.X + circle.R;
-                                                    iniP.Y = result.Centroid.Y - b;
-                                                    endP.Y = result.Centroid.Y + b;
-                                                }
-                                                else
-                                                {
-                                                    iniP.Y = result.Centroid.Y - circle.R;
-                                                    endP.Y = result.Centroid.Y + circle.R;
-                                                    iniP.X = result.Centroid.X - a;
-                                                    endP.X = result.Centroid.X + a;
-                                                }
-                                            }
-                                            break;
-                                        }
-                                        else if (Math.Abs(result.Centroid.X - circle.Centroid.X) / a < 0.2)
+                                        //再判断是否与圆相切
+                                        if (Math.Abs(a - circle.R) / a < 0.2)
                                         {
-                                            double sinTheta = Math.Abs(circle.Centroid.Y - result.Centroid.Y) / circle.R;
-                                            double cosTheta = Math.Sqrt(1 - sinTheta * sinTheta);
-                                            double newA = circle.R * cosTheta;
-                                            if (Math.Abs(newA - circle.R) / a < 0.35 && a / b > 3)
+                                            if (shape.Width >= shape.Height)
                                             {
-                                                iniP.X = circle.Centroid.X - newA;
-                                                endP.X = circle.Centroid.X + newA;
-                                                iniP.Y = result.Centroid.Y - newA / 5;
-                                                endP.Y = result.Centroid.Y + newA / 5;
+                                                iniP.X = result.Centroid.X - circle.R;
+                                                endP.X = result.Centroid.X + circle.R;
+                                                iniP.Y = result.Centroid.Y - b;
+                                                endP.Y = result.Centroid.Y + b;
+                                            }
+                                            else
+                                            {
+                                                iniP.Y = result.Centroid.Y - circle.R;
+                                                endP.Y = result.Centroid.Y + circle.R;
+                                                iniP.X = result.Centroid.X - a;
+                                                endP.X = result.Centroid.X + a;
                                             }
                                         }
-                                        else if (Math.Abs(result.Centroid.Y - circle.Centroid.Y) / a < 0.2)
+                                        break;
+                                    }
+                                    else if (Math.Abs(result.Centroid.X - circle.Centroid.X) / a < 0.2)
+                                    {
+                                        double sinTheta = Math.Abs(circle.Centroid.Y - result.Centroid.Y) / circle.R;
+                                        double cosTheta = Math.Sqrt(1 - sinTheta * sinTheta);
+                                        double newA = circle.R * cosTheta;
+                                        if (Math.Abs(newA - circle.R) / a < 0.35 && a / b > 3)
                                         {
-                                            double cosTheta = Math.Abs(circle.Centroid.X - result.Centroid.X) / circle.R;
-                                            double sinTheta = Math.Sqrt(1 - cosTheta * cosTheta);
-                                            double newA = circle.R * sinTheta;
-                                            if (Math.Abs(newA - circle.R) / a < 0.35 && a / b > 3)
-                                            {
-                                                iniP.X = result.Centroid.X - newA / 5;
-                                                endP.X = result.Centroid.X + newA / 5;
-                                                iniP.Y = circle.Centroid.Y - newA;
-                                                endP.Y = circle.Centroid.Y + newA;
-                                                needRotation = false;
-                                            }
+                                            iniP.X = circle.Centroid.X - newA;
+                                            endP.X = circle.Centroid.X + newA;
+                                            iniP.Y = result.Centroid.Y - newA / 5;
+                                            endP.Y = result.Centroid.Y + newA / 5;
                                         }
                                     }
-
-                                    //纠正垂直与水平关系
-                                    var newPoints = FixPointsDirection(p[0], p[2]);
-                                    p[0] = newPoints[0];
-                                    p[2] = newPoints[1];
-                                    newPoints = FixPointsDirection(p[1], p[3]);
-                                    p[1] = newPoints[0];
-                                    p[3] = newPoints[1];
-
-                                    var pointList = GenerateEclipseGeometry(iniP, endP);
-                                    var point = new StylusPointCollection(pointList);
-                                    var stroke = new Stroke(point)
+                                    else if (Math.Abs(result.Centroid.Y - circle.Centroid.Y) / a < 0.2)
                                     {
-                                        DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                                    };
-
-                                    if (needRotation)
-                                    {
-                                        Matrix m = new Matrix();
-                                        FrameworkElement fe = e.Source as FrameworkElement;
-                                        double tanTheta = (p[2].Y - p[0].Y) / (p[2].X - p[0].X);
-                                        double theta = Math.Atan(tanTheta);
-                                        m.RotateAt(theta * 180.0 / Math.PI, result.Centroid.X, result.Centroid.Y);
-                                        stroke.Transform(m, false);
+                                        double cosTheta = Math.Abs(circle.Centroid.X - result.Centroid.X) / circle.R;
+                                        double sinTheta = Math.Sqrt(1 - cosTheta * cosTheta);
+                                        double newA = circle.R * sinTheta;
+                                        if (Math.Abs(newA - circle.R) / a < 0.35 && a / b > 3)
+                                        {
+                                            iniP.X = result.Centroid.X - newA / 5;
+                                            endP.X = result.Centroid.X + newA / 5;
+                                            iniP.Y = circle.Centroid.Y - newA;
+                                            endP.Y = circle.Centroid.Y + newA;
+                                            needRotation = false;
+                                        }
                                     }
-
-                                    SetNewBackupOfStroke();
-                                    inkCanvas.Strokes.Add(stroke);
-                                    inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                                    newStrokes = new StrokeCollection();
-                                    break;
                                 }
-                            }
-                            else if (result.InkDrawingNode.GetShapeName().Contains("Triangle"))
-                            {
-                                var shape = result.InkDrawingNode.GetShape();
-                                var p = result.InkDrawingNode.HotPoints;
-                                if ((Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) - Math.Min(Math.Min(p[0].X, p[1].X), p[2].X) >= 100 ||
-                                    Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) - Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y) >= 100) && result.InkDrawingNode.HotPoints.Count == 3)
+
+                                //纠正垂直与水平关系
+                                var newPoints = FixPointsDirection(p[0], p[2]);
+                                p[0] = newPoints[0];
+                                p[2] = newPoints[1];
+                                newPoints = FixPointsDirection(p[1], p[3]);
+                                p[1] = newPoints[0];
+                                p[3] = newPoints[1];
+
+                                var pointList = GenerateEclipseGeometry(iniP, endP);
+                                var point = new StylusPointCollection(pointList);
+                                var stroke = new Stroke(point)
                                 {
-                                    //纠正垂直与水平关系
-                                    var newPoints = FixPointsDirection(p[0], p[1]);
-                                    p[0] = newPoints[0];
-                                    p[1] = newPoints[1];
-                                    newPoints = FixPointsDirection(p[0], p[2]);
-                                    p[0] = newPoints[0];
-                                    p[2] = newPoints[1];
-                                    newPoints = FixPointsDirection(p[1], p[2]);
-                                    p[1] = newPoints[0];
-                                    p[2] = newPoints[1];
+                                    DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                                };
 
-                                    var pointList = p.ToList();
-                                    //pointList.Add(p[0]);
-                                    var point = new StylusPointCollection(pointList);
-                                    var stroke = new Stroke(GenerateFakePressureTriangle(point))
-                                    {
-                                        DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                                    };
-                                    SetNewBackupOfStroke();
-                                    inkCanvas.Strokes.Add(stroke);
-                                    inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                                    newStrokes = new StrokeCollection();
-                                    break;
-                                }
-                            }
-                            else if (result.InkDrawingNode.GetShapeName().Contains("Rectangle") ||
-                                     result.InkDrawingNode.GetShapeName().Contains("Diamond") ||
-                                     result.InkDrawingNode.GetShapeName().Contains("Parallelogram") ||
-                                     result.InkDrawingNode.GetShapeName().Contains("Square"))
-                            {
-                                var shape = result.InkDrawingNode.GetShape();
-                                var p = result.InkDrawingNode.HotPoints;
-                                if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) - Math.Min(Math.Min(Math.Min(p[0].X, p[1].X), p[2].X), p[3].X) >= 100 ||
-                                    Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) - Math.Min(Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 100) && result.InkDrawingNode.HotPoints.Count == 4)
+                                if (needRotation)
                                 {
-                                    //纠正垂直与水平关系
-                                    var newPoints = FixPointsDirection(p[0], p[1]);
-                                    p[0] = newPoints[0];
-                                    p[1] = newPoints[1];
-                                    newPoints = FixPointsDirection(p[1], p[2]);
-                                    p[1] = newPoints[0];
-                                    p[2] = newPoints[1];
-                                    newPoints = FixPointsDirection(p[2], p[3]);
-                                    p[2] = newPoints[0];
-                                    p[3] = newPoints[1];
-                                    newPoints = FixPointsDirection(p[3], p[0]);
-                                    p[3] = newPoints[0];
-                                    p[0] = newPoints[1];
-
-                                    var pointList = p.ToList();
-                                    pointList.Add(p[0]);
-                                    var point = new StylusPointCollection(pointList);
-                                    var stroke = new Stroke(GenerateFakePressureRectangle(point))
-                                    {
-                                        DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                                    };
-                                    SetNewBackupOfStroke();
-                                    inkCanvas.Strokes.Add(stroke);
-                                    inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                                    newStrokes = new StrokeCollection();
-                                    break;
+                                    Matrix m = new Matrix();
+                                    FrameworkElement fe = e.Source as FrameworkElement;
+                                    double tanTheta = (p[2].Y - p[0].Y) / (p[2].X - p[0].X);
+                                    double theta = Math.Atan(tanTheta);
+                                    m.RotateAt(theta * 180.0 / Math.PI, result.Centroid.X, result.Centroid.Y);
+                                    stroke.Transform(m, false);
                                 }
+
+                                SetNewBackupOfStroke();
+                                inkCanvas.Strokes.Add(stroke);
+                                inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                newStrokes = new StrokeCollection();
+                            }
+                        }
+                        else if (result.InkDrawingNode.GetShapeName().Contains("Triangle"))
+                        {
+                            var shape = result.InkDrawingNode.GetShape();
+                            var p = result.InkDrawingNode.HotPoints;
+                            if ((Math.Max(Math.Max(p[0].X, p[1].X), p[2].X) - Math.Min(Math.Min(p[0].X, p[1].X), p[2].X) >= 100 ||
+                                Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y) - Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y) >= 100) && result.InkDrawingNode.HotPoints.Count == 3)
+                            {
+                                //纠正垂直与水平关系
+                                var newPoints = FixPointsDirection(p[0], p[1]);
+                                p[0] = newPoints[0];
+                                p[1] = newPoints[1];
+                                newPoints = FixPointsDirection(p[0], p[2]);
+                                p[0] = newPoints[0];
+                                p[2] = newPoints[1];
+                                newPoints = FixPointsDirection(p[1], p[2]);
+                                p[1] = newPoints[0];
+                                p[2] = newPoints[1];
+
+                                var pointList = p.ToList();
+                                //pointList.Add(p[0]);
+                                var point = new StylusPointCollection(pointList);
+                                var stroke = new Stroke(GenerateFakePressureTriangle(point))
+                                {
+                                    DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                                };
+                                SetNewBackupOfStroke();
+                                inkCanvas.Strokes.Add(stroke);
+                                inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                newStrokes = new StrokeCollection();
+                            }
+                        }
+                        else if (result.InkDrawingNode.GetShapeName().Contains("Rectangle") ||
+                                 result.InkDrawingNode.GetShapeName().Contains("Diamond") ||
+                                 result.InkDrawingNode.GetShapeName().Contains("Parallelogram") ||
+                                 result.InkDrawingNode.GetShapeName().Contains("Square"))
+                        {
+                            var shape = result.InkDrawingNode.GetShape();
+                            var p = result.InkDrawingNode.HotPoints;
+                            if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) - Math.Min(Math.Min(Math.Min(p[0].X, p[1].X), p[2].X), p[3].X) >= 100 ||
+                                Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) - Math.Min(Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 100) && result.InkDrawingNode.HotPoints.Count == 4)
+                            {
+                                //纠正垂直与水平关系
+                                var newPoints = FixPointsDirection(p[0], p[1]);
+                                p[0] = newPoints[0];
+                                p[1] = newPoints[1];
+                                newPoints = FixPointsDirection(p[1], p[2]);
+                                p[1] = newPoints[0];
+                                p[2] = newPoints[1];
+                                newPoints = FixPointsDirection(p[2], p[3]);
+                                p[2] = newPoints[0];
+                                p[3] = newPoints[1];
+                                newPoints = FixPointsDirection(p[3], p[0]);
+                                p[3] = newPoints[0];
+                                p[0] = newPoints[1];
+
+                                var pointList = p.ToList();
+                                pointList.Add(p[0]);
+                                var point = new StylusPointCollection(pointList);
+                                var stroke = new Stroke(GenerateFakePressureRectangle(point))
+                                {
+                                    DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                                };
+                                SetNewBackupOfStroke();
+                                inkCanvas.Strokes.Add(stroke);
+                                inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                newStrokes = new StrokeCollection();
                             }
                         }
                     }
