@@ -51,6 +51,8 @@ namespace Ink_Canvas
         public bool IsEnableTwoFingerRotation { get; set; } = false;
         [JsonProperty("isEnableTwoFingerGestureInPresentationMode")]
         public bool IsEnableTwoFingerGestureInPresentationMode { get; set; } = false;
+        [JsonProperty("isEnableFingerGestureSlideShowControl")]
+        public bool IsEnableFingerGestureSlideShowControl { get; set; } = true;
     }
 
     public class Startup

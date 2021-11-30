@@ -164,29 +164,25 @@ namespace Ink_Canvas
         private void InkCanvas_Gesture(object sender, InkCanvasGestureEventArgs e)
         {
             ReadOnlyCollection<GestureRecognitionResult> gestures = e.GetGestureRecognitionResults();
-
-            foreach (GestureRecognitionResult gest in gestures)
+            try
             {
-                //Trace.WriteLine(string.Format("Gesture: {0}, Confidence: {1}", gest.ApplicationGesture, gest.RecognitionConfidence));
-                if ((DateTime.Now - lastGestureTime).TotalMilliseconds <= 1500 &&
-                    StackPanelPPTControls.Visibility == Visibility.Visible &&
-                    lastApplicationGesture == gest.ApplicationGesture)
+                foreach (GestureRecognitionResult gest in gestures)
                 {
-                    if (gest.ApplicationGesture == ApplicationGesture.Left)
+                    //Trace.WriteLine(string.Format("Gesture: {0}, Confidence: {1}", gest.ApplicationGesture, gest.RecognitionConfidence));
+                    if (StackPanelPPTControls.Visibility == Visibility.Visible)
                     {
-                        BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
-                    }
-                    if (gest.ApplicationGesture == ApplicationGesture.Right)
-                    {
-                        BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
+                        if (gest.ApplicationGesture == ApplicationGesture.Left)
+                        {
+                            BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
+                        }
+                        if (gest.ApplicationGesture == ApplicationGesture.Right)
+                        {
+                            BtnPPTSlidesUp_Click(BtnPPTSlidesUp, null);
+                        }
                     }
                 }
-
-                lastApplicationGesture = gest.ApplicationGesture;
-                lastGestureTime = DateTime.Now;
             }
-
-            inkCanvas.Strokes.Add(e.Strokes);
+            catch { }
         }
         private void inkCanvas_EditingModeChanged(object sender, RoutedEventArgs e)
         {
@@ -523,6 +519,14 @@ namespace Ink_Canvas
             else
             {
                 ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn = false;
+            }
+            if (Settings.Gesture.IsEnableFingerGestureSlideShowControl)
+            {
+                ToggleSwitchEnableFingerGestureSlideShowControl.IsOn = true;
+            }
+            else
+            {
+                ToggleSwitchEnableFingerGestureSlideShowControl.IsOn = false;
             }
 
             if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + "\\InkCanvas" + ".lnk"))
@@ -1358,6 +1362,7 @@ namespace Ink_Canvas
             BorderClearInDelete.Visibility = Visibility.Collapsed;
 
             iniP = e.GetTouchPoint(inkCanvas).Position;
+            inkCanvas.Opacity = 1;
 
             double boundsWidth = GetTouchBoundWidth(e);
             if (boundsWidth > BoundsWidth)
@@ -1371,10 +1376,19 @@ namespace Ink_Canvas
                 }
                 else
                 {
-                    inkCanvas.EraserShape = new EllipseStylusShape(5, 5);
-                    //inkCanvas.EraserShape = new RectangleStylusShape(8, 8);
-                    //inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
-                    inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                    if (StackPanelPPTControls.Visibility == Visibility.Visible && inkCanvas.Strokes.Count == 0 && Settings.Gesture.IsEnableFingerGestureSlideShowControl)
+                    {
+                        isLastTouchEraser = false;
+                        inkCanvas.EditingMode = InkCanvasEditingMode.GestureOnly;
+                        inkCanvas.Opacity = 0.1;
+                    }
+                    else
+                    {
+                        inkCanvas.EraserShape = new EllipseStylusShape(5, 5);
+                        //inkCanvas.EraserShape = new RectangleStylusShape(8, 8);
+                        //inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
+                        inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                    }
                 }
             }
             else
@@ -2267,6 +2281,16 @@ namespace Ink_Canvas
 
         #region Gesture
 
+
+        private void ToggleSwitchEnableFingerGestureSlideShowControl_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsEnableFingerGestureSlideShowControl = ToggleSwitchEnableFingerGestureSlideShowControl.IsOn;
+
+            SaveSettingsToFile();
+        }
+
         private void ToggleSwitchEnableTwoFingerRotation_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
@@ -3055,6 +3079,7 @@ namespace Ink_Canvas
         {
             try
             {
+                inkCanvas.Opacity = 1;
                 if (Settings.InkToShape.IsInkToShapeEnabled)
                 {
                     try
