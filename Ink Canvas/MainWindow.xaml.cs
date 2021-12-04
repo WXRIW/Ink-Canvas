@@ -3180,7 +3180,7 @@ namespace Ink_Canvas
                             result.Centroid = new Point((p[0].X + p[2].X) / 2, (p[0].Y + p[2].Y) / 2);
                             bool needRotation = true;
 
-                            if (shape.Width > 75 || shape.Height > 75 && result.InkDrawingNode.HotPoints.Count == 3)
+                            if (shape.Width > 75 || shape.Height > 75 && p.Count == 4)
                             {
                                 Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
                                 Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
