@@ -2851,6 +2851,7 @@ namespace Ink_Canvas
                     else
                     {
                         double d = CuboidFrontRectIniP.Y - endP.Y;
+                        if (d < 0) d = -d; //就是懒不想做反向的，不要让我去做，想做自己做好之后 Pull Request
                         double a = CuboidFrontRectEndP.X - CuboidFrontRectIniP.X; //正面矩形长
                         double b = CuboidFrontRectEndP.Y - CuboidFrontRectIniP.Y; //正面矩形宽
 
