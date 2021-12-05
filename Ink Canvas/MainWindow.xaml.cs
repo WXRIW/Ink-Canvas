@@ -4503,7 +4503,7 @@ namespace Ink_Canvas
         private void SymbolIconRandOne_MouseUp(object sender, MouseButtonEventArgs e)
         {
             BorderTools.Visibility = Visibility.Collapsed;
-            BtnRand_Click(BtnRand, null);
+            new RandWindow(true).ShowDialog();
         }
 
         private void SymbolIconTools_MouseUp(object sender, MouseButtonEventArgs e)

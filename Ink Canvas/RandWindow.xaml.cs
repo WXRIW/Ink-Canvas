@@ -28,7 +28,24 @@ namespace Ink_Canvas
             InitializeComponent();
         }
 
+        public RandWindow(bool IsAutoClose)
+        {
+            InitializeComponent();
+
+            isAutoClose = IsAutoClose;
+
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(100);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    BorderBtnRand_MouseUp(BorderBtnRand, null);
+                });
+            })).Start();
+        }
+
         public static int randSeed = 0;
+
+        public bool isAutoClose = false;
 
         public int TotalCount = 1;
         public int PeopleCount = 60;
@@ -158,6 +175,17 @@ namespace Ink_Canvas
                         LabelOutput3.Content = outputString.ToString().Trim();
                     }
                     BorderBtnRandCover.Visibility = Visibility.Collapsed;
+
+                    if (isAutoClose)
+                    {
+                        new Thread(new ThreadStart(() => {
+                            Thread.Sleep(1500);
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                Close();
+                            });
+                        })).Start();
+                    }
                 });
             })).Start();
         }
