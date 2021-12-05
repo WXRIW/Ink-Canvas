@@ -2525,6 +2525,15 @@ namespace Ink_Canvas
             CancelSingleFingerDragMode();
         }
 
+        private void BtnDrawDashedCircle_Click(object sender, EventArgs e)
+        {
+            forceEraser = true;
+            drawingShapeMode = 10;
+            inkCanvas.EditingMode = InkCanvasEditingMode.None;
+            inkCanvas.IsManipulationEnabled = true;
+            CancelSingleFingerDragMode();
+        }
+
         private void BtnDrawCylinder_Click(object sender, EventArgs e)
         {
             forceEraser = true;
@@ -2699,6 +2708,17 @@ namespace Ink_Canvas
                     catch { }
                     lastTempStroke = stroke;
                     inkCanvas.Strokes.Add(stroke);
+                    break;
+                case 10:
+                    R = GetDistance(iniP, endP);
+                    strokes = GenerateDashedLineEllipseStrokeCollection(new Point(iniP.X - R, iniP.Y - R), new Point(iniP.X + R, iniP.Y + R));
+                    try
+                    {
+                        inkCanvas.Strokes.Remove(lastTempStrokeCollection);
+                    }
+                    catch { }
+                    lastTempStrokeCollection = strokes;
+                    inkCanvas.Strokes.Add(strokes);
                     break;
                 case 6:
                     newIniP = iniP;
@@ -3620,18 +3640,31 @@ namespace Ink_Canvas
                                     }
                                     else if (Math.Abs(result.Centroid.X - circle.Centroid.X) / a < 0.2)
                                     {
-                                        Label.Visibility = Visibility.Visible;
-                                        Label.Foreground = Brushes.Gray;
                                         double sinTheta = Math.Abs(circle.Centroid.Y - result.Centroid.Y) / circle.R;
                                         double cosTheta = Math.Sqrt(1 - sinTheta * sinTheta);
                                         double newA = circle.R * cosTheta;
-                                        Label.Content = Label.Content.ToString() + newA.ToString() + "  " + (Math.Abs(newA - circle.R) / a).ToString();
                                         if (circle.R * sinTheta / circle.R < 0.9 && a / b > 2 && Math.Abs(newA - a) / newA < 0.3)
                                         {
                                             iniP.X = circle.Centroid.X - newA;
                                             endP.X = circle.Centroid.X + newA;
                                             iniP.Y = result.Centroid.Y - newA / 5;
                                             endP.Y = result.Centroid.Y + newA / 5;
+
+                                            double topB = endP.Y - iniP.Y;
+
+                                            SetNewBackupOfStroke();
+                                            inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                            newStrokes = new StrokeCollection();
+
+                                            var _pointList = GenerateEllipseGeometry(iniP, endP, false, true);
+                                            var _point = new StylusPointCollection(_pointList);
+                                            var _stroke = new Stroke(_point)
+                                            {
+                                                DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
+                                            };
+                                            inkCanvas.Strokes.Add(_stroke.Clone());
+                                            inkCanvas.Strokes.Add(GenerateDashedLineEllipseStrokeCollection(iniP, endP, true, false));
+                                            return;
                                         }
                                     }
                                     else if (Math.Abs(result.Centroid.Y - circle.Centroid.Y) / a < 0.2)

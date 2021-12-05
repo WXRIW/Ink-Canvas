@@ -22,6 +22,32 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <DrawingImage x:Key="DrawShapeImageSource.DashedCircle">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V825 H825 V0 H0 Z">
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" DashCap="Round" LineJoin="Miter">
+                            <Pen.DashStyle>
+                                <DashStyle Offset="0" Dashes="2.029 2.029" />
+                            </Pen.DashStyle>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <EllipseGeometry RadiusX="387.5" RadiusY="387.5" Center="412.5,412.5" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="100" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="412.45,412.55" EndPoint="412.55,412.45" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
     <DrawingImage x:Key="DrawShapeImageSource.Cuboid">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V798.2 H801.77 V0 H0 Z">
