@@ -777,6 +777,23 @@
                                 </Border>
                             </Grid>
                             <ui:SymbolIcon Symbol="SelectAll" Foreground="#666666" MouseUp="SymbolIconSelect_MouseUp"/>
+                            <Grid Margin="3,5,0,5">
+                                <Image MouseUp="ImageDrawShape_MouseUp" Margin="-2.5" Source="{DynamicResource DrawShapeImageSource.DrawShapeIcon}"/>
+                                <Border x:Name="BorderDrawShape" Visibility="Visible" Background="#9FFFFFFF" BorderBrush="#BF666666" BorderThickness="1"
+                                    CornerRadius="8" Margin="-158,-65,-158,30" Height="50">
+                                    <ui:SimpleStackPanel Spacing="10" Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
+                                        <Image Margin="10,12,0,12" MouseUp="BtnDrawLine_Click" Source="{DynamicResource DrawShapeImageSource.Line}"/>
+                                        <Image Margin="-4,12,0,12" MouseUp="BtnDrawDashedLine_Click" Source="{DynamicResource DrawShapeImageSource.DashedLine}"/>
+                                        <Image Margin="-4,12,3,12" MouseUp="BtnDrawArrow_Click" Source="{DynamicResource DrawShapeImageSource.ArrowLine}"/>
+                                        <Image Margin="0,11" MouseUp="BtnDrawRectangle_Click" Source="{DynamicResource DrawShapeImageSource.Rectangle}"/>
+                                        <Image Margin="0,10" MouseUp="BtnDrawEllipse_Click" Source="{DynamicResource DrawShapeImageSource.Ellipse}"/>
+                                        <Image Margin="0,10" MouseUp="BtnDrawCircle_Click" Source="{DynamicResource DrawShapeImageSource.Circle}"/>
+                                        <Image Margin="3,10,2,10" MouseUp="BtnDrawCylinder_Click" Source="{DynamicResource DrawShapeImageSource.Cylinder}"/>
+                                        <Image Margin="2,12.5,2.5,10" MouseUp="BtnDrawCone_Click" Source="{DynamicResource DrawShapeImageSource.Cone}"/>
+                                        <Image Margin="2,12.5,2.5,10" MouseUp="BtnDrawCuboid_Click" Source="{DynamicResource DrawShapeImageSource.Cuboid}"/>
+                                    </ui:SimpleStackPanel>
+                                </Border>
+                            </Grid>
                             <Viewbox Margin="0,2">
                                 <Grid>
                                     <ui:SymbolIcon Symbol="Undo" Foreground="#666666"

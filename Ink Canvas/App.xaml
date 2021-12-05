@@ -10,6 +10,7 @@
                 <ui:ThemeResources RequestedTheme="Light" />
                 <ui:XamlControlsResources />
                 <ResourceDictionary Source="Resources/SeewoImageDictionary.xaml"/>
+                <ResourceDictionary Source="Resources/DrawShapeImageDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
