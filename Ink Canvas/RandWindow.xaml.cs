@@ -28,6 +28,8 @@ namespace Ink_Canvas
             InitializeComponent();
         }
 
+        public static int randSeed = 0;
+
         public int TotalCount = 1;
         public int PeopleCount = 60;
         public List<string> Names = new List<string>();
@@ -53,7 +55,7 @@ namespace Ink_Canvas
 
         private void BorderBtnRand_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Random random = new Random();
+            Random random = new Random(randSeed + DateTime.Now.Millisecond / 10 % 10);
             string outputString = "";
             List<string> outputs = new List<string>();
             List<int> rands = new List<int>();

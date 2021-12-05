@@ -3796,6 +3796,19 @@ namespace Ink_Canvas
                     }
                 }
 
+
+                try
+                {
+                    if (e.Stroke.StylusPoints.Count > 3)
+                    {
+                        Random random = new Random();
+                        double _speed = GetPointSpeed(e.Stroke.StylusPoints[random.Next(0, e.Stroke.StylusPoints.Count - 1)].ToPoint(), e.Stroke.StylusPoints[random.Next(0, e.Stroke.StylusPoints.Count - 1)].ToPoint(), e.Stroke.StylusPoints[random.Next(0, e.Stroke.StylusPoints.Count - 1)].ToPoint());
+
+                        RandWindow.randSeed = (int)(_speed * 100000 * 1000);
+                    }
+                }
+                catch { }
+
                 switch (Settings.Canvas.InkStyle)
                 {
                     case 1:
@@ -4482,6 +4495,12 @@ namespace Ink_Canvas
         }
 
         private void SymbolIconRand_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            BorderTools.Visibility = Visibility.Collapsed;
+            BtnRand_Click(BtnRand, null);
+        }
+
+        private void SymbolIconRandOne_MouseUp(object sender, MouseButtonEventArgs e)
         {
             BorderTools.Visibility = Visibility.Collapsed;
             BtnRand_Click(BtnRand, null);
