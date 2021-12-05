@@ -3037,6 +3037,7 @@ namespace Ink_Canvas
         bool isMouseDown = false;
         private void inkCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            BorderDrawShape.Visibility = Visibility.Collapsed;
             iniP = e.GetPosition(inkCanvas);
             isMouseDown = true;
         }
@@ -3072,7 +3073,6 @@ namespace Ink_Canvas
                     BtnPen_Click(null, null); //画完还原到笔模式
                 }
             }
-            BorderDrawShape.Visibility = Visibility.Collapsed;
             isMouseDown = false;
         }
 

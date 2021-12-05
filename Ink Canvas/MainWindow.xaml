@@ -780,7 +780,7 @@
                             <Grid Margin="3,5,0,5">
                                 <Image MouseUp="ImageDrawShape_MouseUp" Margin="-2.5" Source="{DynamicResource DrawShapeImageSource.DrawShapeIcon}"/>
                                 <Border x:Name="BorderDrawShape" Visibility="Visible" Background="#9FFFFFFF" BorderBrush="#BF666666" BorderThickness="1"
-                                    CornerRadius="8" Margin="-245,-70,-245,30" Height="50">
+                                    CornerRadius="8" Margin="-215,-70,-215,30" Height="50">
                                     <ui:SimpleStackPanel Spacing="10" Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
                                         <Image Margin="15,12,0,12" MouseUp="BtnDrawLine_Click" Source="{DynamicResource DrawShapeImageSource.Line}"/>
                                         <Image Margin="-4,12,0,12" MouseUp="BtnDrawDashedLine_Click" Source="{DynamicResource DrawShapeImageSource.DashedLine}"/>
@@ -792,8 +792,12 @@
                                         <Image Margin="3,10,2,10" MouseUp="BtnDrawCylinder_Click" Source="{DynamicResource DrawShapeImageSource.Cylinder}"/>
                                         <Image Margin="2,12.5,2.5,10" MouseUp="BtnDrawCone_Click" Source="{DynamicResource DrawShapeImageSource.Cone}"/>
                                         <Image Margin="2,12.5,2.5,10" MouseUp="BtnDrawCuboid_Click" Source="{DynamicResource DrawShapeImageSource.Cuboid}"/>
-                                        <Label Margin="15,0,0,0" Content="墨迹&#x000A;识别" Foreground="#666666" VerticalAlignment="Center"/>
-                                        <ui:ToggleSwitch Foreground="#666666" FontFamily="Microsoft YaHei UI" Width="80" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableInkToShape_Toggled" IsOn="{Binding ElementName=ToggleSwitchEnableInkToShape, Path=IsOn}"/>
+                                        <ui:SimpleStackPanel Margin="5,6,10,6">
+                                            <Label Margin="0,0,0,-2" Content="墨迹识别" Foreground="#666666" FontSize="13" VerticalAlignment="Center"/>
+                                            <Viewbox Height="25">
+                                                <ui:ToggleSwitch Foreground="#666666" FontFamily="Microsoft YaHei UI" Width="70" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableInkToShape_Toggled" IsOn="{Binding ElementName=ToggleSwitchEnableInkToShape, Path=IsOn}"/>
+                                            </Viewbox>
+                                        </ui:SimpleStackPanel>
                                     </ui:SimpleStackPanel>
                                 </Border>
                             </Grid>
