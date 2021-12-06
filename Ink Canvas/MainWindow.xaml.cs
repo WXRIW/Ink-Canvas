@@ -708,6 +708,7 @@ namespace Ink_Canvas
 
         private void CancelSingleFingerDragMode()
         {
+            BorderDrawShape.Visibility = Visibility.Collapsed;
             Label.Content = "isSingleFingerDragMode=" + isSingleFingerDragMode.ToString();
             if (isSingleFingerDragMode)
             {
@@ -3037,7 +3038,7 @@ namespace Ink_Canvas
         bool isMouseDown = false;
         private void inkCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            BorderDrawShape.Visibility = Visibility.Collapsed;
+            //BorderDrawShape.Visibility = Visibility.Collapsed;
             iniP = e.GetPosition(inkCanvas);
             isMouseDown = true;
         }
@@ -3052,6 +3053,14 @@ namespace Ink_Canvas
 
         private void inkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (drawingShapeMode == 5)
+            {
+                Circle circle = new Circle(new Point(), 0, lastTempStroke);
+                circle.R = GetDistance(circle.Stroke.StylusPoints[0].ToPoint(), circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].ToPoint()) / 2;
+                circle.Centroid = new Point((circle.Stroke.StylusPoints[0].X + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].X) / 2,
+                                            (circle.Stroke.StylusPoints[0].Y + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].Y) / 2);
+                circles.Add(circle);
+            }
             lastTempStroke = null;
             lastTempStrokeCollection = null;
             if (drawingShapeMode != 9 && drawingShapeMode != 0)
