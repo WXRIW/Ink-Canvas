@@ -1470,6 +1470,7 @@ namespace Ink_Canvas
                 }
             }
             dec.Remove(e.TouchDevice.Id);
+            inkCanvas.Opacity = 1;
             if (dec.Count == 0)
             {
                 if (lastTouchDownStrokeCollection.Count() != inkCanvas.Strokes.Count())
