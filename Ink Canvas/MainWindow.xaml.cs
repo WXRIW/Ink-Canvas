@@ -2980,9 +2980,41 @@ namespace Ink_Canvas
                     if (d == 0) return;
                     double sinTheta = (iniP.Y - endP.Y) / d;
                     double cosTheta = (endP.X - iniP.X) / d;
+                    double tanTheta = sinTheta / cosTheta;
                     double x = 20;
-                    if (Math.Abs(sinTheta / cosTheta) < 1.0 / 8) endP.Y = iniP.Y;
-                    if (Math.Abs(cosTheta / sinTheta) < 1.0 / 8) endP.X = iniP.X;
+                    if (Math.Abs(tanTheta) < 1.0 / 12)
+                    {
+                        sinTheta = 0;
+                        cosTheta = 1;
+                        endP.Y = iniP.Y;
+                    }
+                    //if (tanTheta < 0.6 && tanTheta > 0.55) //30
+                    //{
+                    //    sinTheta = 0.5;
+                    //    cosTheta = 0.866;
+                    //    endP.Y = iniP.Y - d * sinTheta;
+                    //    endP.X = iniP.X + d * cosTheta;
+                    //}
+                    //if (tanTheta < 1.05 && tanTheta > 0.95) //45
+                    //{
+                    //    sinTheta = 0.707;
+                    //    cosTheta = 0.707;
+                    //    endP.Y = iniP.Y - d * sinTheta;
+                    //    endP.X = iniP.X + d * cosTheta;
+                    //}
+                    //if (tanTheta < 1.76 && tanTheta > 1.7) //60
+                    //{
+                    //    sinTheta = 0.866;
+                    //    cosTheta = 0.5;
+                    //    endP.Y = iniP.Y - d * sinTheta;
+                    //    endP.X = iniP.X + d * cosTheta;
+                    //}
+                    if (Math.Abs(cosTheta / sinTheta) < 1.0 / 12)
+                    {
+                        endP.X = iniP.X;
+                        sinTheta = 1;
+                        cosTheta = 0;
+                    }
                     strokes.Add(GenerateLineStroke(new Point(iniP.X - 3 * x * sinTheta, iniP.Y - 3 * x * cosTheta), new Point(endP.X - 3 * x * sinTheta, endP.Y - 3 * x * cosTheta)));
                     strokes.Add(GenerateLineStroke(new Point(iniP.X - x * sinTheta, iniP.Y - x * cosTheta), new Point(endP.X - x * sinTheta, endP.Y - x * cosTheta)));
                     strokes.Add(GenerateLineStroke(new Point(iniP.X + x * sinTheta, iniP.Y + x * cosTheta), new Point(endP.X + x * sinTheta, endP.Y + x * cosTheta)));
