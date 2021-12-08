@@ -799,4 +799,188 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <DrawingImage x:Key="DrawShapeImageSource.Coordinate5">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V798.42 H796.54 V0 H0 Z">
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="290.48,508.88" EndPoint="770.01,508.88" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="770.6,508.42" EndPoint="601.29,418.79" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="600.18,597.33" EndPoint="771.54,509.71" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="290.3,509.06" EndPoint="290.3,26.53" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="289.84,25.94" EndPoint="200.21,195.25" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="378.75,196.36" EndPoint="291.13,25" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="290.39,508.97" EndPoint="26.67,772.68" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="26.58,773.42" EndPoint="209.68,717.08" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="84.21,590.05" EndPoint="25,773.18" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="DrawShapeImageSource.RectangleCenter">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V750.96 H753.21 V0 H0 Z">
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="25,25" EndPoint="725,25.5" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="25,725.25" EndPoint="25,25.25" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="728.21,725.96" EndPoint="728.21,25.96" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="26,725.25" EndPoint="726,725.75" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="150" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="376.56,375.53" EndPoint="376.66,375.43" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="DrawShapeImageSource.EllipseCenter">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V649.3 H825 V0 H0 Z">
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <EllipseGeometry RadiusX="387.5" RadiusY="299.65" Center="412.5,324.65" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="150" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="412.45,324.7" EndPoint="412.55,324.6" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="DrawShapeImageSource.DotLine">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V749.84 H749.84 V0 H0 Z">
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="60" StartLineCap="Round" EndLineCap="Round" DashCap="Round" LineJoin="Miter">
+                            <Pen.DashStyle>
+                                <DashStyle Offset="0" Dashes="0.0166666666666667 2" />
+                            </Pen.DashStyle>
+                        </Pen>
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="30,719.84" EndPoint="719.84,30" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="DrawShapeImageSource.Parabola">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V635.2 H684.27 V0 H0 Z">
+                <DrawingGroup Transform="1,0,0,1,-157.87,-182.4">
+                    <GeometryDrawing Geometry="F1 M684.27,635.2z M0,0z M182.87,207.4C191.75,296.78 210.54,423.16 252.87,553.03 260.15,575.33 290.28,665.09 352.09,727.67 378.68,754.59 401.88,767.11 413.96,772.86A203.34,203.34,0,0,0,496.84,792.4">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="1,0,0,1,-157.87,-182.4">
+                    <GeometryDrawing Geometry="F1 M684.27,635.2z M0,0z M817.13,207.6C808.25,296.98 789.46,423.36 747.13,553.23 739.85,575.53 709.72,665.29 647.91,727.87 621.32,754.79 598.12,767.31 586.04,773.06A203.34,203.34,0,0,1,503.16,792.6">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 </ResourceDictionary>
