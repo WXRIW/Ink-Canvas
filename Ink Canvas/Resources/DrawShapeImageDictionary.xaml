@@ -983,4 +983,154 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+    <DrawingImage x:Key="DrawShapeImageSource.HyperbolaWithFocalPoint">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V772.73 H777.7 V0 H0 Z">
+                <DrawingGroup Transform="1,0,0,1,-111.15,-113.63">
+                    <GeometryDrawing Geometry="F1 M777.7,772.73z M0,0z M136.54,861.37A395.1,395.1,0,0,0,216.54,814.37C254.61,785.46,277.79,756.9,284.54,748.37A351.08,351.08,0,0,0,330.54,672.37C345.4,638.21,350.64,610.37,355.54,583.37A523.22,523.22,0,0,0,363.85,500.5">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="57" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="85" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="108.8,386.42" EndPoint="108.9,386.32" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <DrawingGroup Transform="1,0,0,1,-111.15,-113.63">
+                    <GeometryDrawing Geometry="F1 M777.7,772.73z M0,0z M136.15,138.63A395.1,395.1,0,0,1,216.15,185.63C254.22,214.54,277.41,243.1,284.15,251.63A350.65,350.65,0,0,1,330.15,327.63C345.01,361.79,350.25,389.63,355.15,416.63A522,522,0,0,1,363.46,499.5">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="57" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="1,0,0,1,-111.15,-113.63">
+                    <GeometryDrawing Geometry="F1 M777.7,772.73z M0,0z M863.46,861.37A395.1,395.1,0,0,1,783.46,814.37C745.39,785.46,722.21,756.9,715.46,748.37A351.08,351.08,0,0,1,669.46,672.37C654.6,638.21,649.36,610.37,644.46,583.37A523.22,523.22,0,0,1,636.15,500.5">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="57" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="1,0,0,1,-111.15,-113.63">
+                    <GeometryDrawing Geometry="F1 M777.7,772.73z M0,0z M863.85,138.63A395.1,395.1,0,0,0,783.85,185.63C745.78,214.54,722.59,243.1,715.85,251.63A350.65,350.65,0,0,0,669.85,327.63C654.99,361.79,649.75,389.63,644.85,416.63A522,522,0,0,0,636.54,499.5">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="57" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="85" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="668.8,386.42" EndPoint="668.9,386.32" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="DrawShapeImageSource.ParabolaWithFocalPoint">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V635.2 H684.27 V0 H0 Z">
+                <DrawingGroup Transform="1,0,0,1,-157.87,-182.4">
+                    <GeometryDrawing Geometry="F1 M684.27,635.2z M0,0z M182.87,207.4C191.75,296.78 210.54,423.16 252.87,553.03 260.15,575.33 290.28,665.09 352.09,727.67 378.68,754.59 401.88,767.11 413.96,772.86A203.34,203.34,0,0,0,496.84,792.4">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="1,0,0,1,-157.87,-182.4">
+                    <GeometryDrawing Geometry="F1 M684.27,635.2z M0,0z M817.13,207.6C808.25,296.98 789.46,423.36 747.13,553.23 739.85,575.53 709.72,665.29 647.91,727.87 621.32,754.79 598.12,767.31 586.04,773.06A203.34,203.34,0,0,1,503.16,792.6">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="75" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="342.08,417.65" EndPoint="342.18,417.55" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="DrawShapeImageSource.EllipseCenterWithFocalPoint">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V649.3 H825 V0 H0 Z">
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="50" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <EllipseGeometry RadiusX="387.5" RadiusY="299.65" Center="412.5,324.65" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="150" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="412.45,324.7" EndPoint="412.55,324.6" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="75" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="212.45,324.7" EndPoint="212.55,324.6" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <GeometryDrawing>
+                    <GeometryDrawing.Pen>
+                        <Pen Brush="#666666" Thickness="75" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                    </GeometryDrawing.Pen>
+                    <GeometryDrawing.Geometry>
+                        <LineGeometry StartPoint="612.45,324.7" EndPoint="612.55,324.6" />
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="DrawShapeImageSource.Hyperbola">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V772.73 H777.7 V0 H0 Z">
+                <DrawingGroup Transform="1,0,0,1,-111.15,-113.63">
+                    <GeometryDrawing Geometry="F1 M777.7,772.73z M0,0z M136.54,861.37A395.1,395.1,0,0,0,216.54,814.37C254.61,785.46,277.79,756.9,284.54,748.37A351.08,351.08,0,0,0,330.54,672.37C345.4,638.21,350.64,610.37,355.54,583.37A523.22,523.22,0,0,0,363.85,500.5">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="57" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="1,0,0,1,-111.15,-113.63">
+                    <GeometryDrawing Geometry="F1 M777.7,772.73z M0,0z M136.15,138.63A395.1,395.1,0,0,1,216.15,185.63C254.22,214.54,277.41,243.1,284.15,251.63A350.65,350.65,0,0,1,330.15,327.63C345.01,361.79,350.25,389.63,355.15,416.63A522,522,0,0,1,363.46,499.5">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="57" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="1,0,0,1,-111.15,-113.63">
+                    <GeometryDrawing Geometry="F1 M777.7,772.73z M0,0z M863.46,861.37A395.1,395.1,0,0,1,783.46,814.37C745.39,785.46,722.21,756.9,715.46,748.37A351.08,351.08,0,0,1,669.46,672.37C654.6,638.21,649.36,610.37,644.46,583.37A523.22,523.22,0,0,1,636.15,500.5">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="57" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup Transform="1,0,0,1,-111.15,-113.63">
+                    <GeometryDrawing Geometry="F1 M777.7,772.73z M0,0z M863.85,138.63A395.1,395.1,0,0,0,783.85,185.63C745.78,214.54,722.59,243.1,715.85,251.63A350.65,350.65,0,0,0,669.85,327.63C654.99,361.79,649.75,389.63,644.85,416.63A522,522,0,0,0,636.54,499.5">
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#666666" Thickness="57" StartLineCap="Round" EndLineCap="Round" LineJoin="Miter" />
+                        </GeometryDrawing.Pen>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 </ResourceDictionary>
