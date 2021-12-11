@@ -5351,8 +5351,49 @@ namespace Ink_Canvas
 
         private void SymbolIconRandOne_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            BorderTools.Visibility = Visibility.Collapsed;
-            new RandWindow(true).ShowDialog();
+            //BorderTools.Visibility = Visibility.Collapsed;
+            //new RandWindow(true).ShowDialog();
+
+            InkCanvasForInkReplay.Visibility = Visibility.Visible;
+            inkCanvas.Visibility = Visibility.Collapsed;
+            InkCanvasForInkReplay.Strokes.Clear();
+            StrokeCollection strokes = inkCanvas.Strokes.Clone();
+
+            new Thread(new ThreadStart(() =>
+            {
+                foreach (Stroke stroke in strokes)
+                {
+                    //Thread.Sleep(200);
+                    //Application.Current.Dispatcher.Invoke(() =>
+                    //{
+                    //    InkCanvasForInkReplay.Strokes.Add(stroke);
+                    //});
+                    StylusPointCollection stylusPoints = new StylusPointCollection();
+                    Stroke s = null;
+                    foreach (StylusPoint stylusPoint in stroke.StylusPoints)
+                    {
+                        Thread.Sleep(10);
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            try
+                            {
+                                InkCanvasForInkReplay.Strokes.Remove(s);
+                            }
+                            catch { }
+                            stylusPoints.Add(stylusPoint);
+                            s = new Stroke(stylusPoints.Clone());
+                            s.DrawingAttributes = stroke.DrawingAttributes;
+                            InkCanvasForInkReplay.Strokes.Add(s);
+                        });
+                    }
+                }
+                Thread.Sleep(500);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    InkCanvasForInkReplay.Visibility = Visibility.Collapsed;
+                    inkCanvas.Visibility = Visibility.Visible;
+                });
+            })).Start();
         }
 
         private void SymbolIconTools_MouseUp(object sender, MouseButtonEventArgs e)

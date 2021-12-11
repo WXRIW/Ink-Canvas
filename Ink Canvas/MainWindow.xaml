@@ -1017,5 +1017,6 @@
         </Viewbox>
         <Grid Name="GridForFloatingBarDraging" Background="#01000000" Visibility="Collapsed"
               MouseMove="SymbolIconEmoji_MouseMove" MouseUp="SymbolIconEmoji_MouseUp"/>
+        <InkCanvas Name="InkCanvasForInkReplay" Visibility="Collapsed" EditingMode="None" Background="Transparent"/>
     </Grid>
 </Window>
