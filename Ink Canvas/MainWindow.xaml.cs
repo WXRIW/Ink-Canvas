@@ -3351,6 +3351,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 24:
+                case 25:
                     //双曲线 x^2/a^2 - y^2/b^2 = 1
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     var pointList2 = new List<Point>();
@@ -3398,6 +3399,21 @@ namespace Ink_Canvas
                             point = new StylusPointCollection(pointList4);
                             stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
                             strokes.Add(stroke.Clone());
+                            if (drawingShapeMode == 25)
+                            {
+                                //画焦点
+                                c = Math.Sqrt(a * a + b * b);
+                                stylusPoint = new StylusPoint(iniP.X + c, iniP.Y, (float)1.0);
+                                point = new StylusPointCollection();
+                                point.Add(stylusPoint);
+                                stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
+                                strokes.Add(stroke.Clone());
+                                stylusPoint = new StylusPoint(iniP.X - c, iniP.Y, (float)1.0);
+                                point = new StylusPointCollection();
+                                point.Add(stylusPoint);
+                                stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
+                                strokes.Add(stroke.Clone());
+                            }
                         }
                         catch
                         {

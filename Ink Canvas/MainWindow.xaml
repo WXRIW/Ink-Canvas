@@ -849,7 +849,7 @@
                                                 <Image Margin="6,10,2,10" MouseUp="BtnDrawCylinder_Click" Source="{DynamicResource DrawShapeImageSource.Cylinder}"/>
                                                 <Image Margin="8,12.5,0,10" MouseUp="BtnDrawCone_Click" Source="{DynamicResource DrawShapeImageSource.Cone}"/>
                                                 <Image Margin="5.5,12.5,2.5,10" MouseUp="BtnDrawCuboid_Click" Source="{DynamicResource DrawShapeImageSource.Cuboid}"/>
-                                                <Image Margin="0,11.5,2.5,9.5" MouseUp="BtnDrawCuboid_Click" Source="{DynamicResource DrawShapeImageSource.Tetrahedron}"/>
+                                                <Image Visibility="Collapsed" Margin="0,11.5,2.5,9.5" MouseUp="BtnDrawCuboid_Click" Source="{DynamicResource DrawShapeImageSource.Tetrahedron}"/>
                                             </ui:SimpleStackPanel>
                                         </ui:SimpleStackPanel>
                                     </Viewbox>
