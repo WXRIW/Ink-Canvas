@@ -49,6 +49,8 @@ namespace Ink_Canvas
     {
         [JsonProperty("isEnableTwoFingerRotation")]
         public bool IsEnableTwoFingerRotation { get; set; } = false;
+        [JsonProperty("isEnableTwoFingerRotationOnSelection")]
+        public bool IsEnableTwoFingerRotationOnSelection { get; set; } = false;
         [JsonProperty("isEnableTwoFingerGestureInPresentationMode")]
         public bool IsEnableTwoFingerGestureInPresentationMode { get; set; } = false;
         [JsonProperty("isEnableFingerGestureSlideShowControl")]

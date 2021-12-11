@@ -52,6 +52,7 @@ namespace Ink_Canvas
             BorderSettings.Visibility = Visibility.Collapsed;
             StackPanelToolButtons.Visibility = Visibility.Collapsed;
             BorderDrawShape.Visibility = Visibility.Collapsed;
+            GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
 
             if (App.StartArgs.Contains("-b")) //-b border
             {
@@ -160,7 +161,7 @@ namespace Ink_Canvas
             catch { }
         }
 
-        ApplicationGesture lastApplicationGesture = ApplicationGesture.AllGestures;
+        //ApplicationGesture lastApplicationGesture = ApplicationGesture.AllGestures;
         DateTime lastGestureTime = DateTime.Now;
         private void InkCanvas_Gesture(object sender, InkCanvasGestureEventArgs e)
         {
@@ -296,7 +297,10 @@ namespace Ink_Canvas
                                 }
                             }
                         }
+                    }
 
+                    if (response.Contains("Special Version") || response.Contains("AutoUpdateOnly"))
+                    {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             Version version = Assembly.GetExecutingAssembly().GetName().Version;
@@ -513,6 +517,14 @@ namespace Ink_Canvas
             {
                 ToggleSwitchEnableTwoFingerRotation.IsOn = false;
             }
+            if (Settings.Gesture.IsEnableTwoFingerRotationOnSelection)
+            {
+                ToggleSwitchEnableTwoFingerRotationOnSelection.IsOn = true;
+            }
+            else
+            {
+                ToggleSwitchEnableTwoFingerRotationOnSelection.IsOn = false;
+            }
             if (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode)
             {
                 ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn = true;
@@ -712,6 +724,7 @@ namespace Ink_Canvas
             {
                 BorderDrawShape.Visibility = Visibility.Collapsed;
             }
+            GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
             Label.Content = "isSingleFingerDragMode=" + isSingleFingerDragMode.ToString();
             if (isSingleFingerDragMode)
             {
@@ -2330,6 +2343,7 @@ namespace Ink_Canvas
             if (!isLoaded) return;
 
             Settings.Gesture.IsEnableTwoFingerRotation = ToggleSwitchEnableTwoFingerRotation.IsOn;
+            Settings.Gesture.IsEnableTwoFingerRotationOnSelection = ToggleSwitchEnableTwoFingerRotationOnSelection.IsOn;
 
             SaveSettingsToFile();
         }
@@ -2545,13 +2559,16 @@ namespace Ink_Canvas
         }
         #endregion Other Controls
 
+        #endregion Left Side Panel
+
         #region Selection Gestures
 
         bool isGridInkCanvasSelectionCoverMouseDown = false;
+        StrokeCollection StrokesSelectionClone = new StrokeCollection();
+
         private void GridInkCanvasSelectionCover_MouseDown(object sender, MouseButtonEventArgs e)
         {
             isGridInkCanvasSelectionCoverMouseDown = true;
-            //GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
         }
 
         private void GridInkCanvasSelectionCover_MouseUp(object sender, MouseButtonEventArgs e)
@@ -2571,6 +2588,9 @@ namespace Ink_Canvas
             inkCanvas.IsManipulationEnabled = false;
         }
 
+        double BorderStrokeSelectionControlWidth = 490.0;
+        double BorderStrokeSelectionControlHeight = 80.0;
+
         private void inkCanvas_SelectionChanged(object sender, EventArgs e)
         {
             if (inkCanvas.GetSelectedStrokes().Count == 0)
@@ -2580,10 +2600,21 @@ namespace Ink_Canvas
             else
             {
                 GridInkCanvasSelectionCover.Visibility = Visibility.Visible;
-                //GridInkCanvasSelectionCover.Height = inkCanvas.GetSelectionBounds().Height;
-                //GridInkCanvasSelectionCover.Width = inkCanvas.GetSelectionBounds().Width;
-                //GridInkCanvasSelectionCover.Margin = new Thickness(inkCanvas.GetSelectionBounds().Left, inkCanvas.GetSelectionBounds().Top, 0, 0);
+                BorderStrokeSelectionClone.Background = Brushes.Transparent;
+                isStrokeSelectionCloneOn = false;
+                updateBorderStrokeSelectionControlLocation();
             }
+        }
+
+        private void updateBorderStrokeSelectionControlLocation()
+        {
+            double borderLeft = (inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Right - BorderStrokeSelectionControlWidth) / 2;
+            double borderTop = inkCanvas.GetSelectionBounds().Bottom + 15;
+            if (borderLeft < 0) borderLeft = 0;
+            if (borderTop < 0) borderTop = 0;
+            if (Width - borderLeft < BorderStrokeSelectionControlWidth) borderLeft = Width - BorderStrokeSelectionControlWidth;
+            if (Height - borderTop < BorderStrokeSelectionControlHeight) borderTop = Height - BorderStrokeSelectionControlHeight;
+            BorderStrokeSelectionControl.Margin = new Thickness(borderLeft, borderTop, 0, 0);
         }
 
         private void GridInkCanvasSelectionCover_ManipulationStarting(object sender, ManipulationStartingEventArgs e)
@@ -2598,43 +2629,53 @@ namespace Ink_Canvas
 
         private void GridInkCanvasSelectionCover_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
-            if (dec.Count >= 1)
+            try
             {
-                ManipulationDelta md = e.DeltaManipulation;
-                Vector trans = md.Translation;  // 获得位移矢量
-                double rotate = md.Rotation;  // 获得旋转角度
-                Vector scale = md.Scale;  // 获得缩放倍数
-
-                Matrix m = new Matrix();
-
-                // Find center of element and then transform to get current location of center
-                FrameworkElement fe = e.Source as FrameworkElement;
-                Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
-                center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
-                    inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
-                center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
-
-                // Update matrix to reflect translation/rotation
-                m.Translate(trans.X, trans.Y);  // 移动
-                if (Settings.Gesture.IsEnableTwoFingerRotation)
+                if (dec.Count >= 1)
                 {
-                    m.RotateAt(rotate, center.X, center.Y);  // 旋转
-                }
-                m.ScaleAt(scale.X, scale.Y, center.X, center.Y);  // 缩放
+                    ManipulationDelta md = e.DeltaManipulation;
+                    Vector trans = md.Translation;  // 获得位移矢量
+                    double rotate = md.Rotation;  // 获得旋转角度
+                    Vector scale = md.Scale;  // 获得缩放倍数
 
-                StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
-                foreach (Stroke stroke in strokes)
-                {
-                    stroke.Transform(m, false);
+                    Matrix m = new Matrix();
 
-                    try
+                    // Find center of element and then transform to get current location of center
+                    FrameworkElement fe = e.Source as FrameworkElement;
+                    Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+                    center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+                        inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
+                    center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+                    // Update matrix to reflect translation/rotation
+                    m.Translate(trans.X, trans.Y);  // 移动
+                    m.ScaleAt(scale.X, scale.Y, center.X, center.Y);  // 缩放
+
+                    StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+                    if (StrokesSelectionClone.Count != 0)
                     {
-                        stroke.DrawingAttributes.Width *= md.Scale.X;
-                        stroke.DrawingAttributes.Height *= md.Scale.Y;
+                        strokes = StrokesSelectionClone;
                     }
-                    catch { }
+                    else if (Settings.Gesture.IsEnableTwoFingerRotationOnSelection)
+                    {
+                        m.RotateAt(rotate, center.X, center.Y);  // 旋转
+                    }
+                    foreach (Stroke stroke in strokes)
+                    {
+                        stroke.Transform(m, false);
+
+                        try
+                        {
+                            stroke.DrawingAttributes.Width *= md.Scale.X;
+                            stroke.DrawingAttributes.Height *= md.Scale.Y;
+                        }
+                        catch { }
+                    }
+
+                    updateBorderStrokeSelectionControlLocation();
                 }
             }
+            catch { }
         }
 
         private void GridInkCanvasSelectionCover_TouchDown(object sender, TouchEventArgs e)
@@ -2655,20 +2696,19 @@ namespace Ink_Canvas
                 TouchPoint touchPoint = e.GetTouchPoint(null);
                 centerPoint = touchPoint.Position;
                 lastTouchPointOnGridInkCanvasCover = touchPoint.Position;
+
+                if (isStrokeSelectionCloneOn)
+                {
+                    StrokesSelectionClone = inkCanvas.GetSelectedStrokes().Clone();
+                    inkCanvas.Strokes.Add(StrokesSelectionClone);
+                }
             }
-            ////设备两个及两个以上，将画笔功能关闭
-            //if (dec.Count > 1)
-            //{
-            //    if (inkCanvas.EditingMode != InkCanvasEditingMode.None && inkCanvas.EditingMode != InkCanvasEditingMode.Select)
-            //    {
-            //        lastInkCanvasEditingMode = inkCanvas.EditingMode;
-            //        inkCanvas.EditingMode = InkCanvasEditingMode.None;
-            //    }
-            //}
         }
 
         private void GridInkCanvasSelectionCover_PreviewTouchUp(object sender, TouchEventArgs e)
         {
+            dec.Remove(e.TouchDevice.Id);
+            if (dec.Count >= 1) return;
             if (lastTouchPointOnGridInkCanvasCover == e.GetTouchPoint(null).Position)
             {
                 if (lastTouchPointOnGridInkCanvasCover.X < inkCanvas.GetSelectionBounds().Left ||
@@ -2677,33 +2717,22 @@ namespace Ink_Canvas
                     lastTouchPointOnGridInkCanvasCover.Y > inkCanvas.GetSelectionBounds().Bottom)
                 {
                     inkCanvas.Select(new StrokeCollection());
+                    StrokesSelectionClone = new StrokeCollection();
                 }
             }
             else if (inkCanvas.GetSelectedStrokes().Count == 0)
             {
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+                StrokesSelectionClone = new StrokeCollection();
             }
             else
             {
                 GridInkCanvasSelectionCover.Visibility = Visibility.Visible;
-                //GridInkCanvasSelectionCover.Height = inkCanvas.GetSelectionBounds().Height;
-                //GridInkCanvasSelectionCover.Width = inkCanvas.GetSelectionBounds().Width;
-                //GridInkCanvasSelectionCover.Margin = new Thickness(inkCanvas.GetSelectionBounds().Left, inkCanvas.GetSelectionBounds().Top, 0, 0);
+                StrokesSelectionClone = new StrokeCollection();
             }
-            ////手势完成后切回之前的状态
-            //if (dec.Count > 1)
-            //{
-            //    if (inkCanvas.EditingMode == InkCanvasEditingMode.None)
-            //    {
-            //        inkCanvas.EditingMode = lastInkCanvasEditingMode;
-            //    }
-            //}
-            dec.Remove(e.TouchDevice.Id);
         }
 
         #endregion Selection Gestures
-
-        #endregion Left Side Panel
 
         #region Shape Drawing
 
@@ -3282,9 +3311,9 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 23:
-                    a = Math.Abs(endP.X - iniP.X) / 2;
-                    b = Math.Abs(endP.Y - iniP.Y) / 2;
-                    pointList = GenerateEllipseGeometry(new Point(iniP.X - a * 2, iniP.Y - b * 2), new Point(iniP.X + a * 2, iniP.Y + b * 2));
+                    a = Math.Abs(endP.X - iniP.X);
+                    b = Math.Abs(endP.Y - iniP.Y);
+                    pointList = GenerateEllipseGeometry(new Point(iniP.X - a, iniP.Y - b), new Point(iniP.X + a, iniP.Y + b));
                     point = new StylusPointCollection(pointList);
                     stroke = new Stroke(point)
                     {
@@ -5017,9 +5046,11 @@ namespace Ink_Canvas
 
         private void SymbolIconDelete_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (sender != lastBorderMouseDownObject) return;
             if (inkCanvas.GetSelectedStrokes().Count > 0)
             {
                 inkCanvas.Strokes.Remove(inkCanvas.GetSelectedStrokes());
+                GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
             }
             else if (inkCanvas.Strokes.Count > 0)
             {
@@ -5261,6 +5292,167 @@ namespace Ink_Canvas
         private void GridPPTControlNext_MouseUp(object sender, MouseButtonEventArgs e)
         {
             BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
+        }
+
+        object lastBorderMouseDownObject;
+
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            lastBorderMouseDownObject = sender;
+        }
+
+        bool isStrokeSelectionCloneOn = false;
+        private void BorderStrokeSelectionClone_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            if (isStrokeSelectionCloneOn)
+            {
+                BorderStrokeSelectionClone.Background = Brushes.Transparent;
+
+                isStrokeSelectionCloneOn = false;
+            }
+            else
+            {
+                BorderStrokeSelectionClone.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
+
+                isStrokeSelectionCloneOn = true;
+            }
+        }
+
+        private void BorderStrokeSelectionDelete_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject == sender)
+            {
+                SymbolIconDelete_MouseUp(sender, e);
+            }
+        }
+
+        private void GridPenWidthDecrease_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
+            {
+                stroke.DrawingAttributes.Width *= 0.8;
+                stroke.DrawingAttributes.Height *= 0.8;
+            }
+        }
+
+        private void GridPenWidthIncrease_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
+            {
+                stroke.DrawingAttributes.Width *= 1.25;
+                stroke.DrawingAttributes.Height *= 1.25;
+            }
+        }
+
+        private void GridPenWidthRestore_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
+            {
+                stroke.DrawingAttributes.Width = inkCanvas.DefaultDrawingAttributes.Width;
+                stroke.DrawingAttributes.Height = inkCanvas.DefaultDrawingAttributes.Height;
+            }
+        }
+
+        private void ImageFlipHorizontal_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            Matrix m = new Matrix();
+
+            // Find center of element and then transform to get current location of center
+            FrameworkElement fe = e.Source as FrameworkElement;
+            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
+            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+            // Update matrix to reflect translation/rotation
+            m.ScaleAt(-1, 1, center.X, center.Y);  // 缩放
+
+            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+            foreach (Stroke stroke in strokes)
+            {
+                stroke.Transform(m, false);
+            }
+
+            //updateBorderStrokeSelectionControlLocation();
+        }
+
+        private void ImageFlipVertical_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            Matrix m = new Matrix();
+
+            // Find center of element and then transform to get current location of center
+            FrameworkElement fe = e.Source as FrameworkElement;
+            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
+            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+            // Update matrix to reflect translation/rotation
+            m.ScaleAt(1, -1, center.X, center.Y);  // 缩放
+
+            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+            foreach (Stroke stroke in strokes)
+            {
+                stroke.Transform(m, false);
+            }
+        }
+
+        private void ImageRotate45_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            Matrix m = new Matrix();
+
+            // Find center of element and then transform to get current location of center
+            FrameworkElement fe = e.Source as FrameworkElement;
+            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
+            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+            // Update matrix to reflect translation/rotation
+            m.RotateAt(45, center.X, center.Y);  // 旋转
+
+            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+            foreach (Stroke stroke in strokes)
+            {
+                stroke.Transform(m, false);
+            }
+        }
+
+        private void ImageRotate90_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            Matrix m = new Matrix();
+
+            // Find center of element and then transform to get current location of center
+            FrameworkElement fe = e.Source as FrameworkElement;
+            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
+            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+            // Update matrix to reflect translation/rotation
+            m.RotateAt(90, center.X, center.Y);  // 旋转
+
+            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+            foreach (Stroke stroke in strokes)
+            {
+                stroke.Transform(m, false);
+            }
         }
 
         private void ImagePPTControlEnd_MouseUp(object sender, MouseButtonEventArgs e)
