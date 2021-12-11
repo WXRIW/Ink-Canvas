@@ -3284,7 +3284,7 @@ namespace Ink_Canvas
                 case 23:
                     a = Math.Abs(endP.X - iniP.X) / 2;
                     b = Math.Abs(endP.Y - iniP.Y) / 2;
-                    pointList = GenerateEllipseGeometry(new Point(iniP.X - a, iniP.Y - b), new Point(iniP.X + a, iniP.Y + b));
+                    pointList = GenerateEllipseGeometry(new Point(iniP.X - a * 2, iniP.Y - b * 2), new Point(iniP.X + a * 2, iniP.Y + b * 2));
                     point = new StylusPointCollection(pointList);
                     stroke = new Stroke(point)
                     {
@@ -3365,7 +3365,7 @@ namespace Ink_Canvas
                         //drawMultiStepShapeSpecialParameter1 = (endP.X - iniP.X) * (endP.X - iniP.X) - (endP.Y - iniP.Y) * (endP.Y - iniP.Y) / (k * k);
                         //drawMultiStepShapeSpecialParameter2 = drawMultiStepShapeSpecialParameter1 * drawMultiStepShapeSpecialParameter1 * k * k;
                         drawMultiStepShapeSpecialParameter3 = k;
-                        drawMultiStepShapeSpecialStrokeCollection = strokes.Clone();
+                        drawMultiStepShapeSpecialStrokeCollection = strokes;
                     }
                     else
                     {
@@ -3378,23 +3378,31 @@ namespace Ink_Canvas
                         pointList = new List<Point>();
                         for (double i = a; i <= Math.Abs(endP.X - iniP.X); i += 0.5)
                         {
-                            pointList.Add(new Point(iniP.X + i, iniP.Y - Math.Sqrt(k * k * (endP.X - iniP.X) * (endP.X - iniP.X) - b * b)));
-                            pointList2.Add(new Point(iniP.X + i, iniP.Y + k * k * (endP.X - iniP.X) * (endP.X - iniP.X) - b * b));
-                            pointList3.Add(new Point(iniP.X - i, iniP.Y - k * k * (endP.X - iniP.X) * (endP.X - iniP.X) + b * b));
-                            pointList4.Add(new Point(iniP.X - i, iniP.Y + k * k * (endP.X - iniP.X) * (endP.X - iniP.X) - b * b));
+                            double rY = Math.Sqrt(Math.Abs(k * k * i * i - b * b));
+                            pointList.Add(new Point(iniP.X + i, iniP.Y - rY));
+                            pointList2.Add(new Point(iniP.X + i, iniP.Y + rY));
+                            pointList3.Add(new Point(iniP.X - i, iniP.Y - rY));
+                            pointList4.Add(new Point(iniP.X - i, iniP.Y + rY));
                         }
-                        point = new StylusPointCollection(pointList);
-                        stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
-                        strokes.Add(stroke.Clone());
-                        point = new StylusPointCollection(pointList2);
-                        stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
-                        strokes.Add(stroke.Clone());
-                        point = new StylusPointCollection(pointList3);
-                        stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
-                        strokes.Add(stroke.Clone());
-                        point = new StylusPointCollection(pointList4);
-                        stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
-                        strokes.Add(stroke.Clone());
+                        try
+                        {
+                            point = new StylusPointCollection(pointList);
+                            stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
+                            strokes.Add(stroke.Clone());
+                            point = new StylusPointCollection(pointList2);
+                            stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
+                            strokes.Add(stroke.Clone());
+                            point = new StylusPointCollection(pointList3);
+                            stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
+                            strokes.Add(stroke.Clone());
+                            point = new StylusPointCollection(pointList4);
+                            stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
+                            strokes.Add(stroke.Clone());
+                        }
+                        catch
+                        {
+                            return;
+                        }
                     }
                     try
                     {
