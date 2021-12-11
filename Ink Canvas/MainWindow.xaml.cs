@@ -2563,6 +2563,172 @@ namespace Ink_Canvas
 
         #region Selection Gestures
 
+        #region Floating Control
+
+        object lastBorderMouseDownObject;
+
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            lastBorderMouseDownObject = sender;
+        }
+
+        bool isStrokeSelectionCloneOn = false;
+        private void BorderStrokeSelectionClone_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            if (isStrokeSelectionCloneOn)
+            {
+                BorderStrokeSelectionClone.Background = Brushes.Transparent;
+
+                isStrokeSelectionCloneOn = false;
+            }
+            else
+            {
+                BorderStrokeSelectionClone.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
+
+                isStrokeSelectionCloneOn = true;
+            }
+        }
+
+        private void BorderStrokeSelectionDelete_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject == sender)
+            {
+                SymbolIconDelete_MouseUp(sender, e);
+            }
+        }
+
+        private void GridPenWidthDecrease_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
+            {
+                stroke.DrawingAttributes.Width *= 0.8;
+                stroke.DrawingAttributes.Height *= 0.8;
+            }
+        }
+
+        private void GridPenWidthIncrease_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
+            {
+                stroke.DrawingAttributes.Width *= 1.25;
+                stroke.DrawingAttributes.Height *= 1.25;
+            }
+        }
+
+        private void GridPenWidthRestore_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
+            {
+                stroke.DrawingAttributes.Width = inkCanvas.DefaultDrawingAttributes.Width;
+                stroke.DrawingAttributes.Height = inkCanvas.DefaultDrawingAttributes.Height;
+            }
+        }
+
+        private void ImageFlipHorizontal_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            Matrix m = new Matrix();
+
+            // Find center of element and then transform to get current location of center
+            FrameworkElement fe = e.Source as FrameworkElement;
+            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
+            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+            // Update matrix to reflect translation/rotation
+            m.ScaleAt(-1, 1, center.X, center.Y);  // 缩放
+
+            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+            foreach (Stroke stroke in strokes)
+            {
+                stroke.Transform(m, false);
+            }
+
+            //updateBorderStrokeSelectionControlLocation();
+        }
+
+        private void ImageFlipVertical_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            Matrix m = new Matrix();
+
+            // Find center of element and then transform to get current location of center
+            FrameworkElement fe = e.Source as FrameworkElement;
+            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
+            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+            // Update matrix to reflect translation/rotation
+            m.ScaleAt(1, -1, center.X, center.Y);  // 缩放
+
+            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+            foreach (Stroke stroke in strokes)
+            {
+                stroke.Transform(m, false);
+            }
+        }
+
+        private void ImageRotate45_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            Matrix m = new Matrix();
+
+            // Find center of element and then transform to get current location of center
+            FrameworkElement fe = e.Source as FrameworkElement;
+            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
+            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+            // Update matrix to reflect translation/rotation
+            m.RotateAt(45, center.X, center.Y);  // 旋转
+
+            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+            foreach (Stroke stroke in strokes)
+            {
+                stroke.Transform(m, false);
+            }
+        }
+
+        private void ImageRotate90_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            Matrix m = new Matrix();
+
+            // Find center of element and then transform to get current location of center
+            FrameworkElement fe = e.Source as FrameworkElement;
+            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
+            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
+            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
+
+            // Update matrix to reflect translation/rotation
+            m.RotateAt(90, center.X, center.Y);  // 旋转
+
+            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+            foreach (Stroke stroke in strokes)
+            {
+                stroke.Transform(m, false);
+            }
+        }
+
+        #endregion
+
+
         bool isGridInkCanvasSelectionCoverMouseDown = false;
         StrokeCollection StrokesSelectionClone = new StrokeCollection();
 
@@ -5292,167 +5458,6 @@ namespace Ink_Canvas
         private void GridPPTControlNext_MouseUp(object sender, MouseButtonEventArgs e)
         {
             BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
-        }
-
-        object lastBorderMouseDownObject;
-
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            lastBorderMouseDownObject = sender;
-        }
-
-        bool isStrokeSelectionCloneOn = false;
-        private void BorderStrokeSelectionClone_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (lastBorderMouseDownObject != sender) return;
-
-            if (isStrokeSelectionCloneOn)
-            {
-                BorderStrokeSelectionClone.Background = Brushes.Transparent;
-
-                isStrokeSelectionCloneOn = false;
-            }
-            else
-            {
-                BorderStrokeSelectionClone.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
-
-                isStrokeSelectionCloneOn = true;
-            }
-        }
-
-        private void BorderStrokeSelectionDelete_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (lastBorderMouseDownObject == sender)
-            {
-                SymbolIconDelete_MouseUp(sender, e);
-            }
-        }
-
-        private void GridPenWidthDecrease_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (lastBorderMouseDownObject != sender) return;
-
-            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
-            {
-                stroke.DrawingAttributes.Width *= 0.8;
-                stroke.DrawingAttributes.Height *= 0.8;
-            }
-        }
-
-        private void GridPenWidthIncrease_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (lastBorderMouseDownObject != sender) return;
-
-            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
-            {
-                stroke.DrawingAttributes.Width *= 1.25;
-                stroke.DrawingAttributes.Height *= 1.25;
-            }
-        }
-
-        private void GridPenWidthRestore_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (lastBorderMouseDownObject != sender) return;
-
-            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
-            {
-                stroke.DrawingAttributes.Width = inkCanvas.DefaultDrawingAttributes.Width;
-                stroke.DrawingAttributes.Height = inkCanvas.DefaultDrawingAttributes.Height;
-            }
-        }
-
-        private void ImageFlipHorizontal_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (lastBorderMouseDownObject != sender) return;
-
-            Matrix m = new Matrix();
-
-            // Find center of element and then transform to get current location of center
-            FrameworkElement fe = e.Source as FrameworkElement;
-            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
-            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
-                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
-            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
-
-            // Update matrix to reflect translation/rotation
-            m.ScaleAt(-1, 1, center.X, center.Y);  // 缩放
-
-            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
-            foreach (Stroke stroke in strokes)
-            {
-                stroke.Transform(m, false);
-            }
-
-            //updateBorderStrokeSelectionControlLocation();
-        }
-
-        private void ImageFlipVertical_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (lastBorderMouseDownObject != sender) return;
-
-            Matrix m = new Matrix();
-
-            // Find center of element and then transform to get current location of center
-            FrameworkElement fe = e.Source as FrameworkElement;
-            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
-            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
-                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
-            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
-
-            // Update matrix to reflect translation/rotation
-            m.ScaleAt(1, -1, center.X, center.Y);  // 缩放
-
-            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
-            foreach (Stroke stroke in strokes)
-            {
-                stroke.Transform(m, false);
-            }
-        }
-
-        private void ImageRotate45_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (lastBorderMouseDownObject != sender) return;
-
-            Matrix m = new Matrix();
-
-            // Find center of element and then transform to get current location of center
-            FrameworkElement fe = e.Source as FrameworkElement;
-            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
-            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
-                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
-            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
-
-            // Update matrix to reflect translation/rotation
-            m.RotateAt(45, center.X, center.Y);  // 旋转
-
-            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
-            foreach (Stroke stroke in strokes)
-            {
-                stroke.Transform(m, false);
-            }
-        }
-
-        private void ImageRotate90_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (lastBorderMouseDownObject != sender) return;
-
-            Matrix m = new Matrix();
-
-            // Find center of element and then transform to get current location of center
-            FrameworkElement fe = e.Source as FrameworkElement;
-            Point center = new Point(fe.ActualWidth / 2, fe.ActualHeight / 2);
-            center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
-                inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
-            center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
-
-            // Update matrix to reflect translation/rotation
-            m.RotateAt(90, center.X, center.Y);  // 旋转
-
-            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
-            foreach (Stroke stroke in strokes)
-            {
-                stroke.Transform(m, false);
-            }
         }
 
         private void ImagePPTControlEnd_MouseUp(object sender, MouseButtonEventArgs e)
