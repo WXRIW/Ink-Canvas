@@ -2999,8 +2999,8 @@ namespace Ink_Canvas
 
         int drawMultiStepShapeCurrentStep = 0; //多笔完成的图形 当前所处在的笔画
         StrokeCollection drawMultiStepShapeSpecialStrokeCollection = new StrokeCollection(); //多笔完成的图形 当前所处在的笔画
-        double drawMultiStepShapeSpecialParameter1 = 0.0; //多笔完成的图形 特殊参数 通常用于表示a
-        double drawMultiStepShapeSpecialParameter2 = 0.0; //多笔完成的图形 特殊参数 通常用于表示b
+        //double drawMultiStepShapeSpecialParameter1 = 0.0; //多笔完成的图形 特殊参数 通常用于表示a
+        //double drawMultiStepShapeSpecialParameter2 = 0.0; //多笔完成的图形 特殊参数 通常用于表示b
         double drawMultiStepShapeSpecialParameter3 = 0.0; //多笔完成的图形 特殊参数 通常用于表示k
 
         private void MouseTouchMove(Point endP)
@@ -3363,8 +3363,6 @@ namespace Ink_Canvas
                         double k = Math.Abs((endP.Y - iniP.Y) / (endP.X - iniP.X));
                         strokes.Add(GenerateDashedLineStrokeCollection(new Point(2 * iniP.X - endP.X, 2 * iniP.Y - endP.Y), endP));
                         strokes.Add(GenerateDashedLineStrokeCollection(new Point(2 * iniP.X - endP.X, endP.Y), new Point(endP.X, 2 * iniP.Y - endP.Y)));
-                        //drawMultiStepShapeSpecialParameter1 = (endP.X - iniP.X) * (endP.X - iniP.X) - (endP.Y - iniP.Y) * (endP.Y - iniP.Y) / (k * k);
-                        //drawMultiStepShapeSpecialParameter2 = drawMultiStepShapeSpecialParameter1 * drawMultiStepShapeSpecialParameter1 * k * k;
                         drawMultiStepShapeSpecialParameter3 = k;
                         drawMultiStepShapeSpecialStrokeCollection = strokes;
                     }
@@ -3374,8 +3372,6 @@ namespace Ink_Canvas
                         double k = drawMultiStepShapeSpecialParameter3;
                         a = Math.Sqrt(Math.Abs((endP.X - iniP.X) * (endP.X - iniP.X) - (endP.Y - iniP.Y) * (endP.Y - iniP.Y) / (k * k)));
                         b = a * k;
-                        Label.Content = string.Format("a = {0}, b = {1}, k = {2}", a.ToString(), b.ToString(), k.ToString());
-                        Label.Visibility = Visibility.Visible;
                         pointList = new List<Point>();
                         for (double i = a; i <= Math.Abs(endP.X - iniP.X); i += 0.5)
                         {
