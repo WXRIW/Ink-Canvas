@@ -43,6 +43,8 @@ namespace Ink_Canvas
         public bool IsShowCursor { get; set; } = false;
         [JsonProperty("inkStyle")]
         public int InkStyle { get; set; } = 0;
+        [JsonProperty("eraserSize")]
+        public int EraserSize { get; set; } = 2;
     }
 
     public class Gesture

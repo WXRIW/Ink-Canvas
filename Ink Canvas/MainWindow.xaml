@@ -336,13 +336,22 @@
                                                FontSize="14"/>
                                 </StackPanel>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowCursor" Header="显示画笔光标" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCursor_Toggled"/>
-                                <TextBlock Text="画笔样式"  FontFamily="Microsoft YaHei UI" FontSize="14"/>
+                                <TextBlock Text="画笔样式" FontFamily="Microsoft YaHei UI" FontSize="14"/>
                                 <ComboBox Name="ComboBoxPenStyle" FontFamily="Microsoft YaHei UI" SelectedIndex="0" SelectionChanged="ComboBoxPenStyle_SelectionChanged">
                                     <ComboBoxItem Content="模拟笔锋（根据墨迹尾部计算）" FontFamily="Microsoft YaHei UI"/>
                                     <ComboBoxItem Content="模拟笔锋（根据速度计算）" FontFamily="Microsoft YaHei UI"/>
                                     <ComboBoxItem Content="无笔锋"  FontFamily="Microsoft YaHei UI"/>
                                 </ComboBox>
                                 <ui:ToggleSwitch Header="手指模式" IsOn="{Binding ElementName=ToggleSwitchModeFinger, Path=IsOn}" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关"/>
+                                <TextBlock Text="此选项仅适用于可获取触摸面积的屏幕" TextWrapping="Wrap" Foreground="#666666"/>
+                                <TextBlock Text="橡皮大小"  FontFamily="Microsoft YaHei UI" FontSize="14"/>
+                                <ComboBox Name="ComboBoxEraserSize" FontFamily="Microsoft YaHei UI" SelectedIndex="2" SelectionChanged="ComboBoxEraserSize_SelectionChanged">
+                                    <ComboBoxItem Content="小" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="较小" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="中（默认）" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="较大"  FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="大"  FontFamily="Microsoft YaHei UI"/>
+                                </ComboBox>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="手势">
@@ -420,9 +429,9 @@
                             <ui:SimpleStackPanel Spacing="12">
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoKillPptService" Header="自动查杀“PPT 小工具”" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoKillPptService_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoKillEasiNote" Header="自动查杀“希沃白板 5”" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoKillEasiNote_Toggled"/>
-                                <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesAtScreenshot" Header="截图时自动保存墨迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoKillEasiNote_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesAtScreenshot" Header="截图时自动保存墨迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveStrokesAtScreenshot_Toggled"/>
                                 <TextBlock Text="开启后将在结束幻灯片放映时自动将已有墨迹保存至此电脑，并在下次打开时自动加载（文件名和幻灯片页数都要相同）" TextWrapping="Wrap" Foreground="#666666"/>
-                                <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesInPowerPoint" Header="自动保存幻灯片墨迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoKillEasiNote_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesInPowerPoint" Header="自动保存幻灯片墨迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveStrokesInPowerPoint_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="关于">
@@ -492,7 +501,7 @@
 
         <Grid Name="GridNotifications" Margin="0,110" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Bottom">
             <Border CornerRadius="25" Height="50" Background="LightGray" Opacity="0.85">
-                <TextBlock Name="TextBlockNotice" Text="测试文本" Margin="20,10" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+                <TextBlock Name="TextBlockNotice" Text="测试文本" Margin="20,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
             </Border>
         </Grid>
 

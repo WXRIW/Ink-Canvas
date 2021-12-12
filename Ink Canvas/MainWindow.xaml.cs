@@ -971,6 +971,7 @@ namespace Ink_Canvas
         int BoundsWidth = 5;
         private void ToggleSwitchModeFinger_Toggled(object sender, RoutedEventArgs e)
         {
+            ToggleSwitchAutoEnterModeFinger.IsOn = ToggleSwitchModeFinger.IsOn;
             if (ToggleSwitchModeFinger.IsOn)
             {
                 BoundsWidth = 10; //35
@@ -1417,6 +1418,22 @@ namespace Ink_Canvas
                 if (drawingShapeMode == 0 && forceEraser) return;
                 if (boundsWidth > BoundsWidth * 2.5)
                 {
+                    double k = 1;
+                    switch (Settings.Canvas.EraserSize)
+                    {
+                        case 0:
+                            k = 0.5;
+                            break;
+                        case 1:
+                            k = 0.8;
+                            break;
+                        case 3:
+                            k = 1.25;
+                            break;
+                        case 4:
+                            k = 1.8;
+                            break;
+                    }
                     inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
                     inkCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
                 }
@@ -2343,6 +2360,13 @@ namespace Ink_Canvas
             SaveSettingsToFile();
         }
 
+        private void ComboBoxEraserSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Canvas.EraserSize = ComboBoxEraserSize.SelectedIndex;
+            SaveSettingsToFile();
+        }
+
         private void InkWidthSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (!isLoaded) return;
@@ -2390,6 +2414,21 @@ namespace Ink_Canvas
                 timerKillProcess.Stop();
             }
         }
+
+        private void ToggleSwitchAutoSaveStrokesAtScreenshot_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Automation.IsAutoSaveStrokesAtScreenshot = ToggleSwitchAutoSaveStrokesAtScreenshot.IsOn;
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchAutoSaveStrokesInPowerPoint_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Automation.IsAutoSaveStrokesInPowerPoint = ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn;
+            SaveSettingsToFile();
+        }
+
         #endregion
 
         #region Gesture
@@ -5110,13 +5149,12 @@ namespace Ink_Canvas
 
         private void BtnScreenshot_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                GridNotifications.Visibility = Visibility.Collapsed;
+            GridNotifications.Visibility = Visibility.Collapsed;
 
-                new Thread(new ThreadStart(() => {
-                    Thread.Sleep(20);
-
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(20);
+                try
+                {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
@@ -5138,12 +5176,22 @@ namespace Ink_Canvas
                         ShowNotification("截图成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
                             @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png");
                     });
-                })).Start();
-            }
-            catch
-            {
-                ShowNotification("截图保存失败");
-            }
+                }
+                catch
+                {
+                    ShowNotification("截图保存失败");
+                }
+
+                try
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (inkCanvas.Visibility != Visibility.Visible || inkCanvas.Strokes.Count == 0) return;
+                        SaveInkCanvasStrokes(false);
+                    });
+                }
+                catch { }
+            })).Start();
         }
 
         #endregion
@@ -5185,6 +5233,11 @@ namespace Ink_Canvas
                     });
                 }
             })).Start();
+        }
+
+        private void AppendNotification(string notice)
+        {
+            TextBlockNotice.Text = TextBlockNotice.Text + Environment.NewLine + notice;
         }
 
         #endregion
@@ -5640,31 +5693,37 @@ namespace Ink_Canvas
 
             GridNotifications.Visibility = Visibility.Collapsed;
 
-            new Thread(new ThreadStart(() => {
-                Thread.Sleep(50);
+            SaveInkCanvasStrokes();
+        }
 
+        private void SaveInkCanvasStrokes(bool newNotice = true)
+        {
                 try
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
                         if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\User Saved"))
                         {
                             Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\User Saved");
                         }
 
                         FileStream fs = new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                            @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk", FileMode.Create);
+                            @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk", FileMode.Create); //Ink Canvas STroKes
                         inkCanvas.Strokes.Save(fs);
 
-                        ShowNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                            @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk"); //Ink Canvas STroKes
-                    });
+                        if (newNotice)
+                        {
+                            ShowNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                                @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk");
+                        }
+                        else
+                        {
+                            AppendNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                                @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk");
+                        }
                 }
                 catch
                 {
                     ShowNotification("墨迹保存失败");
                 }
-            })).Start();
         }
 
         private void SymbolIconOpenStrokes_MouseUp(object sender, MouseButtonEventArgs e)
@@ -5679,7 +5738,7 @@ namespace Ink_Canvas
                 openFileDialog.InitialDirectory = defaultFolderPath;
             }
             openFileDialog.Title = "打开墨迹文件";
-            openFileDialog.Filter = "InkCanvas Strokes File (*.icstk)|*.icstk";
+            openFileDialog.Filter = "Ink Canvas Strokes File (*.icstk)|*.icstk";
             if (openFileDialog.ShowDialog() == true)
             {
                 try
