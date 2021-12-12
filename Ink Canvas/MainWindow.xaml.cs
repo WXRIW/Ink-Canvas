@@ -1848,9 +1848,9 @@ namespace Ink_Canvas
                 if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
                 {
                     string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\Auto Saved\Presentations\";
-                    if (Directory.Exists(defaultFolderPath + Wn.Application.Caption + "_" + Wn.Presentation.Slides.Count))
+                    if (Directory.Exists(defaultFolderPath + Wn.Application.ActivePresentation.Name + "_" + Wn.Presentation.Slides.Count))
                     {
-                        FileInfo[] files = new DirectoryInfo(defaultFolderPath + Wn.Application.Caption + "_" + Wn.Presentation.Slides.Count).GetFiles();
+                        FileInfo[] files = new DirectoryInfo(defaultFolderPath + Wn.Application.ActivePresentation.Name + "_" + Wn.Presentation.Slides.Count).GetFiles();
                         foreach(FileInfo file in files)
                         {
                             try
@@ -1953,7 +1953,7 @@ namespace Ink_Canvas
             if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
             {
                 string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\Auto Saved\Presentations\";
-                string folderPath = defaultFolderPath + presentation.Application.Caption + "_" + presentation.Slides.Count;
+                string folderPath = defaultFolderPath + presentation.Application.ActivePresentation.Name + "_" + presentation.Slides.Count;
                 if (!Directory.Exists(folderPath))
                 {
                     Directory.CreateDirectory(folderPath);
