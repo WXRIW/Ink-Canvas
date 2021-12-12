@@ -1806,7 +1806,32 @@ namespace Ink_Canvas
                 }
 
                 slidescount = Wn.Presentation.Slides.Count;
+                previousSlideID = 0;
                 memoryStreams = new MemoryStream[slidescount + 2];
+
+                //检查是否有已有墨迹，并加载
+                if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
+                {
+                    string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\Auto Saved\Presentations\";
+                    if (Directory.Exists(defaultFolderPath + Wn.Application.Caption + "_" + Wn.Presentation.Slides.Count))
+                    {
+                        FileInfo[] files = new DirectoryInfo(defaultFolderPath + Wn.Application.Caption + "_" + Wn.Presentation.Slides.Count).GetFiles();
+                        foreach(FileInfo file in files)
+                        {
+                            try
+                            {
+                                int i = int.Parse(System.IO.Path.GetFileNameWithoutExtension(file.Name));
+                                //var fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read);
+                                //MemoryStream ms = new MemoryStream(File.ReadAllBytes(file.FullName));
+                                //new StrokeCollection(fs).Save(ms);
+                                //ms.Position = 0;
+                                memoryStreams[i] = new MemoryStream(File.ReadAllBytes(file.FullName));
+                                memoryStreams[i].Position = 0;
+                            }
+                            catch { }
+                        }
+                    }
+                }
 
                 pointDesktop = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
                 pointPPT = new Point(-1, -1);
@@ -1871,38 +1896,67 @@ namespace Ink_Canvas
                 })).Start();
             });
             previousSlideID = Wn.View.CurrentShowPosition;
+            //检查是否有已有墨迹，并加载当前页
+            if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
+            {
+                try
+                {
+                    if (memoryStreams[Wn.View.CurrentShowPosition].Length > 0)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            inkCanvas.Strokes = new System.Windows.Ink.StrokeCollection(memoryStreams[Wn.View.CurrentShowPosition]);
+                        });
+                    }
+                }
+                catch { }
+            }
         }
 
         private void PptApplication_SlideShowEnd(Presentation Pres)
         {
+            if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
+            {
+                string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\Auto Saved\Presentations\";
+                string folderPath = defaultFolderPath + presentation.Application.Caption + "_" + presentation.Slides.Count;
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                for (int i = 1; i <= presentation.Slides.Count; i++)
+                {
+                    try
+                    {
+                        if (memoryStreams[i].Length > 0)
+                        {
+                            byte[] srcBuf = new Byte[memoryStreams[i].Length];
+                            //MessageBox.Show(memoryStreams[i].Length.ToString());
+                            memoryStreams[i].Read(srcBuf, 0, srcBuf.Length);
+                            File.WriteAllBytes(folderPath + @"\" + i.ToString("0000") + ".icstk", srcBuf);
+                        }
+                    }
+                    catch
+                    {
+                        File.Delete(folderPath + @"\" + i.ToString("0000") + ".icstk");
+                    }
+                }
+            }
+
             Application.Current.Dispatcher.Invoke(() =>
             {
                 isPresentationHaveBlackSpace = false;
 
-                //if (isButtonBackgroundTransparent == ToggleSwitchTransparentButtonBackground.IsOn &&
-                //    isButtonBackgroundTransparent == true)
-                //{
-                    //if (Settings.Appearance.IsTransparentButtonBackground)
-                    //{
-                    //    BtnExit.Background = new SolidColorBrush(StringToColor("#7F909090"));
-                    //}
-                    //else
-                    //{
-                        if (BtnSwitchTheme.Content.ToString() == "深色")
-                        {
-                            //Light
-                            BtnExit.Foreground = Brushes.Black;
-                            SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
-                            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-                            //BtnExit.Background = new SolidColorBrush(StringToColor("#FFCCCCCC"));
-                        }
-                        else
-                        {
-                            //Dark
-                            //BtnExit.Background = new SolidColorBrush(StringToColor("#FF555555"));
-                        }
-                    //}
-                //}
+                if (BtnSwitchTheme.Content.ToString() == "深色")
+                {
+                    //Light
+                    BtnExit.Foreground = Brushes.Black;
+                    SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
+                    ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                }
+                else
+                {
+                    //Dark
+                }
 
                 BtnPPTSlideShow.Visibility = Visibility.Visible;
                 BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
@@ -2062,6 +2116,17 @@ namespace Ink_Canvas
 
         private void BtnPPTSlideShowEnd_Click(object sender, RoutedEventArgs e)
         {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    MemoryStream ms = new MemoryStream();
+                    inkCanvas.Strokes.Save(ms);
+                    ms.Position = 0;
+                    memoryStreams[pptApplication.SlideShowWindows[1].View.CurrentShowPosition] = ms;
+                }
+                catch { }
+            });
             new Thread(new ThreadStart(() =>
             {
                 try
