@@ -36,6 +36,7 @@ using System.Drawing.Imaging;
 using System.Windows.Media.Animation;
 using System.Windows.Ink.AnalysisCore;
 using Ink_Canvas.Helpers;
+using Microsoft.Win32;
 
 namespace Ink_Canvas
 {
@@ -2756,9 +2757,11 @@ namespace Ink_Canvas
 
         double BorderStrokeSelectionControlWidth = 490.0;
         double BorderStrokeSelectionControlHeight = 80.0;
+        bool isProgramChangeStrokeSelection = false;
 
         private void inkCanvas_SelectionChanged(object sender, EventArgs e)
         {
+            if (isProgramChangeStrokeSelection) return;
             if (inkCanvas.GetSelectedStrokes().Count == 0)
             {
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
@@ -2865,7 +2868,12 @@ namespace Ink_Canvas
 
                 if (isStrokeSelectionCloneOn)
                 {
-                    StrokesSelectionClone = inkCanvas.GetSelectedStrokes().Clone();
+                    StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+                    isProgramChangeStrokeSelection = true;
+                    inkCanvas.Select(new StrokeCollection());
+                    StrokesSelectionClone = strokes.Clone();
+                    inkCanvas.Select(strokes);
+                    isProgramChangeStrokeSelection = false;
                     inkCanvas.Strokes.Add(StrokesSelectionClone);
                 }
             }
@@ -2875,6 +2883,7 @@ namespace Ink_Canvas
         {
             dec.Remove(e.TouchDevice.Id);
             if (dec.Count >= 1) return;
+            isProgramChangeStrokeSelection = false;
             if (lastTouchPointOnGridInkCanvasCover == e.GetTouchPoint(null).Position)
             {
                 if (lastTouchPointOnGridInkCanvasCover.X < inkCanvas.GetSelectionBounds().Left ||
@@ -2921,6 +2930,22 @@ namespace Ink_Canvas
         int drawingShapeMode = 0;
 
         #region Buttons
+
+        private void SymbolIconPinBorderDrawShape_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            ToggleSwitchDrawShapeBorderAutoHide.IsOn = !ToggleSwitchDrawShapeBorderAutoHide.IsOn;
+
+            if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+            {
+                ((ModernWpf.Controls.SymbolIcon)sender).Symbol = ModernWpf.Controls.Symbol.Pin;
+            }
+            else
+            {
+                ((ModernWpf.Controls.SymbolIcon)sender).Symbol = ModernWpf.Controls.Symbol.UnPin;
+            }
+        }
 
         private void BtnPen_Click(object sender, RoutedEventArgs e)
         {
@@ -4178,8 +4203,8 @@ namespace Ink_Canvas
 
         #region Whiteboard Controls
 
-        StrokeCollection[] strokeCollections = new StrokeCollection[100];
-        bool[] whiteboadLastModeIsRedo = new bool[100];
+        StrokeCollection[] strokeCollections = new StrokeCollection[101];
+        bool[] whiteboadLastModeIsRedo = new bool[101];
         StrokeCollection lastTouchDownStrokeCollection = new StrokeCollection();
 
         int CurrentWhiteboardIndex = 1;
@@ -4254,6 +4279,8 @@ namespace Ink_Canvas
 
         private void BtnWhiteBoardAdd_Click(object sender, EventArgs e)
         {
+            if (WhiteboardTotalCount >= 99) return;
+
             SaveStrokes();
             inkCanvas.Strokes.Clear();
 
@@ -5339,26 +5366,41 @@ namespace Ink_Canvas
 
         private void ImageCountdownTimer_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (lastBorderMouseDownObject != sender) return;
+
             BorderTools.Visibility = Visibility.Collapsed;
             BtnCountdownTimer_Click(BtnCountdownTimer, null);
         }
 
         private void SymbolIconRand_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            if (lastBorderMouseDownObject != sender) return;
+
             BorderTools.Visibility = Visibility.Collapsed;
             BtnRand_Click(BtnRand, null);
         }
 
         private void SymbolIconRandOne_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            //BorderTools.Visibility = Visibility.Collapsed;
-            //new RandWindow(true).ShowDialog();
+            if (lastBorderMouseDownObject != sender) return;
+
+            BorderTools.Visibility = Visibility.Collapsed;
+            new RandWindow(true).ShowDialog();
+        }
+
+        private void GridInkReplayButton_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            BorderTools.Visibility = Visibility.Collapsed;
+            BorderDrawShape.Visibility = Visibility.Collapsed;
 
             InkCanvasForInkReplay.Visibility = Visibility.Visible;
             inkCanvas.Visibility = Visibility.Collapsed;
+            isStopInkReplay = false;
             InkCanvasForInkReplay.Strokes.Clear();
             StrokeCollection strokes = inkCanvas.Strokes.Clone();
-
+            int k = 2, i = 0;
             new Thread(new ThreadStart(() =>
             {
                 foreach (Stroke stroke in strokes)
@@ -5372,7 +5414,12 @@ namespace Ink_Canvas
                     Stroke s = null;
                     foreach (StylusPoint stylusPoint in stroke.StylusPoints)
                     {
-                        Thread.Sleep(10);
+                        if (i++ >= k)
+                        {
+                            i = 0;
+                            Thread.Sleep(10);
+                            if (isStopInkReplay) return;
+                        }
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             try
@@ -5387,13 +5434,23 @@ namespace Ink_Canvas
                         });
                     }
                 }
-                Thread.Sleep(500);
+                Thread.Sleep(100);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     InkCanvasForInkReplay.Visibility = Visibility.Collapsed;
                     inkCanvas.Visibility = Visibility.Visible;
                 });
             })).Start();
+        }
+        bool isStopInkReplay = false;
+        private void InkCanvasForInkReplay_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                InkCanvasForInkReplay.Visibility = Visibility.Collapsed;
+                inkCanvas.Visibility = Visibility.Visible;
+                isStopInkReplay = true;
+            }
         }
 
         private void SymbolIconTools_MouseUp(object sender, MouseButtonEventArgs e)
@@ -5504,6 +5561,77 @@ namespace Ink_Canvas
         private void ImagePPTControlEnd_MouseUp(object sender, MouseButtonEventArgs e)
         {
             BtnPPTSlideShowEnd_Click(BtnPPTSlideShowEnd, null);
+        }
+
+        #endregion
+
+        #region Save & Open
+
+        private void SymbolIconSaveStrokes_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender || inkCanvas.Visibility != Visibility.Visible) return;
+
+            BorderTools.Visibility = Visibility.Collapsed;
+
+            GridNotifications.Visibility = Visibility.Collapsed;
+
+            new Thread(new ThreadStart(() => {
+                Thread.Sleep(50);
+
+                try
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\User Saved"))
+                        {
+                            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\User Saved");
+                        }
+
+                        FileStream fs = new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
+                            @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk", FileMode.Create);
+                        inkCanvas.Strokes.Save(fs);
+
+                        ShowNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                            @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk"); //Ink Canvas STroKes
+                    });
+                }
+                catch
+                {
+                    ShowNotification("墨迹保存失败");
+                }
+            })).Start();
+        }
+
+        private void SymbolIconOpenStrokes_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+            BorderTools.Visibility = Visibility.Collapsed;
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\User Saved";
+            if (Directory.Exists(defaultFolderPath))
+            {
+                openFileDialog.InitialDirectory = defaultFolderPath;
+            }
+            openFileDialog.Title = "打开墨迹文件";
+            openFileDialog.Filter = "InkCanvas Strokes File (*.icstk)|*.icstk";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var fs = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read);
+                    inkCanvas.Strokes = new StrokeCollection(fs);
+
+                    if (inkCanvas.Visibility != Visibility.Visible)
+                    {
+                        SymbolIconCursor_Click(sender, null);
+                    }
+                }
+                catch
+                {
+                    ShowNotification("墨迹打开失败");
+                }
+            }
         }
 
         #endregion
