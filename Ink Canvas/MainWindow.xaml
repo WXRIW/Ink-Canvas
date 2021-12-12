@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019"
         AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize"
         mc:Ignorable="d" WindowState="Maximized" Loaded="Window_Loaded" Background="Transparent" ShowInTaskbar="False"
-        Title="Ink Canvas 画板" Height="10000" Width="1000" FontFamily="Microsoft YaHei UI"
+        Title="Ink Canvas 画板" Height="1000" Width="1000" FontFamily="Microsoft YaHei UI"
         Foreground="Black" Stylus.IsPressAndHoldEnabled="False">
     <!--资源中添加命令-->
     <Window.Resources>

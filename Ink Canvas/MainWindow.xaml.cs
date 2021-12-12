@@ -300,34 +300,35 @@ namespace Ink_Canvas
                         }
                     }
 
-                    if (response.Contains("Special Version") || response.Contains("AutoUpdateOnly"))
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
+                        Version version = Assembly.GetExecutingAssembly().GetName().Version;
+                        TextBlockVersion.Text = version.ToString();
+
+                        string lastVersion = "";
+                        if (response.Contains("Special Version") && !File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini"))
                         {
-                            Version version = Assembly.GetExecutingAssembly().GetName().Version;
-                            TextBlockVersion.Text = version.ToString();
-
-                            string lastVersion = "";
-                            if (!File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini"))
+                            new WelcomeWindow().ShowDialog();
+                        }
+                        else
+                        {
+                            try
                             {
-                                new WelcomeWindow().ShowDialog();
+                                lastVersion = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini");
                             }
-                            else
+                            catch { }
+                            if (!lastVersion.Contains(version.ToString()))
                             {
-                                try
-                                {
-                                    lastVersion = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "versions.ini");
-                                }
-                                catch { }
-                                if (!lastVersion.Contains(version.ToString()))
-                                {
-                                    new ChangeLogWindow().ShowDialog();
-                                    lastVersion += "\n" + version.ToString();
-                                    File.WriteAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini", lastVersion.Trim());
-                                }
+                                new ChangeLogWindow().ShowDialog();
+                                lastVersion += "\n" + version.ToString();
+                                File.WriteAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini", lastVersion.Trim());
+                            }
 
-                                //第二次启动时才可以进入检查版本更新模式
-                                new Thread(new ThreadStart(() => {
+                            //第二次启动时才可以进入检查版本更新模式
+                            if (response.Contains("Special Version") || response.Contains("AutoUpdateOnly"))
+                            {
+                                new Thread(new ThreadStart(() =>
+                                {
                                     try
                                     {
                                         if (response.Contains("<update>"))
@@ -362,8 +363,8 @@ namespace Ink_Canvas
                                     catch { }
                                 })).Start();
                             }
-                        });
-                    }
+                        }
+                    });
                 }
                 catch { }
             })).Start();
@@ -566,10 +567,9 @@ namespace Ink_Canvas
                     inkCanvas.ForceCursor = false;
                 }
 
-                if (Settings.Canvas.InkStyle != 0)
-                {
-                    ComboBoxPenStyle.SelectedIndex = Settings.Canvas.InkStyle;
-                }
+                ComboBoxPenStyle.SelectedIndex = Settings.Canvas.InkStyle;
+
+                ComboBoxEraserSize.SelectedIndex = Settings.Canvas.EraserSize;
             }
             else
             {
@@ -603,6 +603,24 @@ namespace Ink_Canvas
                 else
                 {
                     ToggleSwitchAutoKillPptService.IsOn = false;
+                }
+
+                if (Settings.Automation.IsAutoSaveStrokesAtScreenshot)
+                {
+                    ToggleSwitchAutoSaveStrokesAtScreenshot.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchAutoSaveStrokesAtScreenshot.IsOn = false;
+                }
+
+                if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
+                {
+                    ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn = false;
                 }
             }
             else
@@ -1434,7 +1452,7 @@ namespace Ink_Canvas
                             k = 1.8;
                             break;
                     }
-                    inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
+                    inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5 * k, boundsWidth * 1.5 * k);
                     inkCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
                 }
                 else
@@ -5518,6 +5536,10 @@ namespace Ink_Canvas
             isStopInkReplay = false;
             InkCanvasForInkReplay.Strokes.Clear();
             StrokeCollection strokes = inkCanvas.Strokes.Clone();
+            if (inkCanvas.GetSelectedStrokes().Count!= 0)
+            {
+                strokes = inkCanvas.GetSelectedStrokes().Clone();
+            }
             int k = 2, i = 0;
             new Thread(new ThreadStart(() =>
             {
