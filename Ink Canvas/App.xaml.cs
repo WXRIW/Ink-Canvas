@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Ink_Canvas.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -24,12 +26,18 @@ namespace Ink_Canvas
 
         void App_Startup(object sender, StartupEventArgs e)
         {
+            LogHelper.LogFile = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + LogHelper.LogFileName;
+
+            LogHelper.NewLog(string.Format("Ink Canvas Starting (Version: {0})", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+
             bool ret;
             mutex = new System.Threading.Mutex(true, "Ink_Canvas", out ret);
 
             if (!ret && !e.Args.Contains("-m")) //-m multiple
             {
+                LogHelper.NewLog("Detected existing instance");
                 MessageBox.Show("已有一个程序实例正在运行");
+                LogHelper.NewLog("Ink Canvas automatically closed");
                 Environment.Exit(0);
             }
 

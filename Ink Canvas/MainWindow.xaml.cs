@@ -50,6 +50,8 @@ namespace Ink_Canvas
         public MainWindow()
         {
             InitializeComponent();
+
+
             BorderSettings.Visibility = Visibility.Collapsed;
             StackPanelToolButtons.Visibility = Visibility.Collapsed;
             BorderDrawShape.Visibility = Visibility.Collapsed;
@@ -308,6 +310,7 @@ namespace Ink_Canvas
                         string lastVersion = "";
                         if (response.Contains("Special Version") && !File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini"))
                         {
+                            LogHelper.WriteLogToFile("Welcome Window Show Dialog", LogHelper.LogType.Event);
                             new WelcomeWindow().ShowDialog();
                         }
                         else
@@ -319,6 +322,7 @@ namespace Ink_Canvas
                             catch { }
                             if (!lastVersion.Contains(version.ToString()))
                             {
+                                LogHelper.WriteLogToFile("Change Log Window Show Dialog", LogHelper.LogType.Event);
                                 new ChangeLogWindow().ShowDialog();
                                 lastVersion += "\n" + version.ToString();
                                 File.WriteAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini", lastVersion.Trim());
@@ -351,6 +355,8 @@ namespace Ink_Canvas
                                                         string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
                                                         System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
 
+                                                        LogHelper.WriteLogToFile("Detected new version, closing Ink Canvas for update", LogHelper.LogType.Event);
+
                                                         Application.Current.Dispatcher.Invoke(() =>
                                                         {
                                                             Application.Current.Shutdown();
@@ -377,7 +383,7 @@ namespace Ink_Canvas
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
 
             TextBlockVersion.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
+            LogHelper.WriteLogToFile("Ink Canvas Loaded", LogHelper.LogType.Event);
             isLoaded = true;
         }
 
@@ -637,6 +643,14 @@ namespace Ink_Canvas
                 else
                 {
                     ToggleSwitchIsSpecialScreen.IsOn = false;
+                }
+                if (Settings.Advanced.IsLogEnabled)
+                {
+                    ToggleSwitchIsLogEnabled.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchIsLogEnabled.IsOn = false;
                 }
             }
             else 
@@ -1799,6 +1813,10 @@ namespace Ink_Canvas
 
         private void PptApplication_PresentationClose(Presentation Pres)
         {
+            pptApplication.PresentationClose -= PptApplication_PresentationClose;
+            pptApplication.SlideShowBegin -= PptApplication_SlideShowBegin;
+            pptApplication.SlideShowNextSlide -= PptApplication_SlideShowNextSlide;
+            pptApplication.SlideShowEnd -= PptApplication_SlideShowEnd;
             pptApplication = null;
             timerCheckPPT.Start();
             BtnPPTSlideShow.Visibility = Visibility.Collapsed;
@@ -1809,6 +1827,7 @@ namespace Ink_Canvas
         //bool isButtonBackgroundTransparent = true; //此变量仅用于保存用于幻灯片放映时的优化
         private void PptApplication_SlideShowBegin(SlideShowWindow Wn)
         {
+            LogHelper.WriteLogToFile("PowerPoint Application Slide Show Begin", LogHelper.LogType.Event);
             Application.Current.Dispatcher.Invoke(() =>
             {
                 //调整颜色
@@ -1844,27 +1863,38 @@ namespace Ink_Canvas
                 previousSlideID = 0;
                 memoryStreams = new MemoryStream[slidescount + 2];
 
+                LogHelper.NewLog("Name: " + Wn.Presentation.Name);
+                LogHelper.NewLog("Slides Count: " + slidescount.ToString());
+
                 //检查是否有已有墨迹，并加载
                 if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
                 {
                     string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\Auto Saved\Presentations\";
-                    if (Directory.Exists(defaultFolderPath + Wn.Application.ActivePresentation.Name + "_" + Wn.Presentation.Slides.Count))
+                    if (Directory.Exists(defaultFolderPath + Wn.Presentation.Name + "_" + Wn.Presentation.Slides.Count))
                     {
-                        FileInfo[] files = new DirectoryInfo(defaultFolderPath + Wn.Application.ActivePresentation.Name + "_" + Wn.Presentation.Slides.Count).GetFiles();
-                        foreach(FileInfo file in files)
+                        LogHelper.WriteLogToFile("Found saved strokes", LogHelper.LogType.Trace);
+                        FileInfo[] files = new DirectoryInfo(defaultFolderPath + Wn.Presentation.Name + "_" + Wn.Presentation.Slides.Count).GetFiles();
+                        int count = 0;
+                        foreach (FileInfo file in files)
                         {
+                            int i = -1;
                             try
                             {
-                                int i = int.Parse(System.IO.Path.GetFileNameWithoutExtension(file.Name));
+                                i = int.Parse(System.IO.Path.GetFileNameWithoutExtension(file.Name));
                                 //var fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read);
                                 //MemoryStream ms = new MemoryStream(File.ReadAllBytes(file.FullName));
                                 //new StrokeCollection(fs).Save(ms);
                                 //ms.Position = 0;
                                 memoryStreams[i] = new MemoryStream(File.ReadAllBytes(file.FullName));
                                 memoryStreams[i].Position = 0;
+                                count++;
                             }
-                            catch { }
+                            catch (Exception ex)
+                            {
+                                LogHelper.WriteLogToFile(string.Format("Failed to load strokes on Slide {0}\n{1}", i, ex.ToString()), LogHelper.LogType.Error);
+                            }
                         }
+                        LogHelper.WriteLogToFile(string.Format("Loaded {0} saved strokes", count.ToString()));
                     }
                 }
 
@@ -1921,6 +1951,9 @@ namespace Ink_Canvas
                     BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
                 }
 
+                isEnteredSlideShowEndEvent = false;
+                LogHelper.NewLog("PowerPoint Slide Show Loading process complete");
+
                 new Thread(new ThreadStart(() =>
                 {
                     Thread.Sleep(100);
@@ -1930,49 +1963,69 @@ namespace Ink_Canvas
                     });
                 })).Start();
             });
-            previousSlideID = Wn.View.CurrentShowPosition;
-            //检查是否有已有墨迹，并加载当前页
-            if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
-            {
-                try
-                {
-                    if (memoryStreams[Wn.View.CurrentShowPosition].Length > 0)
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            inkCanvas.Strokes = new System.Windows.Ink.StrokeCollection(memoryStreams[Wn.View.CurrentShowPosition]);
-                        });
-                    }
-                }
-                catch { }
-            }
+            //previousSlideID = Wn.View.CurrentShowPosition;
+            ////检查是否有已有墨迹，并加载当前页
+            //if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
+            //{
+            //    try
+            //    {
+            //        if (memoryStreams[Wn.View.CurrentShowPosition].Length > 0)
+            //        {
+            //            Application.Current.Dispatcher.Invoke(() =>
+            //            {
+            //                inkCanvas.Strokes = new System.Windows.Ink.StrokeCollection(memoryStreams[Wn.View.CurrentShowPosition]);
+            //            });
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        LogHelper.WriteLogToFile(string.Format("Failed to load strokes for current slide (Slide {0})\n{1}", Wn.View.CurrentShowPosition, ex.ToString()), LogHelper.LogType.Error);
+            //    }
+            //}
         }
 
+        bool isEnteredSlideShowEndEvent = false; //防止重复调用本函数导致墨迹保存失效
         private void PptApplication_SlideShowEnd(Presentation Pres)
         {
+            LogHelper.WriteLogToFile(string.Format("PowerPoint Slide Show End"), LogHelper.LogType.Event);
+            if (isEnteredSlideShowEndEvent)
+            {
+                LogHelper.WriteLogToFile("Detected previous entrance, returning");
+                return;
+            }
+            isEnteredSlideShowEndEvent = true;
             if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
             {
                 string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\Auto Saved\Presentations\";
-                string folderPath = defaultFolderPath + presentation.Application.ActivePresentation.Name + "_" + presentation.Slides.Count;
+                string folderPath = defaultFolderPath + Pres.Name + "_" + Pres.Slides.Count;
                 if (!Directory.Exists(folderPath))
                 {
                     Directory.CreateDirectory(folderPath);
                 }
-                for (int i = 1; i <= presentation.Slides.Count; i++)
+                for (int i = 1; i <= Pres.Slides.Count; i++)
                 {
-                    try
+                    if (memoryStreams[i] != null)
                     {
-                        if (memoryStreams[i].Length > 0)
+                        try
                         {
-                            byte[] srcBuf = new Byte[memoryStreams[i].Length];
-                            //MessageBox.Show(memoryStreams[i].Length.ToString());
-                            memoryStreams[i].Read(srcBuf, 0, srcBuf.Length);
-                            File.WriteAllBytes(folderPath + @"\" + i.ToString("0000") + ".icstk", srcBuf);
+                            if (memoryStreams[i].Length > 8)
+                            {
+                                byte[] srcBuf = new Byte[memoryStreams[i].Length];
+                                //MessageBox.Show(memoryStreams[i].Length.ToString());
+                                int byteLength = memoryStreams[i].Read(srcBuf, 0, srcBuf.Length);
+                                File.WriteAllBytes(folderPath + @"\" + i.ToString("0000") + ".icstk", srcBuf);
+                                LogHelper.WriteLogToFile(string.Format("Saved strokes for Slide {0}, size={1}, byteLength={2}", i.ToString(), memoryStreams[i].Length, byteLength));
+                            }
+                            else
+                            {
+                                File.Delete(folderPath + @"\" + i.ToString("0000") + ".icstk");
+                            }
                         }
-                    }
-                    catch
-                    {
-                        File.Delete(folderPath + @"\" + i.ToString("0000") + ".icstk");
+                        catch (Exception ex)
+                        {
+                            LogHelper.WriteLogToFile(string.Format("Failed to save strokes for Slide {0}\n{1}", i, ex.ToString()), LogHelper.LogType.Error);
+                            File.Delete(folderPath + @"\" + i.ToString("0000") + ".icstk");
+                        }
                     }
                 }
             }
@@ -2061,6 +2114,7 @@ namespace Ink_Canvas
 
         private void PptApplication_SlideShowNextSlide(SlideShowWindow Wn)
         {
+            LogHelper.WriteLogToFile(string.Format("PowerPoint Next Slide (Slide {0})", Wn.View.CurrentShowPosition), LogHelper.LogType.Event);
             if (Wn.View.CurrentShowPosition != previousSlideID)
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -2562,6 +2616,13 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
             Settings.Advanced.IsSpecialScreen = ToggleSwitchIsSpecialScreen.IsOn;
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchIsLogEnabled_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Advanced.IsLogEnabled = ToggleSwitchIsLogEnabled.IsOn;
             SaveSettingsToFile();
         }
 
@@ -5540,7 +5601,7 @@ namespace Ink_Canvas
             {
                 strokes = inkCanvas.GetSelectedStrokes().Clone();
             }
-            int k = 2, i = 0;
+            int k = 1, i = 0;
             new Thread(new ThreadStart(() =>
             {
                 foreach (Stroke stroke in strokes)
@@ -5720,32 +5781,32 @@ namespace Ink_Canvas
 
         private void SaveInkCanvasStrokes(bool newNotice = true)
         {
-                try
+            try
+            {
+                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\User Saved"))
                 {
-                        if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\User Saved"))
-                        {
-                            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\User Saved");
-                        }
-
-                        FileStream fs = new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                            @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk", FileMode.Create); //Ink Canvas STroKes
-                        inkCanvas.Strokes.Save(fs);
-
-                        if (newNotice)
-                        {
-                            ShowNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                                @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk");
-                        }
-                        else
-                        {
-                            AppendNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                                @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk");
-                        }
+                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\User Saved");
                 }
-                catch
+
+                FileStream fs = new FileStream(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
+                    @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk", FileMode.Create); //Ink Canvas STroKes
+                inkCanvas.Strokes.Save(fs);
+
+                if (newNotice)
                 {
-                    ShowNotification("墨迹保存失败");
+                    ShowNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                        @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk");
                 }
+                else
+                {
+                    AppendNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                        @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk");
+                }
+            }
+            catch
+            {
+                ShowNotification("墨迹保存失败");
+            }
         }
 
         private void SymbolIconOpenStrokes_MouseUp(object sender, MouseButtonEventArgs e)
@@ -5763,10 +5824,20 @@ namespace Ink_Canvas
             openFileDialog.Filter = "Ink Canvas Strokes File (*.icstk)|*.icstk";
             if (openFileDialog.ShowDialog() == true)
             {
+                LogHelper.WriteLogToFile(string.Format("Strokes Insert: Name: {0}", openFileDialog.FileName), LogHelper.LogType.Event);
                 try
                 {
                     var fs = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read);
                     inkCanvas.Strokes = new StrokeCollection(fs);
+                    LogHelper.NewLog(string.Format("Strokes Insert: Strokes Count: {0}", inkCanvas.Strokes.Count.ToString()));
+                    if (inkCanvas.Strokes.Count == 0)
+                    {
+                        fs.Close();
+                        var memoryStream = new MemoryStream(File.ReadAllBytes(openFileDialog.FileName));
+                        memoryStream.Position = 0;
+                        inkCanvas.Strokes = new StrokeCollection(memoryStream);
+                        LogHelper.NewLog(string.Format("Strokes Insert (2): Strokes Count: {0}", inkCanvas.Strokes.Count.ToString()));
+                    }
 
                     if (inkCanvas.Visibility != Visibility.Visible)
                     {
