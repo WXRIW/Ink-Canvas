@@ -359,6 +359,7 @@ namespace Ink_Canvas
 
                                                         Application.Current.Dispatcher.Invoke(() =>
                                                         {
+                                                            closeIsFromButton = true;
                                                             Application.Current.Shutdown();
                                                         });
                                                     }
@@ -385,6 +386,24 @@ namespace Ink_Canvas
             TextBlockVersion.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             LogHelper.WriteLogToFile("Ink Canvas Loaded", LogHelper.LogType.Event);
             isLoaded = true;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            LogHelper.WriteLogToFile("Ink Canvas closing", LogHelper.LogType.Event);
+            if (!closeIsFromButton)
+            {
+                if (MessageBox.Show("是否继续关闭 Ink Canvas 画板，这将丢失当前未保存的工作。", "Ink Canvas 画板", MessageBoxButton.OKCancel, MessageBoxImage.Warning) != MessageBoxResult.OK)
+                {
+                    LogHelper.WriteLogToFile("Ink Canvas closing cancelled", LogHelper.LogType.Event);
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            LogHelper.WriteLogToFile("Ink Canvas closed", LogHelper.LogType.Event);
         }
 
         private void LoadSettings(bool isStartup = true)
@@ -676,11 +695,13 @@ namespace Ink_Canvas
         }
 
         #endregion Definations and Loading
-
+        
         #region Right Side Panel
 
+        bool closeIsFromButton = false;
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
+            closeIsFromButton = true;
             Close();
         }
 
@@ -688,6 +709,7 @@ namespace Ink_Canvas
         {
             Process.Start(System.Windows.Forms.Application.ExecutablePath, "-m");
 
+            closeIsFromButton = true;
             Application.Current.Shutdown();
         }
 
@@ -5612,27 +5634,55 @@ namespace Ink_Canvas
                     //    InkCanvasForInkReplay.Strokes.Add(stroke);
                     //});
                     StylusPointCollection stylusPoints = new StylusPointCollection();
-                    Stroke s = null;
-                    foreach (StylusPoint stylusPoint in stroke.StylusPoints)
+                    if (stroke.StylusPoints.Count == 629) //圆或椭圆
                     {
-                        if (i++ >= k)
+                        Stroke s = null;
+                        foreach (StylusPoint stylusPoint in stroke.StylusPoints)
                         {
-                            i = 0;
-                            Thread.Sleep(10);
-                            if (isStopInkReplay) return;
-                        }
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            try
+                            if (i++ >= 50)
                             {
-                                InkCanvasForInkReplay.Strokes.Remove(s);
+                                i = 0;
+                                Thread.Sleep(10);
+                                if (isStopInkReplay) return;
                             }
-                            catch { }
-                            stylusPoints.Add(stylusPoint);
-                            s = new Stroke(stylusPoints.Clone());
-                            s.DrawingAttributes = stroke.DrawingAttributes;
-                            InkCanvasForInkReplay.Strokes.Add(s);
-                        });
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                try
+                                {
+                                    InkCanvasForInkReplay.Strokes.Remove(s);
+                                }
+                                catch { }
+                                stylusPoints.Add(stylusPoint);
+                                s = new Stroke(stylusPoints.Clone());
+                                s.DrawingAttributes = stroke.DrawingAttributes;
+                                InkCanvasForInkReplay.Strokes.Add(s);
+                            });
+                        }
+                    }
+                    else
+                    {
+                        Stroke s = null;
+                        foreach (StylusPoint stylusPoint in stroke.StylusPoints)
+                        {
+                            if (i++ >= k)
+                            {
+                                i = 0;
+                                Thread.Sleep(10);
+                                if (isStopInkReplay) return;
+                            }
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                try
+                                {
+                                    InkCanvasForInkReplay.Strokes.Remove(s);
+                                }
+                                catch { }
+                                stylusPoints.Add(stylusPoint);
+                                s = new Stroke(stylusPoints.Clone());
+                                s.DrawingAttributes = stroke.DrawingAttributes;
+                                InkCanvasForInkReplay.Strokes.Add(s);
+                            });
+                        }
                     }
                 }
                 Thread.Sleep(100);
