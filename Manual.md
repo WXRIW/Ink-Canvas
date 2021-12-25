@@ -2,11 +2,17 @@
 
 ## 目录
 [一、介绍](#intro)  
+
 [其他要点](#other)
+
 [二、用法](#usage)  
+
  [预设作图](#predraw)
+ 
  [识别作图](#orcdraw)
+ 
 [预览界面](#preview)
+
 [三、感谢](#thank)  
 
 ## Ink Canvas 是什么? <span id='intro'></span>
