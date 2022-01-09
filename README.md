@@ -12,6 +12,11 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 支持 Active Pen (支持压感)  
 对于其他红外线屏也可以提供相似功能，欢迎大家测试！  
 
+## 使用说明（用户指南）
+[点此查看](https://github.com/WXRIW/Ink-Canvas/blob/master/Manual.md)
+
+## 感谢
+特别感谢 [yuwenhui2020](https://github.com/yuwenhui2020) 为 ` Ink Canvas 使用说明` 做出的贡献！
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FWXRIW%2FInk-Canvas.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FWXRIW%2FInk-Canvas?ref=badge_large)
