@@ -323,7 +323,7 @@ namespace Ink_Canvas
                             if (!lastVersion.Contains(version.ToString()))
                             {
                                 LogHelper.WriteLogToFile("Change Log Window Show Dialog", LogHelper.LogType.Event);
-                                new ChangeLogWindow().ShowDialog();
+                                //new ChangeLogWindow().ShowDialog();
                                 lastVersion += "\n" + version.ToString();
                                 File.WriteAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini", lastVersion.Trim());
                             }
@@ -391,13 +391,23 @@ namespace Ink_Canvas
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             LogHelper.WriteLogToFile("Ink Canvas closing", LogHelper.LogType.Event);
+            e.Cancel = true;
             if (!closeIsFromButton)
             {
-                if (MessageBox.Show("是否继续关闭 Ink Canvas 画板，这将丢失当前未保存的工作。", "Ink Canvas 画板", MessageBoxButton.OKCancel, MessageBoxImage.Warning) != MessageBoxResult.OK)
+                if (MessageBox.Show("是否继续关闭 Ink Canvas 画板，这将丢失当前未保存的工作。", "Ink Canvas 画板", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
                 {
-                    LogHelper.WriteLogToFile("Ink Canvas closing cancelled", LogHelper.LogType.Event);
-                    e.Cancel = true;
+                    if (MessageBox.Show("真的狠心关闭 Ink Canvas 画板吗？", "Ink Canvas 画板", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
+                    {
+                        if (MessageBox.Show("是否取消关闭 Ink Canvas 画板？", "Ink Canvas 画板", MessageBoxButton.OKCancel, MessageBoxImage.Error) != MessageBoxResult.OK)
+                        {
+                            e.Cancel = false;
+                        }
+                    }
                 }
+            }
+            if (e.Cancel)
+            {
+                LogHelper.WriteLogToFile("Ink Canvas closing cancelled", LogHelper.LogType.Event);
             }
         }
 
@@ -4470,7 +4480,11 @@ namespace Ink_Canvas
 
         private void BtnWhiteBoardSwitchNext_Click(object sender, EventArgs e)
         {
-            if (CurrentWhiteboardIndex >= WhiteboardTotalCount) return;
+            if (CurrentWhiteboardIndex >= WhiteboardTotalCount)
+            {
+                BtnWhiteBoardAdd_Click(sender, e);
+                return;
+            }
 
             SaveStrokes();
 
@@ -4602,10 +4616,14 @@ namespace Ink_Canvas
                         for (int i = newStrokes.Count - 1; i >= 0; i--)
                         {
                             strokeReco.Add(newStrokes[i]);
-                            result = InkRecognizeHelper.RecognizeShape(strokeReco);
-                            if (result.InkDrawingNode.GetShapeName() == "Circle" || result.InkDrawingNode.GetShapeName() == "Ellipse") break;
+                            var newResult = InkRecognizeHelper.RecognizeShape(strokeReco);
+                            if (newResult.InkDrawingNode.GetShapeName() == "Circle" || newResult.InkDrawingNode.GetShapeName() == "Ellipse")
+                            {
+                                result = newResult;
+                                break;
+                            }
                             //Label.Visibility = Visibility.Visible;
-                            Label.Content = circles.Count.ToString() + "\n" + result.InkDrawingNode.GetShapeName();
+                            Label.Content = circles.Count.ToString() + "\n" + newResult.InkDrawingNode.GetShapeName();
                         }
                         if (result.InkDrawingNode.GetShapeName() == "Circle")
                         {
