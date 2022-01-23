@@ -72,7 +72,7 @@ namespace Ink_Canvas
 
         private void BorderBtnRand_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Random random = new Random(randSeed + DateTime.Now.Millisecond / 10 % 10);
+            Random random = new Random();// randSeed + DateTime.Now.Millisecond / 10 % 10);
             string outputString = "";
             List<string> outputs = new List<string>();
             List<int> rands = new List<int>();

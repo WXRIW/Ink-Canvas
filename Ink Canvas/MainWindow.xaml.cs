@@ -1988,7 +1988,7 @@ namespace Ink_Canvas
 
                 new Thread(new ThreadStart(() =>
                 {
-                    Thread.Sleep(200);
+                    Thread.Sleep(100);
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
@@ -5463,7 +5463,7 @@ namespace Ink_Canvas
                     {
                         new Thread(new ThreadStart(() =>
                         {
-                            Thread.Sleep(200);
+                            Thread.Sleep(100);
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
@@ -5540,7 +5540,7 @@ namespace Ink_Canvas
 
                 new Thread(new ThreadStart(() =>
                 {
-                    Thread.Sleep(200);
+                    Thread.Sleep(100);
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
@@ -5566,7 +5566,7 @@ namespace Ink_Canvas
                 {
                     new Thread(new ThreadStart(() =>
                     {
-                        Thread.Sleep(200);
+                        Thread.Sleep(100);
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
@@ -5646,7 +5646,7 @@ namespace Ink_Canvas
             {
                 foreach (Stroke stroke in strokes)
                 {
-                    //Thread.Sleep(200);
+                    //Thread.Sleep(100);
                     //Application.Current.Dispatcher.Invoke(() =>
                     //{
                     //    InkCanvasForInkReplay.Strokes.Add(stroke);
@@ -5703,7 +5703,7 @@ namespace Ink_Canvas
                         }
                     }
                 }
-                Thread.Sleep(200);
+                Thread.Sleep(100);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     InkCanvasForInkReplay.Visibility = Visibility.Collapsed;
