@@ -343,26 +343,26 @@ namespace Ink_Canvas
                                                 str = Strings.Left(str, str.IndexOf("<update>")).Trim();
                                                 if (str.Length > 0)
                                                 {
-                                                    string updateIP;
-                                                    int updatePort;
+                                                    //string updateIP;
+                                                    //int updatePort;
 
-                                                    string[] vs = str.Split(':');
-                                                    updateIP = vs[0];
-                                                    updatePort = int.Parse(vs[1]);
+                                                    //string[] vs = str.Split(':');
+                                                    //updateIP = vs[0];
+                                                    //updatePort = int.Parse(vs[1]);
 
-                                                    if (OAUS.Core.VersionHelper.HasNewVersion(GetIp(updateIP), updatePort))
-                                                    {
-                                                        string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
-                                                        System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
+                                                    //if (OAUS.Core.VersionHelper.HasNewVersion(GetIp(updateIP), updatePort))
+                                                    //{
+                                                    //    string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
+                                                    //    System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
 
-                                                        LogHelper.WriteLogToFile("Detected new version, closing Ink Canvas for update", LogHelper.LogType.Event);
+                                                    //    LogHelper.WriteLogToFile("Detected new version, closing Ink Canvas for update", LogHelper.LogType.Event);
 
-                                                        Application.Current.Dispatcher.Invoke(() =>
-                                                        {
-                                                            closeIsFromButton = true;
-                                                            Application.Current.Shutdown();
-                                                        });
-                                                    }
+                                                    //    Application.Current.Dispatcher.Invoke(() =>
+                                                    //    {
+                                                    //        closeIsFromButton = true;
+                                                    //        Application.Current.Shutdown();
+                                                    //    });
+                                                    //}
                                                 }
                                             }
                                         }
