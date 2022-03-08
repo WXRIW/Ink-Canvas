@@ -5,7 +5,7 @@
 [二、用法](#usage)  
 [三、技巧](#skill)  
 [四、感谢](#thank)  
-
+[五、图片](#pictu)
 ## Ink Canvas 是什么? <span id='intro'></span>
 Ink Canvas 画板是一款轻量级画板软件，其针对希沃白板设备进行了特别优化，与预装的“希沃白板 5”软件相比，启动速度大幅度提升（提升5-10 倍），系统资源占用更小，使用体验更佳。  
 
@@ -82,3 +82,10 @@ Ink Canvas 画板是一款轻量级画板软件，其针对希沃白板设备进
 
 ## 感谢 <span id='thank'></span>
 特别感谢 [yuwenhui2020](https://github.com/yuwenhui2020) 为 ` Ink Canvas 使用说明` 做出的贡献！
+
+## 图片版说明<span id='pictu'></span>
+
+此为带图标的简易说明  
+![image](image1.png)  
+图片预览https://yuwenhui2020.github.io/ink/BHH~7AJ6N7OMLT095LO(LQJ.png
+
