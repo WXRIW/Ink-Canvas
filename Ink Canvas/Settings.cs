@@ -91,6 +91,8 @@ namespace Ink_Canvas
         public bool IsAutoKillEasiNote { get; set; } = false;
         [JsonProperty("isAutoSaveStrokesAtScreenshot")]
         public bool IsAutoSaveStrokesAtScreenshot { get; set; } = false;
+        [JsonProperty("isAutoSaveStrokesAtClear")]
+        public bool IsAutoSaveStrokesAtClear { get; set; } = false;
         [JsonProperty("isAutoSaveStrokesInPowerPoint")]
         public bool IsAutoSaveStrokesInPowerPoint { get; set; } = true;
     }

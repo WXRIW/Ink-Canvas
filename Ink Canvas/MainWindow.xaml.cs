@@ -2523,6 +2523,15 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
             Settings.Automation.IsAutoSaveStrokesAtScreenshot = ToggleSwitchAutoSaveStrokesAtScreenshot.IsOn;
+            ToggleSwitchAutoSaveStrokesAtClear.Header = 
+                ToggleSwitchAutoSaveStrokesAtScreenshot.IsOn ? "清屏时自动截图并保存墨迹" : "清屏时自动截图";
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchAutoSaveStrokesAtClear_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Automation.IsAutoSaveStrokesAtClear = ToggleSwitchAutoSaveStrokesAtClear.IsOn;
             SaveSettingsToFile();
         }
 
@@ -5268,6 +5277,9 @@ namespace Ink_Canvas
 
         private void BtnScreenshot_Click(object sender, RoutedEventArgs e)
         {
+            bool isHideNotification = false;
+            if (sender is bool) isHideNotification = (bool)sender;
+
             GridNotifications.Visibility = Visibility.Collapsed;
 
             new Thread(new ThreadStart(() => {
@@ -5292,13 +5304,19 @@ namespace Ink_Canvas
                         bitmap.Save(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
                             @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png", ImageFormat.Png);
 
-                        ShowNotification("截图成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                            @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png");
+                        if (!isHideNotification)
+                        {
+                            ShowNotification("截图成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                                @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png");
+                        }
                     });
                 }
                 catch
                 {
-                    ShowNotification("截图保存失败");
+                    if (!isHideNotification)
+                    {
+                        ShowNotification("截图保存失败");
+                    }
                 }
 
                 try
@@ -5310,6 +5328,14 @@ namespace Ink_Canvas
                     });
                 }
                 catch { }
+
+                if (isHideNotification)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        BtnClear_Click(BtnClear, null);
+                    });
+                }
             })).Start();
         }
 
@@ -5484,7 +5510,14 @@ namespace Ink_Canvas
             }
             else if (inkCanvas.Strokes.Count > 0)
             {
-                BtnClear_Click(BtnClear, null);
+                if (Settings.Automation.IsAutoSaveStrokesAtClear)
+                {
+                    BtnScreenshot_Click(true, null);
+                }
+                else
+                {
+                    BtnClear_Click(BtnClear, null);
+                }
             }
             else
             {
