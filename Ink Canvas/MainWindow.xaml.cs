@@ -4621,7 +4621,7 @@ namespace Ink_Canvas
                             if (!inkCanvas.Strokes.Contains(circles[i].Stroke)) circles.RemoveAt(i);
                         }
                         var strokeReco = new StrokeCollection();
-                        var result = InkRecognizeHelper.RecognizeShape(strokeReco);
+                        var result = InkRecognizeHelper.RecognizeShape(newStrokes);
                         for (int i = newStrokes.Count - 1; i >= 0; i--)
                         {
                             strokeReco.Add(newStrokes[i]);
