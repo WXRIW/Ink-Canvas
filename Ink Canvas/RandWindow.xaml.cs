@@ -1,4 +1,5 @@
-﻿using ModernWpf.Controls;
+﻿using Microsoft.VisualBasic;
+using ModernWpf.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -196,10 +197,26 @@ namespace Ink_Canvas
             if (File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Names.txt"))
             {
                 string[] fileNames = File.ReadAllLines(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Names.txt");
+                string[] replaces = new string[0];
+
+                if (File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Replace.txt"))
+                {
+                    replaces = File.ReadAllLines(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Replace.txt");
+                }
 
                 //Fix emtpy lines
-                foreach (string s in fileNames)
+                foreach (string str in fileNames)
                 {
+                    string s = str;
+                    //Make replacement
+                    foreach (string replace in replaces)
+                    {
+                        if (s == Strings.Left(replace, replace.IndexOf("-->")))
+                        {
+                            s = Strings.Mid(replace, replace.IndexOf("-->") + 4);
+                        }
+                    }
+
                     if (s != "") Names.Add(s);
                 }
 
