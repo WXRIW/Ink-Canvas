@@ -2131,11 +2131,11 @@ namespace Ink_Canvas
         {
             if (StackPanelPPTControls.Visibility != Visibility.Visible || currentMode != 0) return;
 
-            if (e.Key == Key.Down || e.Key == Key.PageDown || e.Key == Key.Right)
+            if (e.Key == Key.Down || e.Key == Key.PageDown || e.Key == Key.Right || e.Key == Key.P)
             {
                 BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
             }
-            if (e.Key == Key.Up || e.Key == Key.PageUp || e.Key == Key.Left)
+            if (e.Key == Key.Up || e.Key == Key.PageUp || e.Key == Key.Left || e.Key == Key.N)
             {
                 BtnPPTSlidesUp_Click(BtnPPTSlidesUp, null);
             }
