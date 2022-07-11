@@ -546,6 +546,14 @@ namespace Ink_Canvas
             {
                 Settings.Gesture = new Gesture();
             }
+            if (Settings.Gesture.IsEnableTwoFingerZoom)
+            {
+                ToggleSwitchEnableTwoFingerZoom.IsOn = true;
+            }
+            else
+            {
+                ToggleSwitchEnableTwoFingerZoom.IsOn = false;
+            }
             if (Settings.Gesture.IsEnableTwoFingerRotation)
             {
                 ToggleSwitchEnableTwoFingerRotation.IsOn = true;
@@ -1540,6 +1548,8 @@ namespace Ink_Canvas
         InkCanvasEditingMode lastInkCanvasEditingMode = InkCanvasEditingMode.Ink;
         bool isSingleFingerDragMode = false;
 
+        //防止衣服误触造成的墨迹消失
+
         private void inkCanvas_PreviewTouchDown(object sender, TouchEventArgs e)
         {
             dec.Add(e.TouchDevice.Id);
@@ -1553,9 +1563,9 @@ namespace Ink_Canvas
                 lastTouchDownStrokeCollection = inkCanvas.Strokes.Clone();
             }
             //设备两个及两个以上，将画笔功能关闭
-            if (dec.Count > 1 || isSingleFingerDragMode)
+            if (dec.Count > 1 || isSingleFingerDragMode || !Settings.Gesture.IsEnableTwoFingerZoom)
             {
-                if (isInMultiTouchMode) return;
+                if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerZoom) return;
                 if (inkCanvas.EditingMode != InkCanvasEditingMode.None && inkCanvas.EditingMode != InkCanvasEditingMode.Select)
                 {
                     lastInkCanvasEditingMode = inkCanvas.EditingMode;
@@ -1618,7 +1628,7 @@ namespace Ink_Canvas
 
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
-            if (isInMultiTouchMode) return;
+            if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerZoom) return;
             if ((dec.Count >= 2 && (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible || StackPanelPPTButtons.Visibility == Visibility.Collapsed)) || isSingleFingerDragMode)
             {
                 ManipulationDelta md = e.DeltaManipulation;
@@ -2552,6 +2562,15 @@ namespace Ink_Canvas
             if (!isLoaded) return;
 
             Settings.Gesture.IsEnableFingerGestureSlideShowControl = ToggleSwitchEnableFingerGestureSlideShowControl.IsOn;
+
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchEnableTwoFingerZoom_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsEnableTwoFingerZoom = ToggleSwitchEnableTwoFingerZoom.IsOn;
 
             SaveSettingsToFile();
         }

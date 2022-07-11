@@ -49,6 +49,8 @@ namespace Ink_Canvas
 
     public class Gesture
     {
+        [JsonProperty("isEnableTwoFingerZoom")]
+        public bool IsEnableTwoFingerZoom { get; set; } = true;
         [JsonProperty("isEnableTwoFingerRotation")]
         public bool IsEnableTwoFingerRotation { get; set; } = false;
         [JsonProperty("isEnableTwoFingerRotationOnSelection")]
