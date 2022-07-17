@@ -2150,9 +2150,9 @@ namespace Ink_Canvas
                 BtnPPTSlidesUp_Click(BtnPPTSlidesUp, null);
             }
             if (e.Key == Key.Escape)
-			{
+	    {
                 BtnPPTSlideShowEnd_Click(BtnPPTSlideShowEnd, null);
-			}
+	    }
         }
 
         int previousSlideID = 0;
