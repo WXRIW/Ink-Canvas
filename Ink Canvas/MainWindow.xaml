@@ -290,9 +290,9 @@
 
         <Border Name="BorderSettings" Background="White" BorderBrush="Black"
                 BorderThickness="1" CornerRadius="10" ui:ThemeManager.RequestedTheme="Light"
-                Width="481" HorizontalAlignment="Center"
-                Margin="240,80,279,120" Visibility="Visible">
-            <Grid Margin="9,0">
+                Width="400" HorizontalAlignment="Center"
+                Margin="0,80,0,120" Visibility="Visible">
+            <Grid>
                 <ScrollViewer Margin="0,60,0,50" VerticalScrollBarVisibility="Auto"
                               PanningMode="VerticalOnly" ui:ThemeManager.RequestedTheme="Light"
                               ManipulationBoundaryFeedback="SCManipulationBoundaryFeedback">
@@ -300,15 +300,15 @@
                         <TextBlock FontSize="14" Margin="0,0,0,0"
                                    Text="*设置将自动保存，再次点击“设置”按钮即可关闭此页面。"/>
                         <TextBlock FontSize="14" Margin="0,0,0,12"
-                                   Text="*部分设置可能需要重启画板后才能生效。"/>
+                                   Text="*部分设置可能需要重新打开后生效。"/>
                         <GroupBox Header="行为">
                             <ui:SimpleStackPanel Spacing="12">
                                 <ui:SimpleStackPanel Spacing="12" Orientation="Horizontal">
-                                    <Button Content="立即重启画板" Width="160" FontFamily="Microsoft YaHei UI" Click="BtnRestart_Click" Margin="33,0,-65,10"/>
-                                    <Button Content="立即退出画板" Width="160" FontFamily="Microsoft YaHei UI" Click="BtnExit_Click" Margin="87,0,-87,10"/>
+                                    <Button Content="立即重新启动画板" Width="160" FontFamily="Microsoft YaHei UI" Click="BtnRestart_Click" Margin="0,0,0,10"/>
+                                    <Button Content="立即退出" Width="160" FontFamily="Microsoft YaHei UI" Click="BtnExit_Click" Margin="0,0,0,10"/>
                                 </ui:SimpleStackPanel>
                                 <ui:ToggleSwitch Name="ToggleSwitchRunAtStartup" Header="开机时运行" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchRunAtStartup_Toggled"/>
-                                <TextBlock Text="我们并不推荐使用 WPS Office，因为其对于触摸设备的支持较差" Foreground="#666666"/>
+                                <TextBlock Text="我们并不推荐使用 WPS Office，因为其对于触摸设备的较差支持。" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchSupportPowerPoint" Header="Microsoft PowerPoint 支持" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportPowerPoint_Toggled"/>
                                 <TextBlock Text="对 WPS Office 支持时会导致 WPS Office 关闭时卡顿，仅测试用。" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchSupportWPS" Header="WPS Office 支持" IsOn="False" IsEnabled="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportWPS_Toggled"/>
@@ -327,8 +327,8 @@
                                     <Slider x:Name="InkWidthSlider"
                                             HorizontalAlignment="Left"
                                             Minimum="1" Maximum="20"
-                                            Width="393" FontFamily="Microsoft YaHei UI" 
-                                            ui:ControlHelper.Header="笔画粗细"
+                                            Width="330" FontFamily="Microsoft YaHei UI" 
+                                            ui:ControlHelper.Header="画笔粗细"
                                             IsSnapToTickEnabled="True" Value="5"
                                             TickFrequency="1" TickPlacement="Both"
                                             ValueChanged="InkWidthSlider_ValueChanged"/>
@@ -336,7 +336,7 @@
                                                VerticalAlignment="Bottom" Margin="10,0,0,8"
                                                FontSize="14"/>
                                 </StackPanel>
-                                <ui:ToggleSwitch Name="ToggleSwitchShowCursor" Header="画笔光标可视化" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCursor_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowCursor" Header="显示画笔光标" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCursor_Toggled"/>
                                 <TextBlock Text="画笔样式" FontFamily="Microsoft YaHei UI" FontSize="14"/>
                                 <ComboBox Name="ComboBoxPenStyle" FontFamily="Microsoft YaHei UI" SelectedIndex="0" SelectionChanged="ComboBoxPenStyle_SelectionChanged">
                                     <ComboBoxItem Content="模拟笔锋（根据墨迹尾部计算）" FontFamily="Microsoft YaHei UI"/>
@@ -349,7 +349,7 @@
                                 <ComboBox Name="ComboBoxEraserSize" FontFamily="Microsoft YaHei UI" SelectedIndex="2" SelectionChanged="ComboBoxEraserSize_SelectionChanged">
                                     <ComboBoxItem Content="小" FontFamily="Microsoft YaHei UI"/>
                                     <ComboBoxItem Content="较小" FontFamily="Microsoft YaHei UI"/>
-                                    <ComboBoxItem Content="中等（默认）" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="中（默认）" FontFamily="Microsoft YaHei UI"/>
                                     <ComboBoxItem Content="较大"  FontFamily="Microsoft YaHei UI"/>
                                     <ComboBoxItem Content="大"  FontFamily="Microsoft YaHei UI"/>
                                 </ComboBox>
@@ -357,6 +357,7 @@
                         </GroupBox>
                         <GroupBox Header="手势">
                             <ui:SimpleStackPanel Spacing="12">
+                                <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerZoom" Header="允许双指缩放" FontFamily="Microsoft YaHei UI" IsOn="True" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerZoom_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerRotation" Header="允许双指旋转" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerRotation_Toggled"/>
                                 <TextBlock Text="允许选中墨迹后对墨迹进行双指或多指缩放操作（此设置不受“允许双指旋转”设置的影响）" TextWrapping="Wrap" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerRotationOnSelection" Header="允许双指旋转选中的墨迹" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerRotation_Toggled"/>
@@ -377,11 +378,11 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchShowButtonExit" Header="显示“退出”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonExit_Toggled"/>
                                 <Button Content="立即退出" Width="120" Visibility="Collapsed" FontFamily="Microsoft YaHei UI" Click="BtnExit_Click" Margin="0,0,0,10"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowButtonEraser" Header="显示“橡皮”按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonEraser_Toggled"/>
-                                <ui:ToggleSwitch Name="ToggleSwitchShowButtonHideControl" Header="显示”⇅ (显示或隐藏控制按钮)“按钮" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonHideControl_Toggled"/>
-                                    <ui:ToggleSwitch Name="ToggleSwitchShowButtonLRSwitch" Header="显示”⇆ (左右切换)“按钮" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonLRSwitch_Toggled"/>
-                                        <ui:ToggleSwitch Name="ToggleSwitchShowButtonModeFinger" Header="显示”手指模式“切换按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonModeFinger_Toggled"/>
-                                        <StackPanel Visibility="Collapsed" Orientation="Horizontal">
-                                            <Slider x:Name="SideControlOpacitySlider"
+                                <ui:ToggleSwitch Name="ToggleSwitchShowButtonHideControl" Header="显示“⇅ (显示或隐藏控制按钮)”按钮" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonHideControl_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowButtonLRSwitch" Header="显示“⇆ (左右切换)”按钮" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonLRSwitch_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowButtonModeFinger" Header="显示“手指模式”切换按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonModeFinger_Toggled"/>
+                                <StackPanel Visibility="Collapsed" Orientation="Horizontal">
+                                    <Slider x:Name="SideControlOpacitySlider"
                                             HorizontalAlignment="Left"
                                             Minimum="1" Maximum="100"
                                             Width="320" FontFamily="Microsoft YaHei UI" 
@@ -389,10 +390,10 @@
                                             IsSnapToTickEnabled="True" Value="100"
                                             TickFrequency="10" TickPlacement="Both"
                                             ValueChanged="SideControlOpacitySlider_ValueChanged"/>
-                                            <TextBlock Text="{Binding Value, ElementName=SideControlOpacitySlider, Mode=OneWay}"
+                                    <TextBlock Text="{Binding Value, ElementName=SideControlOpacitySlider, Mode=OneWay}"
                                                VerticalAlignment="Bottom" Margin="10,0,0,8"
                                                FontSize="14" Width="25" HorizontalAlignment="Center"/>
-                                        </StackPanel>
+                                </StackPanel>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Name="GroupBoxAppearanceNewUI" Header="外观">
@@ -433,7 +434,7 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoKillEasiNote" Header="自动查杀“希沃白板 5”" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoKillEasiNote_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesAtScreenshot" Header="截图时自动保存墨迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveStrokesAtScreenshot_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesAtClear" Header="清屏时自动截图" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveStrokesAtClear_Toggled"/>
-                                <TextBlock Text="开启后将在结束幻灯片放映时自动将已有墨迹保存至此电脑，并在下次打开时自动加载（文件名和幻灯片页数都相同时）" TextWrapping="Wrap" Foreground="#666666"/>
+                                <TextBlock Text="开启后将在结束幻灯片放映时自动将已有墨迹保存至此电脑，并在下次打开时自动加载（文件名和幻灯片页数都要相同）" TextWrapping="Wrap" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesInPowerPoint" Header="自动保存幻灯片墨迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveStrokesInPowerPoint_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
@@ -441,7 +442,7 @@
                             <ui:SimpleStackPanel Spacing="12">
                                 <ui:SimpleStackPanel Orientation="Horizontal" Spacing="4">
                                     <TextBlock FontSize="14">
-                                        <Bold>当前版本:</Bold>
+                                        <Bold>当前版本:</Bold> 
                                     </TextBlock>
                                     <TextBlock FontSize="14" Text="" Name="TextBlockVersion"/>
                                 </ui:SimpleStackPanel>
@@ -496,7 +497,7 @@
                     <Button FontFamily="Microsoft YaHei UI"
                             Width="120" Margin="10"
                             HorizontalAlignment="Right"
-                            Content="关闭设置"
+                            Content="关闭"
                             Click="BtnSettings_Click"/>
                 </Grid>
             </Grid>
@@ -788,7 +789,7 @@
                 </Viewbox>
             </Grid>
         </Grid>
-
+        
         <Viewbox Name="ViewboxFloatingBar" Margin="100,10,-2000,-200" 
                  HorizontalAlignment="Left" Height="50" VerticalAlignment="Top">
             <Viewbox.LayoutTransform>
@@ -798,7 +799,7 @@
                 <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666" MouseDown="SymbolIconEmoji_MouseDown" MouseUp="SymbolIconEmoji_MouseUp">
                     <ui:SimpleStackPanel Margin="0,5,0,5" Spacing="10" Orientation="Horizontal"
                                          HorizontalAlignment="Center">
-                        <ui:SymbolIcon Name="SymbolIconEmoji" Symbol="Emoji2" Foreground="#666666"/>
+                            <ui:SymbolIcon Name="SymbolIconEmoji" Symbol="Emoji2" Foreground="#666666"/>
                     </ui:SimpleStackPanel>
                 </Border>
                 <Border Margin="5,0,0,0" Visibility="Visible" Height="36" Name="BorderFloatingBarMainControls" Background="#9FFFFFFF" CornerRadius="5" BorderThickness="1" BorderBrush="#BF666666">
@@ -846,24 +847,15 @@
                                         <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
                                     </Viewbox>
                                 </Border>
-                                <Border Name="BorderPenColorWhite" Background="#FFE0DED5" CornerRadius="100" MouseUp="BorderPenColorWhite_MouseUp"
+                                <Border Name="BorderPenColorWhite" Background="White" CornerRadius="100" MouseUp="BorderPenColorWhite_MouseUp"
                                     Width="{Binding ElementName=BorderPenColorYellow, Path=ActualHeight}">
                                     <Viewbox Name="ViewboxBtnColorWhiteContent" Visibility="Collapsed" Margin="6">
                                         <ui:SymbolIcon Symbol="Accept" Foreground="Black"/>
                                     </Viewbox>
                                 </Border>
                             </ui:SimpleStackPanel>
-                            <Grid Width="20" Height="24" Margin="0,0,-2,0" MouseDown="Border_MouseDown" MouseUp="ImageEraser_MouseUp" Visibility="{Binding ElementName=BtnErase, Path=Visibility}">
-                                <Image Margin="-1,-4,-1,-2" Source="{DynamicResource ImageSource.RubberNormal}" RenderTransformOrigin="0.5,0.5">
-                                    <Image.RenderTransform>
-                                        <TransformGroup>
-                                            <ScaleTransform/>
-                                            <SkewTransform/>
-                                            <RotateTransform Angle="-0.172"/>
-                                            <TranslateTransform/>
-                                        </TransformGroup>
-                                    </Image.RenderTransform>
-                                </Image>
+                            <Grid Width="20" Height="24" Margin="0,1.5,-2,0" MouseDown="Border_MouseDown" MouseUp="ImageEraser_MouseUp" Visibility="{Binding ElementName=BtnErase, Path=Visibility}">
+                                <Image Margin="-1,-4,-1,-2" Source="{DynamicResource ImageSource.RubberNormal}" RenderTransformOrigin="0.5,0.5"/>
                             </Grid>
                             <Grid Margin="0,0,0,0" Width="20">
                                 <ui:SymbolIcon Symbol="Delete" Foreground="#666666" MouseDown="Border_MouseDown" MouseUp="SymbolIconDelete_MouseUp"/>
@@ -1049,7 +1041,7 @@
                                                 <Grid MouseUp="SymbolIconRandOne_MouseUp" MouseDown="Border_MouseDown">
                                                     <ui:SymbolIcon Symbol="Shuffle" Foreground="#666666"/>
                                                     <Border CornerRadius="50" BorderBrush="#666666" BorderThickness="1"
-                                                            HorizontalAlignment="Center" Margin="3,0,3,-2" VerticalAlignment="Bottom" Height="9" Width="9">
+                                                            HorizontalAlignment="Center" Margin="-2,0,0,-2" VerticalAlignment="Bottom" Height="9" Width="9">
                                                         <TextBlock Text="1" FontSize="7" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,-0.8,0,0" Foreground="#666666" />
                                                     </Border>
                                                 </Grid>
