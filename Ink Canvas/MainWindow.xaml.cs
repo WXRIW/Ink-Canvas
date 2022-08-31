@@ -381,7 +381,7 @@ namespace Ink_Canvas
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             LogHelper.WriteLogToFile("Ink Canvas closing", LogHelper.LogType.Event);
-            if (!closeIsFromButton)
+            if (!CloseIsFromButton)
             {
                 e.Cancel = true;
                 if (MessageBox.Show("是否继续关闭 Ink Canvas 画板，这将丢失当前未保存的工作。", "Ink Canvas 画板", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
@@ -706,10 +706,10 @@ namespace Ink_Canvas
         
         #region Right Side Panel
 
-        bool closeIsFromButton = false;
+        public static bool CloseIsFromButton = false;
         private void BtnExit_Click(object sender, RoutedEventArgs e)
         {
-            closeIsFromButton = true;
+            CloseIsFromButton = true;
             Close();
         }
 
@@ -717,7 +717,7 @@ namespace Ink_Canvas
         {
             Process.Start(System.Windows.Forms.Application.ExecutablePath, "-m");
 
-            closeIsFromButton = true;
+            CloseIsFromButton = true;
             Application.Current.Shutdown();
         }
 
