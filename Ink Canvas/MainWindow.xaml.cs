@@ -315,16 +315,21 @@ namespace Ink_Canvas
                                 lastVersion = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini");
                             }
                             catch { }
-                            //if (response.Contains("Special Version") && !lastVersion.Contains("3.2.5.0"))
-                            //{
-                            //    LogHelper.WriteLogToFile("Welcome Window Show Dialog (Second time)", LogHelper.LogType.Event);
+                            if (response.Contains("Special Version") && !lastVersion.Contains("NewWelcomeConfigured"))
+                            {
+                                LogHelper.WriteLogToFile("Welcome Window Show Dialog (Second time)", LogHelper.LogType.Event);
 
-                            //    if (response.Contains("Special Version Alhua"))
-                            //    {
-                            //        WelcomeWindow.IsNewBuilding = true;
-                            //    }
-                            //    new WelcomeWindow().ShowDialog();
-                            //}
+                                if (response.Contains("Special Version Alhua"))
+                                {
+                                    WelcomeWindow.IsNewBuilding = true;
+                                }
+                                new WelcomeWindow().ShowDialog();
+                            }
+                            try
+                            {
+                                lastVersion = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini");
+                            }
+                            catch { }
                             if (!lastVersion.Contains(version.ToString()))
                             {
                                 LogHelper.WriteLogToFile("Change Log Window Show Dialog", LogHelper.LogType.Event);

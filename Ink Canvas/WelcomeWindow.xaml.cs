@@ -73,7 +73,7 @@ namespace Ink_Canvas
             }
             catch { }
 
-            str = (str + "\n" + Assembly.GetExecutingAssembly().GetName().Version.ToString()).Trim();
+            str = (str + "\n" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + "\n" + "NewWelcomeConfigured").Trim();
             File.WriteAllText("versions.ini", str);
             Process.Start(System.Windows.Forms.Application.ExecutablePath);
 
