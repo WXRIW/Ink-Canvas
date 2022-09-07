@@ -301,6 +301,11 @@ namespace Ink_Canvas
                         if (response.Contains("Special Version") && !File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini"))
                         {
                             LogHelper.WriteLogToFile("Welcome Window Show Dialog", LogHelper.LogType.Event);
+
+                            if (response.Contains("Special Version Alhua"))
+                            {
+                                WelcomeWindow.IsNewBuilding = true;
+                            }
                             new WelcomeWindow().ShowDialog();
                         }
                         else
@@ -310,6 +315,16 @@ namespace Ink_Canvas
                                 lastVersion = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini");
                             }
                             catch { }
+                            if (response.Contains("Special Version") && !lastVersion.Contains("3.2.5.0"))
+                            {
+                                LogHelper.WriteLogToFile("Welcome Window Show Dialog (Second time)", LogHelper.LogType.Event);
+
+                                if (response.Contains("Special Version Alhua"))
+                                {
+                                    WelcomeWindow.IsNewBuilding = true;
+                                }
+                                new WelcomeWindow().ShowDialog();
+                            }
                             if (!lastVersion.Contains(version.ToString()))
                             {
                                 LogHelper.WriteLogToFile("Change Log Window Show Dialog", LogHelper.LogType.Event);
@@ -1036,7 +1051,7 @@ namespace Ink_Canvas
             ToggleSwitchAutoEnterModeFinger.IsOn = ToggleSwitchModeFinger.IsOn;
             if (ToggleSwitchModeFinger.IsOn)
             {
-                BoundsWidth = 10; //35
+                BoundsWidth = 15; //35
             }
             else
             {

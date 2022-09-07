@@ -27,6 +27,8 @@ namespace Ink_Canvas
             InitializeComponent();
         }
 
+        public static bool IsNewBuilding = false;
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Close();
@@ -55,13 +57,36 @@ namespace Ink_Canvas
                 MainWindow.Settings.Automation.IsAutoKillEasiNote = true;
             }
 
+            if (CheckBoxNewBuildingOptimization.IsChecked == true)
+            {
+                MainWindow.Settings.Appearance.IsShowEraserButton = true;
+                MainWindow.Settings.Startup.IsAutoEnterModeFinger = true;
+            }
+
             MainWindow.SaveSettingsToFile();
 
-            File.WriteAllText("versions.ini", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            string str = string.Empty;
+
+            try
+            {
+                str = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini");
+            }
+            catch { }
+
+            str = (str + "\n" + Assembly.GetExecutingAssembly().GetName().Version.ToString()).Trim();
+            File.WriteAllText("versions.ini", str);
             Process.Start(System.Windows.Forms.Application.ExecutablePath);
 
             MainWindow.CloseIsFromButton = true;
             Application.Current.Shutdown();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (IsNewBuilding)
+            {
+                CheckBoxNewBuildingOptimization.IsChecked = true;
+            }
         }
     }
 }

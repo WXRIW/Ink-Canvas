@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019"
         mc:Ignorable="d" Topmost="True" ResizeMode="NoResize" ui:WindowHelper.UseModernWindowStyle="True"
         WindowStartupLocation="CenterScreen" FontFamily="Microsoft YaHei UI" Closing="Window_Closing"
-        Title="欢迎向导 - Ink Canvas 画板" Height="250" Width="400">
+        Title="欢迎向导 - Ink Canvas 画板" Height="280" Width="400" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -20,6 +20,7 @@
             <CheckBox Name="CheckBoxRunAtStartup" FontFamily="Microsoft YaHei UI" Content="开机时运行" IsChecked="True"/>
             <CheckBox Name="CheckBoxAutoKillPptService" FontFamily="Microsoft YaHei UI" Content="自动查杀“PPT 小工具”" IsChecked="True"/>
             <CheckBox Name="CheckBoxAutoKillEasiNote" FontFamily="Microsoft YaHei UI" Content="自动查杀“希沃白板 5”"/>
+            <CheckBox Name="CheckBoxNewBuildingOptimization" FontFamily="Microsoft YaHei UI" Content="新综合楼优化"/>
         </ui:SimpleStackPanel>
         <Button Grid.Row="2" Margin="0,0,10,10" FontFamily="Microsoft YaHei UI"
                 HorizontalAlignment="Right" Content="确定" Width="100" Click="Button_Click"/>
