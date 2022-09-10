@@ -9,11 +9,6 @@ on:
 jobs:
 
   build:
-
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
-
     runs-on: windows-latest
 
     steps:
@@ -32,15 +27,8 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
 
-    # 安装 NuGet（如果后面需要，可以使用它）
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v1
-      with:
-        nuget-api-key: ${{ secrets.NuGetAPIKey }}
-        nuget-version: '5.x'
-
     # 编译整个项目
     - name: Build the solution
-      run: msbuild /p:Configuration=$env:Configuration -restore
+      run: msbuild /p:Configuration=Debug /p:Platform="Any CPU"
       env:
         Configuration: ${{ matrix.configuration }}
