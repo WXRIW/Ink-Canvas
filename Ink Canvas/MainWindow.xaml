@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019"
         AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize"
         mc:Ignorable="d" WindowState="Maximized" Loaded="Window_Loaded" Background="Transparent" ShowInTaskbar="False"
-        Title="Ink Canvas 画板" Closing="Window_Closing" Closed="Window_Closed"
-        Height="10000" Width="1000" FontFamily="Microsoft YaHei UI"
+        Title="Ink Canvas 画板" Closing="Window_Closing" Closed="Window_Closed" PreviewKeyDown="Main_Grid_PreviewKeyDown"
+        Height="10000" Width="1000" FontFamily="Microsoft YaHei UI" MouseWheel="Window_MouseWheel"
         Foreground="Black" Stylus.IsPressAndHoldEnabled="False">
     <!--资源中添加命令-->
     <Window.Resources>
@@ -28,7 +28,7 @@
                     CanExecute="CommandBinding_CanExecute"
                     Executed="KeyExit"/>
     </Window.CommandBindings>
-    <Grid x:Name="Main_Grid" Background="#01FFFFFF" PreviewKeyDown="Main_Grid_PreviewKeyDown">
+    <Grid x:Name="Main_Grid" Background="#01FFFFFF">
         <Grid Name="GridBackgroundCoverHolder">
             <Grid Name="GridBackgroundCover" Visibility="Hidden" Background="#1F1F1F"/>
         </Grid>

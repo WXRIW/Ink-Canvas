@@ -215,6 +215,32 @@ namespace Ink_Canvas
 
         #region Hotkeys
 
+        private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta >= 120)
+            {
+                BtnPPTSlidesUp_Click(BtnPPTSlidesUp, null);
+            }
+            else if (e.Delta <= -120)
+            {
+                BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
+            }
+        }
+
+        private void Main_Grid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (StackPanelPPTControls.Visibility != Visibility.Visible || currentMode != 0) return;
+
+            if (e.Key == Key.Down || e.Key == Key.PageDown || e.Key == Key.Right || e.Key == Key.N)
+            {
+                BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
+            }
+            if (e.Key == Key.Up || e.Key == Key.PageUp || e.Key == Key.Left || e.Key == Key.P)
+            {
+                BtnPPTSlidesUp_Click(BtnPPTSlidesUp, null);
+            }
+        }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
@@ -2147,20 +2173,6 @@ namespace Ink_Canvas
                     ViewboxFloatingBar.Margin = new Thickness(pointDesktop.X, pointDesktop.Y, -2000, -200);
                 }
             });
-        }
-
-        private void Main_Grid_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (StackPanelPPTControls.Visibility != Visibility.Visible || currentMode != 0) return;
-
-            if (e.Key == Key.Down || e.Key == Key.PageDown || e.Key == Key.Right || e.Key == Key.N)
-            {
-                BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
-            }
-            if (e.Key == Key.Up || e.Key == Key.PageUp || e.Key == Key.Left || e.Key == Key.P)
-            {
-                BtnPPTSlidesUp_Click(BtnPPTSlidesUp, null);
-            }
         }
 
         int previousSlideID = 0;
