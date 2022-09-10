@@ -1,0 +1,28 @@
+name: .NET Build & Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup
+        uses: actions/setup-dotnet@v1
+      - name: Build
+        run: dotnet build --configuration $env:Configuration
+        env:
+          Configuration: ${{ matrix.configuration }}
+      - name: Test
+        run: dotnet test --configuration $env:Configuration
+        env:
+          Configuration: ${{ matrix.configuration }}
