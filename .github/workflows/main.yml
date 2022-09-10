@@ -1,4 +1,4 @@
-name: .NET Build & Test
+name: .NET Build
 
 on:
   push:
@@ -7,21 +7,40 @@ on:
     branches: [ master ]
 
 jobs:
+
   build:
-    strategy:
-      matrix:
-        configuration: [Debug, Release]
     runs-on: windows-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup
-        uses: actions/setup-dotnet@v1
-      - name: Build
-        run: dotnet build --configuration $env:Configuration
-        env:
-          Configuration: ${{ matrix.configuration }}
-      - name: Test
-        run: dotnet test --configuration $env:Configuration
-        env:
-          Configuration: ${{ matrix.configuration }}
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    # 安装 .NET Core
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
+        
+    # 安装 NuGet
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: '5.x'
+
+    # 还原 NuGet 包
+    - name: NuGet restore
+      run: nuget restore
+      
+    # 添加 MSBuild.exe 到环境变量: https://github.com/microsoft/setup-msbuild
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    # 编译整个项目
+    - name: Build the solution
+      run: |
+        msbuild -t:restore
+        msbuild /p:Configuration=Release /p:Platform="Any CPU"
+      env:
+        Configuration: ${{ matrix.configuration }}
