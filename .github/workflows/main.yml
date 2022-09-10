@@ -44,3 +44,10 @@ jobs:
         msbuild /p:Configuration=Release /p:Platform="Any CPU"
       env:
         Configuration: ${{ matrix.configuration }}
+        
+    # 上传编译成品
+    - name: Upload video
+      uses: actions/upload-artifact@main
+      with:
+        name: Ink-Canvas
+        path: Ink Canvas/bin/Release
