@@ -1,0 +1,53 @@
+name: .NET Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    # 安装 .NET Core
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
+        
+    # 安装 NuGet
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: '5.x'
+
+    # 还原 NuGet 包
+    - name: NuGet restore
+      run: nuget restore
+      
+    # 添加 MSBuild.exe 到环境变量: https://github.com/microsoft/setup-msbuild
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    # 编译整个项目
+    - name: Build the solution
+      run: |
+        msbuild -t:restore
+        msbuild /p:Configuration=Release /p:Platform="Any CPU"
+      env:
+        Configuration: ${{ matrix.configuration }}
+        
+    # 上传编译成品
+    - name: Upload to artifact
+      uses: actions/upload-artifact@main
+      with:
+        name: Ink-Canvas
+        path: Ink Canvas/bin/Release
