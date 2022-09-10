@@ -46,7 +46,7 @@ jobs:
         Configuration: ${{ matrix.configuration }}
         
     # 上传编译成品
-    - name: Upload video
+    - name: Upload to artifact
       uses: actions/upload-artifact@main
       with:
         name: Ink-Canvas
