@@ -29,6 +29,8 @@ jobs:
 
     # 编译整个项目
     - name: Build the solution
-      run: msbuild /p:Configuration=Debug /p:Platform="Any CPU"
+      run: |
+        msbuild -t:restore
+        msbuild /p:Configuration=Release /p:Platform="Any CPU"
       env:
         Configuration: ${{ matrix.configuration }}
