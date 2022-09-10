@@ -19,9 +19,9 @@ jobs:
 
     # 安装 .NET Core
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v1
+    - uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 3.1.202
+        dotnet-version: '6.0.x'
 
     # 添加 MSBuild.exe 到环境变量: https://github.com/microsoft/setup-msbuild
     - name: Add msbuild to PATH
