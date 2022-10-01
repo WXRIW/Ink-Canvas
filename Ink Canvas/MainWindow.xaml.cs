@@ -863,7 +863,7 @@ namespace Ink_Canvas
                 if (currentMode == 0)
                 {
                     currentMode++;
-                    GridBackgroundCover.Visibility = Visibility.Visible;
+                    GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                     SaveStrokes(true);
                     inkCanvas.Strokes.Clear();
@@ -900,7 +900,7 @@ namespace Ink_Canvas
                 {
                     case 0: //屏幕模式
                         currentMode = 0;
-                        GridBackgroundCover.Visibility = Visibility.Hidden;
+                        GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                         SaveStrokes();
                         inkCanvas.Strokes.Clear();
@@ -1100,7 +1100,7 @@ namespace Ink_Canvas
                 GridBackgroundCoverHolder.Visibility = Visibility.Visible;
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
 
-                if (GridBackgroundCover.Visibility == Visibility.Hidden)
+                if (GridBackgroundCover.Visibility == Visibility.Collapsed)
                 {
                     if (BtnSwitchTheme.Content.ToString() == "浅色")
                     {
@@ -1194,7 +1194,7 @@ namespace Ink_Canvas
                 if (currentMode == 1)
                 {
                     currentMode = 0;
-                    GridBackgroundCover.Visibility = Visibility.Hidden;
+                    GridBackgroundCover.Visibility = Visibility.Collapsed;
                 }
                 BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
             }
@@ -1991,7 +1991,7 @@ namespace Ink_Canvas
                     if (currentMode != 0)
                     {
                         currentMode = 0;
-                        GridBackgroundCover.Visibility = Visibility.Hidden;
+                        GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                         //SaveStrokes();
                         inkCanvas.Strokes.Clear();
@@ -2134,7 +2134,7 @@ namespace Ink_Canvas
                 if (currentMode != 0)
                 {
                     currentMode = 0;
-                    GridBackgroundCover.Visibility = Visibility.Hidden;
+                    GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                     //SaveStrokes();
                     inkCanvas.Strokes.Clear();
@@ -2216,7 +2216,7 @@ namespace Ink_Canvas
         {
             if (currentMode == 1)
             {
-                GridBackgroundCover.Visibility = Visibility.Hidden;
+                GridBackgroundCover.Visibility = Visibility.Collapsed;
                 currentMode = 0;
             }
 
@@ -2239,7 +2239,7 @@ namespace Ink_Canvas
         {
             if (currentMode == 1)
             {
-                GridBackgroundCover.Visibility = Visibility.Hidden;
+                GridBackgroundCover.Visibility = Visibility.Collapsed;
                 currentMode = 0;
             }
 
@@ -2857,6 +2857,17 @@ namespace Ink_Canvas
 
                 isStrokeSelectionCloneOn = true;
             }
+        }
+
+        private void BorderStrokeSelectionCloneToNewBoard_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (lastBorderMouseDownObject != sender) return;
+
+            var strokes = inkCanvas.GetSelectedStrokes();
+            inkCanvas.Select(new StrokeCollection());
+            strokes = strokes.Clone();
+            BtnWhiteBoardAdd_Click(null, null);
+            inkCanvas.Strokes.Add(strokes);
         }
 
         private void BorderStrokeSelectionDelete_MouseUp(object sender, MouseButtonEventArgs e)

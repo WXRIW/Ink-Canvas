@@ -7,7 +7,7 @@
         AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize"
         mc:Ignorable="d" WindowState="Maximized" Loaded="Window_Loaded" Background="Transparent" ShowInTaskbar="False"
         Title="Ink Canvas 画板" Closing="Window_Closing" Closed="Window_Closed" PreviewKeyDown="Main_Grid_PreviewKeyDown"
-        Height="10000" Width="1000" FontFamily="Microsoft YaHei UI" MouseWheel="Window_MouseWheel"
+        Height="1000" Width="1000" FontFamily="Microsoft YaHei UI" MouseWheel="Window_MouseWheel"
         Foreground="Black" Stylus.IsPressAndHoldEnabled="False">
     <!--资源中添加命令-->
     <Window.Resources>
@@ -30,7 +30,7 @@
     </Window.CommandBindings>
     <Grid x:Name="Main_Grid" Background="#01FFFFFF">
         <Grid Name="GridBackgroundCoverHolder">
-            <Grid Name="GridBackgroundCover" Visibility="Hidden" Background="#1F1F1F"/>
+            <Grid Name="GridBackgroundCover" Visibility="Collapsed" Background="#1F1F1F"/>
         </Grid>
         <Canvas Name="Canvas"/>
         <Label Name="Label" Visibility="Collapsed" Foreground="Gray" Content="0"/>
@@ -80,6 +80,13 @@
                             <ui:SimpleStackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="5">
                                 <ui:SymbolIcon Symbol="Copy" Foreground="#666666"/>
                                 <TextBlock Text="克隆" FontSize="10" Foreground="#666666"/>
+                            </ui:SimpleStackPanel>
+                        </Border>
+                        <Border Name="BorderStrokeSelectionCloneToNewBoard" Margin="0,2,-9,2" Background="Transparent" CornerRadius="{Binding ElementName=BorderStrokeSelectionControl, Path=CornerRadius}"
+                                Width="40" MouseDown="Border_MouseDown" MouseUp="BorderStrokeSelectionCloneToNewBoard_MouseUp" Visibility="{Binding Visibility, ElementName=GridBackgroundCover}">
+                            <ui:SimpleStackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="5">
+                                <ui:SymbolIcon Symbol="Copy" Foreground="#666666"/>
+                                <TextBlock Text="克隆至新页" FontSize="8" Foreground="#666666"/>
                             </ui:SimpleStackPanel>
                         </Border>
                         <Border Width="1" Height="45" BorderBrush="#666666" Background="#666666"/>
