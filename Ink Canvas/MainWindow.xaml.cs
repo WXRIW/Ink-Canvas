@@ -4509,6 +4509,7 @@ namespace Ink_Canvas
         {
             try
             {
+	    	if (WhiteboardStrokesStreams == null) return;
                 if (isBackupMain)
                 {
                     if (WhiteboardStrokesStreams[0].Length > 0)
