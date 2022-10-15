@@ -40,6 +40,7 @@ jobs:
     # 编译整个项目
     - name: Build the solution
       run: |
+        move /Y "Ink Canvas\Ink Canvas.csproj.actions" "Ink Canvas\Ink Canvas.csproj"
         msbuild -t:restore
         msbuild /p:Configuration=Release /p:Platform="Any CPU"
       env:
