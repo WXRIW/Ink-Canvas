@@ -217,8 +217,8 @@ namespace Ink_Canvas
 
         private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-			if (StackPanelPPTControls.Visibility != Visibility.Visible || currentMode != 0) return;
-			if (e.Delta >= 120)
+	    if (StackPanelPPTControls.Visibility != Visibility.Visible || currentMode != 0) return;
+	    if (e.Delta >= 120)
             {
                 BtnPPTSlidesUp_Click(BtnPPTSlidesUp, null);
             }
