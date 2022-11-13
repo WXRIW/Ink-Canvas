@@ -4509,7 +4509,7 @@ namespace Ink_Canvas
         {
             try
             {
-	    	if (WhiteboardStrokesStreams == null) return;
+	    	if (WhiteboardStrokesStreams[CurrentWhiteboardIndex] == null) return; //防止白板打开后不居中
                 if (isBackupMain)
                 {
                     if (WhiteboardStrokesStreams[0].Length > 0)
