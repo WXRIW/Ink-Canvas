@@ -33,11 +33,14 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 ### 我该如何提出功能需求和错误报告？
 1. 你可以选择在GitHub issues里提出
 
-    功能需求：https://github.com/WXRIW/Ink-Canvas/labels/enhancement/new
+  功能需求：https://github.com/WXRIW/Ink-Canvas/labels/enhancement/new 
 
-    错误报告：https://github.com/WXRIW/Ink-Canvas/issues/new
+  错误报告：https://github.com/WXRIW/Ink-Canvas/labels/bug/new
 
 2. 也可以加入 [![交流群](https://img.shields.io/badge/-%E4%BA%A4%E6%B5%81%E7%BE%A4%20891915376-blue?style=flat&logo=TencentQQ)](https://jq.qq.com/?_wv=1027&k=NvlM1Rgg) 进行探讨
+
+### 大小屏设备交替使用/手指或笔头过大 导致被识别成橡皮怎么办？
+点击画板的“设置”按钮并开启`特殊屏幕`选项即可
 
 
 ## 感谢
