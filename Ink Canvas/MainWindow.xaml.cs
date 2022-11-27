@@ -276,7 +276,7 @@ namespace Ink_Canvas
         public static Settings Settings = new Settings();
         public static string settingsFileName = "Settings.json";
         bool isLoaded = false;
-        bool isAutoUpdateEnabled = false;
+        //bool isAutoUpdateEnabled = false;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -299,7 +299,7 @@ namespace Ink_Canvas
                     string response = GetWebClient(Url);
                     if (response.Contains("Special Version"))
                     {
-                        isAutoUpdateEnabled = true;
+                        //isAutoUpdateEnabled = true;
 
                         if (response.Contains("<notice>"))
                         {
@@ -836,11 +836,12 @@ namespace Ink_Canvas
                 BorderDrawShape.Visibility = Visibility.Collapsed;
             }
             GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
-            Label.Content = "isSingleFingerDragMode=" + isSingleFingerDragMode.ToString();
+            //Label.Content = "isSingleFingerDragMode=" + isSingleFingerDragMode.ToString();
             if (isSingleFingerDragMode)
             {
                 BtnFingerDragMode_Click(BtnFingerDragMode, null);
             }
+            isLongPressSelected = false;
         }
 
         private void BtnHideControl_Click(object sender, RoutedEventArgs e)
@@ -1220,6 +1221,8 @@ namespace Ink_Canvas
                 CancelSingleFingerDragMode();
                 forceEraser = false;
             }
+
+            isLongPressSelected = false;
 
             // 改变选中提示
             ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
@@ -3207,6 +3210,7 @@ namespace Ink_Canvas
         #endregion Floating Bar Control
 
         int drawingShapeMode = 0;
+        bool isLongPressSelected = false; // 用于存是否是“选中”状态，便于后期抬笔后不做切换到笔的处理
 
         #region Buttons
 
@@ -3226,6 +3230,53 @@ namespace Ink_Canvas
             }
         }
 
+        object lastMouseDownSender = null;
+        DateTime lastMouseDownTime = DateTime.MinValue;
+
+        private async void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            lastMouseDownSender = sender;
+            lastMouseDownTime = DateTime.Now;
+
+            await Task.Delay(500);
+
+            if (lastMouseDownSender == sender)
+            {
+                lastMouseDownSender = null;
+                var dA = new DoubleAnimation(1, 0.3, new Duration(TimeSpan.FromMilliseconds(100)));
+                ((UIElement)sender).BeginAnimation(OpacityProperty, dA);
+
+                forceEraser = true;
+                inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                inkCanvas.IsManipulationEnabled = true;
+                if (sender == ImageDrawLine)
+                {
+                    drawingShapeMode = 1;
+                }
+                else if (sender == ImageDrawDashedLine)
+                {
+                    drawingShapeMode = 8;
+                }
+                else if (sender == ImageDrawDotLine)
+                {
+                    drawingShapeMode = 18;
+                }
+                else if (sender == ImageDrawArrow)
+                {
+                    drawingShapeMode = 2;
+                }
+                else if (sender == ImageDrawParallelLine)
+                {
+                    drawingShapeMode = 15;
+                }
+                isLongPressSelected = true;
+                if (isSingleFingerDragMode)
+                {
+                    BtnFingerDragMode_Click(BtnFingerDragMode, null);
+                }
+            }
+        }
+
         private void BtnPen_Click(object sender, RoutedEventArgs e)
         {
             forceEraser = false;
@@ -3233,51 +3284,102 @@ namespace Ink_Canvas
             inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             inkCanvas.IsManipulationEnabled = true;
             CancelSingleFingerDragMode();
+            isLongPressSelected = false;
         }
 
         private void BtnDrawLine_Click(object sender, EventArgs e)
         {
-            forceEraser = true;
-            drawingShapeMode = 1;
-            inkCanvas.EditingMode = InkCanvasEditingMode.None;
-            inkCanvas.IsManipulationEnabled = true;
-            CancelSingleFingerDragMode();
+            if (lastMouseDownSender == sender)
+            {
+                forceEraser = true;
+                drawingShapeMode = 1;
+                inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                inkCanvas.IsManipulationEnabled = true;
+                CancelSingleFingerDragMode();
+            }
+            lastMouseDownSender = null;
+            if (isLongPressSelected)
+            {
+                BorderDrawShape.Visibility = Visibility.Collapsed;
+                var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
+                ImageDrawLine.BeginAnimation(OpacityProperty, dA);
+            }
         }
 
         private void BtnDrawDashedLine_Click(object sender, EventArgs e)
         {
-            forceEraser = true;
-            drawingShapeMode = 8;
-            inkCanvas.EditingMode = InkCanvasEditingMode.None;
-            inkCanvas.IsManipulationEnabled = true;
-            CancelSingleFingerDragMode();
+            if (lastMouseDownSender == sender)
+            {
+                forceEraser = true;
+                drawingShapeMode = 8;
+                inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                inkCanvas.IsManipulationEnabled = true;
+                CancelSingleFingerDragMode();
+            }
+            lastMouseDownSender = null;
+            if (isLongPressSelected)
+            {
+                BorderDrawShape.Visibility = Visibility.Collapsed;
+                var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
+                ImageDrawDashedLine.BeginAnimation(OpacityProperty, dA);
+            }
         }
 
         private void BtnDrawDotLine_Click(object sender, EventArgs e)
         {
-            forceEraser = true;
-            drawingShapeMode = 18;
-            inkCanvas.EditingMode = InkCanvasEditingMode.None;
-            inkCanvas.IsManipulationEnabled = true;
-            CancelSingleFingerDragMode();
+            if (lastMouseDownSender == sender)
+            {
+                forceEraser = true;
+                drawingShapeMode = 18;
+                inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                inkCanvas.IsManipulationEnabled = true;
+                CancelSingleFingerDragMode();
+            }
+            lastMouseDownSender = null;
+            if (isLongPressSelected)
+            {
+                BorderDrawShape.Visibility = Visibility.Collapsed;
+                var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
+                ImageDrawDotLine.BeginAnimation(OpacityProperty, dA);
+            }
         }
 
         private void BtnDrawArrow_Click(object sender, EventArgs e)
         {
-            forceEraser = true;
-            drawingShapeMode = 2;
-            inkCanvas.EditingMode = InkCanvasEditingMode.None;
-            inkCanvas.IsManipulationEnabled = true;
-            CancelSingleFingerDragMode();
+            if (lastMouseDownSender == sender)
+            {
+                forceEraser = true;
+                drawingShapeMode = 2;
+                inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                inkCanvas.IsManipulationEnabled = true;
+                CancelSingleFingerDragMode();
+            }
+            lastMouseDownSender = null;
+            if (isLongPressSelected)
+            {
+                BorderDrawShape.Visibility = Visibility.Collapsed;
+                var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
+                ImageDrawArrow.BeginAnimation(OpacityProperty, dA);
+            }
         }
 
         private void BtnDrawParallelLine_Click(object sender, EventArgs e)
         {
-            forceEraser = true;
-            drawingShapeMode = 15;
-            inkCanvas.EditingMode = InkCanvasEditingMode.None;
-            inkCanvas.IsManipulationEnabled = true;
-            CancelSingleFingerDragMode();
+            if (lastMouseDownSender == sender)
+            {
+                forceEraser = true;
+                drawingShapeMode = 15;
+                inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                inkCanvas.IsManipulationEnabled = true;
+                CancelSingleFingerDragMode();
+            }
+            lastMouseDownSender = null;
+            if (isLongPressSelected)
+            {
+                BorderDrawShape.Visibility = Visibility.Collapsed;
+                var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
+                ImageDrawParallelLine.BeginAnimation(OpacityProperty, dA);
+            }
         }
 
         private void BtnDrawCoordinate1_Click(object sender, EventArgs e)
@@ -4432,7 +4534,14 @@ namespace Ink_Canvas
             lastTempStrokeCollection = null;
             if (drawingShapeMode != 9 && drawingShapeMode != 0 && drawingShapeMode != 24 && drawingShapeMode != 25)
             {
-                BtnPen_Click(null, null); //画完一次还原到笔模式
+                if (isLongPressSelected)
+                {
+
+                }
+                else
+                {
+                    BtnPen_Click(null, null); //画完一次还原到笔模式
+                }
             }
             if (drawingShapeMode == 9)
             {

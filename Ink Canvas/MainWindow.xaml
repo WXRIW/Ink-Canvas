@@ -881,8 +881,11 @@
                                     CornerRadius="8" Margin="-100,-265,-100,30" Height="240">
                                     <Viewbox Margin="0,0,0,2">
                                         <ui:SimpleStackPanel Spacing="-8" Orientation="Vertical">
-                                            <Label Content="图形" FontSize="16" Foreground="#666666"
-                                                   HorizontalAlignment="Left" Margin="10,8"/>
+                                            <TextBlock FontSize="16" Foreground="#666666"
+                                                       HorizontalAlignment="Left" Margin="10,8">
+                                                <Run Text="图形"/>
+                                                <Run Text="(第一行支持长按保持选中)" FontSize="10"/>
+                                            </TextBlock>
                                             <ui:SymbolIcon Margin="0,-20,8,15" Symbol="Pin" MouseDown="Border_MouseDown" MouseUp="SymbolIconPinBorderDrawShape_MouseUp" Foreground="#666666" HorizontalAlignment="Right"/>
                                             <ui:SimpleStackPanel Margin="20,0,0,0" Orientation="Horizontal">
                                                 <ui:SimpleStackPanel Visibility="Collapsed" Margin="58,6,5,6" Width="54">
@@ -893,11 +896,11 @@
                                                 </ui:SimpleStackPanel>
                                             </ui:SimpleStackPanel>
                                             <ui:SimpleStackPanel Height="50" Spacing="14" Orientation="Horizontal">
-                                                <Image Margin="16,12,0,12" MouseUp="BtnDrawLine_Click" Source="{DynamicResource DrawShapeImageSource.Line}"/>
-                                                <Image Margin="0,12,0,12" MouseUp="BtnDrawDashedLine_Click" Source="{DynamicResource DrawShapeImageSource.DashedLine}"/>
-                                                <Image Margin="0,12,0,12" MouseUp="BtnDrawDotLine_Click" Source="{DynamicResource DrawShapeImageSource.DotLine}"/>
-                                                <Image Margin="0,12,0,12" MouseUp="BtnDrawArrow_Click" Source="{DynamicResource DrawShapeImageSource.ArrowLine}"/>
-                                                <Image Margin="0,11.5,16,11.5" MouseUp="BtnDrawParallelLine_Click" Source="{DynamicResource DrawShapeImageSource.ParallelLine}"/>
+                                                <Image Name="ImageDrawLine" Margin="16,12,0,12" MouseDown="Image_MouseDown" MouseUp="BtnDrawLine_Click" Source="{DynamicResource DrawShapeImageSource.Line}"/>
+                                                <Image Name="ImageDrawDashedLine" Margin="0,12,0,12" MouseDown="Image_MouseDown" MouseUp="BtnDrawDashedLine_Click" Source="{DynamicResource DrawShapeImageSource.DashedLine}"/>
+                                                <Image Name="ImageDrawDotLine" Margin="0,12,0,12" MouseDown="Image_MouseDown" MouseUp="BtnDrawDotLine_Click" Source="{DynamicResource DrawShapeImageSource.DotLine}"/>
+                                                <Image Name="ImageDrawArrow" Margin="0,12,0,12" MouseDown="Image_MouseDown" MouseUp="BtnDrawArrow_Click" Source="{DynamicResource DrawShapeImageSource.ArrowLine}"/>
+                                                <Image Name="ImageDrawParallelLine" Margin="0,11.5,16,11.5" MouseDown="Image_MouseDown" MouseUp="BtnDrawParallelLine_Click" Source="{DynamicResource DrawShapeImageSource.ParallelLine}"/>
                                             </ui:SimpleStackPanel>
                                             <ui:SimpleStackPanel Height="50" Spacing="15" Orientation="Horizontal">
                                                 <Image Margin="16,12,0,12" MouseUp="BtnDrawCoordinate1_Click" Source="{DynamicResource DrawShapeImageSource.Coordinate1}"/>
