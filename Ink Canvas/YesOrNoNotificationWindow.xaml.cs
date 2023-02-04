@@ -20,28 +20,41 @@ namespace Ink_Canvas
     /// <summary>
     /// Interaction logic for RestoreHiddenSlidesWindow.xaml
     /// </summary>
-    public partial class RestoreHiddenSlidesWindow : Window
+    public partial class YesOrNoNotificationWindow : Window
     {
-        public RestoreHiddenSlidesWindow()
+        private readonly Action _yesAction;
+        private readonly Action _noAction;
+
+        public YesOrNoNotificationWindow(string text, Action yesAction = null, Action noAction = null)
         {
+            _yesAction = yesAction;
+            _noAction = noAction;
             InitializeComponent();
+            Label.Content = text;
         }
 
         private void ButtonYes_Click(object sender, RoutedEventArgs e)
         {
-            foreach (Slide slide in MainWindow.slides)
+            if (_yesAction == null)
             {
-                if (slide.SlideShowTransition.Hidden == Microsoft.Office.Core.MsoTriState.msoTrue)
-                {
-                    slide.SlideShowTransition.Hidden = Microsoft.Office.Core.MsoTriState.msoFalse;
-                }
+                Close();
+                return;
             }
 
+            _yesAction.Invoke();
             Close();
+            
         }
 
         private void ButtonNo_Click(object sender, RoutedEventArgs e)
         {
+            if (_noAction == null)
+            {
+                Close();
+                return;
+            }
+
+            _noAction.Invoke();
             Close();
         }
 

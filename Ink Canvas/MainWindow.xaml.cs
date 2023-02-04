@@ -1915,6 +1915,33 @@ namespace Ink_Canvas
                 if (pptApplication == null) throw new Exception();
                 //BtnCheckPPT.Visibility = Visibility.Collapsed;
 
+                // 跳转到上次播放页
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\Auto Saved\Presentations\";
+                    string folderPath = defaultFolderPath + presentation.Name + "_" + presentation.Slides.Count;
+                    if (File.Exists(folderPath + "/position"))
+                    {
+                        if (int.TryParse(File.ReadAllText(folderPath + "/position"), out var page))
+                        {
+                            IsShowingRestoreHiddenSlidesWindow = true;
+                            new YesOrNoNotificationWindow($"上次播放到了第 {page} 页, 是否立即跳转", () =>
+                            {
+                                if (pptApplication.SlideShowWindows.Count >= 1)
+                                {
+                                    // 如果已经播放了的话, 跳转
+                                    presentation.SlideShowWindow.View.GotoSlide(page);
+                                }
+                                else
+                                {
+                                    presentation.Windows[1].View.GotoSlide(page);
+                                }
+                            }).ShowDialog();
+                        }
+                    }
+                });
+                
+                
                 //检查是否有隐藏幻灯片
                 bool isHaveHiddenSlide = false;
                 foreach (Slide slide in slides)
@@ -1931,8 +1958,20 @@ namespace Ink_Canvas
                     if (isHaveHiddenSlide && !IsShowingRestoreHiddenSlidesWindow)
                     {
                         IsShowingRestoreHiddenSlidesWindow = true;
-                        new RestoreHiddenSlidesWindow().ShowDialog();
+                        new YesOrNoNotificationWindow("检测到此演示文档中包含隐藏的幻灯片，是否取消隐藏？", 
+                            () =>
+                        {
+                            foreach (Slide slide in slides)
+                            {
+                                if (slide.SlideShowTransition.Hidden == Microsoft.Office.Core.MsoTriState.msoTrue)
+                                {
+                                    slide.SlideShowTransition.Hidden = Microsoft.Office.Core.MsoTriState.msoFalse;
+                                }
+                            }
+                        }).ShowDialog();
                     }
+                    
+                    
 
                     BtnPPTSlideShow.Visibility = Visibility.Visible;
                 });
@@ -2151,6 +2190,7 @@ namespace Ink_Canvas
                 {
                     Directory.CreateDirectory(folderPath);
                 }
+                File.WriteAllText(folderPath+"/position", previousSlideID.ToString());
                 for (int i = 1; i <= Pres.Slides.Count; i++)
                 {
                     if (memoryStreams[i] != null)
