@@ -676,6 +676,27 @@ namespace Ink_Canvas
                     ToggleSwitchAutoKillEasiNote.IsOn = false;
                 }
 
+                if (Settings.Automation.IsAutoClearWhenExitingWritingMode)
+                {
+                    ToggleSwitchClearExitingWritingMode.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchClearExitingWritingMode.IsOn = false;
+                }
+                
+                
+                if (Settings.Automation.IsAutoSaveStrokesAtClear)
+                {
+                    ToggleSwitchAutoSaveStrokesAtClear.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchAutoSaveStrokesAtClear.IsOn = false;
+                }
+
+                
+                
                 if (Settings.Automation.IsAutoKillPptService)
                 {
                     ToggleSwitchAutoKillPptService.IsOn = true;
@@ -1124,14 +1145,41 @@ namespace Ink_Canvas
             }
             else
             {
-                Main_Grid.Background = Brushes.Transparent;
-                inkCanvas.Visibility = Visibility.Collapsed;
+                // Auto-clear Strokes
+                // 很烦, 要重新来, 要等待截图完成再清理笔记
+                if (isLoaded && Settings.Automation.IsAutoClearWhenExitingWritingMode)
+                {
+                    if (inkCanvas.Strokes.Count > 0)
+                    {
+                        if (Settings.Automation.IsAutoSaveStrokesAtClear)
+                        {
+                            try
+                            {
+                                SaveScreenShot(true);
+                            }
+                            catch
+                            {
+                                // ignore
+                            }
+                            
+                        }
+                        BtnClear_Click(BtnClear, null);
+                    }
+                    Main_Grid.Background = Brushes.Transparent;
+                    inkCanvas.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    Main_Grid.Background = Brushes.Transparent;
+                    inkCanvas.Visibility = Visibility.Collapsed;
+                }
                 GridBackgroundCoverHolder.Visibility = Visibility.Collapsed;
                 if (currentMode != 0)
                 {
                     SaveStrokes();
                     RestoreStrokes(true);
                 }
+
                 if (BtnSwitchTheme.Content.ToString() == "浅色")
                 {
                     BtnSwitch.Content = "黑板";
@@ -1140,6 +1188,7 @@ namespace Ink_Canvas
                 {
                     BtnSwitch.Content = "白板";
                 }
+
                 StackPanelPPTButtons.Visibility = Visibility.Visible;
                 BtnHideInkCanvas.Content = "显示\n画板";
             }
@@ -2570,6 +2619,14 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
             Settings.Automation.IsAutoSaveStrokesAtClear = ToggleSwitchAutoSaveStrokesAtClear.IsOn;
+            SaveSettingsToFile();
+        }
+        
+        
+        private void ToggleSwitchExitingWritingMode_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Automation.IsAutoClearWhenExitingWritingMode = ToggleSwitchClearExitingWritingMode.IsOn;
             SaveSettingsToFile();
         }
 
@@ -5451,30 +5508,7 @@ namespace Ink_Canvas
                 Thread.Sleep(20);
                 try
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
-                        var bitmap = new System.Drawing.Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                        using (System.Drawing.Graphics memoryGrahics = System.Drawing.Graphics.FromImage(bitmap))
-                        {
-                            memoryGrahics.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, System.Drawing.CopyPixelOperation.SourceCopy);
-                        }
-
-                        if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots"))
-                        {
-                            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots");
-                        }
-
-                        bitmap.Save(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                            @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png", ImageFormat.Png);
-
-                        if (!isHideNotification)
-                        {
-                            ShowNotification("截图成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                                @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png");
-                        }
-                    });
+                    Application.Current.Dispatcher.Invoke(() => { SaveScreenShot(isHideNotification); });
                 }
                 catch
                 {
@@ -5502,6 +5536,32 @@ namespace Ink_Canvas
                     });
                 }
             })).Start();
+        }
+
+        private void SaveScreenShot(bool isHideNotification)
+        {
+            System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
+            var bitmap = new System.Drawing.Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            using (System.Drawing.Graphics memoryGrahics = System.Drawing.Graphics.FromImage(bitmap))
+            {
+                memoryGrahics.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, System.Drawing.CopyPixelOperation.SourceCopy);
+            }
+
+            if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots"))
+            {
+                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                                          @"\Ink Canvas Screenshots");
+            }
+
+            bitmap.Save(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                        @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png", ImageFormat.Png);
+
+            if (!isHideNotification)
+            {
+                ShowNotification("截图成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                                 @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png");
+            }
         }
 
         #endregion

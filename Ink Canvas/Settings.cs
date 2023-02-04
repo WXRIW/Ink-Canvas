@@ -97,6 +97,9 @@ namespace Ink_Canvas
         public bool IsAutoSaveStrokesAtClear { get; set; } = false;
         [JsonProperty("isAutoSaveStrokesInPowerPoint")]
         public bool IsAutoSaveStrokesInPowerPoint { get; set; } = true;
+        [JsonProperty("isAutoClearWhenExitingWritingMode")]
+        public bool IsAutoClearWhenExitingWritingMode { get; set; } = false;
+        
     }
 
     public class Advanced
