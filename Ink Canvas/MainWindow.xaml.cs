@@ -37,6 +37,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Ink.AnalysisCore;
 using Ink_Canvas.Helpers;
 using Microsoft.Win32;
+using Path = System.IO.Path;
 
 namespace Ink_Canvas
 {
@@ -722,6 +723,15 @@ namespace Ink_Canvas
                 else
                 {
                     ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn = false;
+                }
+                
+                if (Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+                {
+                    ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn = false;
                 }
             }
             else
@@ -1952,11 +1962,16 @@ namespace Ink_Canvas
             pptApplication.SlideShowEnd -= PptApplication_SlideShowEnd;
             pptApplication = null;
             timerCheckPPT.Start();
-            BtnPPTSlideShow.Visibility = Visibility.Collapsed;
-            BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                BtnPPTSlideShow.Visibility = Visibility.Collapsed;
+                BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
+            });
         }
 
         bool isPresentationHaveBlackSpace = false;
+
+        private string pptName = null;
         //bool isButtonBackgroundTransparent = true; //此变量仅用于保存用于幻灯片放映时的优化
         private void PptApplication_SlideShowBegin(SlideShowWindow Wn)
         {
@@ -1996,6 +2011,7 @@ namespace Ink_Canvas
                 previousSlideID = 0;
                 memoryStreams = new MemoryStream[slidescount + 2];
 
+                pptName = Wn.Presentation.Name;
                 LogHelper.NewLog("Name: " + Wn.Presentation.Name);
                 LogHelper.NewLog("Slides Count: " + slidescount.ToString());
 
@@ -2243,6 +2259,9 @@ namespace Ink_Canvas
                     ms.Position = 0;
                     memoryStreams[previousSlideID] = ms;
 
+                    if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+                        SaveScreenShot(true, Wn.Presentation.Name + "/" + Wn.View.CurrentShowPosition);
+                    
                     BtnRedo.IsEnabled = false;
                     BtnRedo.Visibility = Visibility.Collapsed;
 
@@ -2634,6 +2653,13 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
             Settings.Automation.IsAutoSaveStrokesInPowerPoint = ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn;
+            SaveSettingsToFile();
+        }
+        
+        private void ToggleSwitchAutoSaveScreenShotInPowerPoint_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Automation.IsAutoSaveScreenShotInPowerPoint = ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn;
             SaveSettingsToFile();
         }
 
@@ -5508,7 +5534,13 @@ namespace Ink_Canvas
                 Thread.Sleep(20);
                 try
                 {
-                    Application.Current.Dispatcher.Invoke(() => { SaveScreenShot(isHideNotification); });
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (BtnPPTSlideShowEnd.Visibility == Visibility.Visible)
+                            SaveScreenShot(isHideNotification, $"{pptName}/{previousSlideID}_{DateTime.Now:HH-mm-ss}");
+                        else
+                            SaveScreenShot(isHideNotification);
+                    });
                 }
                 catch
                 {
@@ -5538,7 +5570,7 @@ namespace Ink_Canvas
             })).Start();
         }
 
-        private void SaveScreenShot(bool isHideNotification)
+        private void SaveScreenShot(bool isHideNotification, string fileName = null)
         {
             System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
             var bitmap = new System.Drawing.Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -5548,19 +5580,22 @@ namespace Ink_Canvas
                 memoryGrahics.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, System.Drawing.CopyPixelOperation.SourceCopy);
             }
 
-            if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots"))
+            if (string.IsNullOrWhiteSpace(fileName))
+                fileName = DateTime.Now.ToString("HH-mm-ss");
+            var savePath =
+                $@"{Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)}\Ink Canvas Screenshots\{DateTime.Now.Date:yyyyMMdd}\{fileName}.png";
+
+
+            if (!Directory.Exists(Path.GetDirectoryName(savePath)))
             {
-                Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                                          @"\Ink Canvas Screenshots");
+                Directory.CreateDirectory(Path.GetDirectoryName(savePath));
             }
 
-            bitmap.Save(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                        @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png", ImageFormat.Png);
+            bitmap.Save(savePath, ImageFormat.Png);
 
             if (!isHideNotification)
             {
-                ShowNotification("截图成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
-                                 @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png");
+                ShowNotification("截图成功保存至 " + savePath);
             }
         }
 
