@@ -2918,23 +2918,32 @@ namespace Ink_Canvas
             }
         }
 
+        private bool isLastStrokeConverted = false;
+        
         private void BtnUndo_Click(object sender, RoutedEventArgs e)
         {
-            int whiteboardIndex = CurrentWhiteboardIndex;
-            if (currentMode == 0)
+            if (isLastStrokeConverted)
             {
-                whiteboardIndex = 0;
+                int whiteboardIndex = CurrentWhiteboardIndex;
+                if (currentMode == 0)
+                {
+                    whiteboardIndex = 0;
+                }
+
+                StrokeCollection strokes = inkCanvas.Strokes.Clone();
+                inkCanvas.Strokes = strokeCollections[whiteboardIndex].Clone();
+                strokeCollections[whiteboardIndex] = strokes;
+
+                BtnRedo.IsEnabled = true;
+                BtnRedo.Visibility = Visibility.Visible;
+
+                BtnUndo.IsEnabled = false;
+                BtnUndo.Visibility = Visibility.Collapsed;
             }
-
-            StrokeCollection strokes = inkCanvas.Strokes.Clone();
-            inkCanvas.Strokes = strokeCollections[whiteboardIndex].Clone();
-            strokeCollections[whiteboardIndex] = strokes;
-
-            BtnRedo.IsEnabled = true;
-            BtnRedo.Visibility = Visibility.Visible;
-
-            BtnUndo.IsEnabled = false;
-            BtnUndo.Visibility = Visibility.Collapsed;
+            else
+            {
+                back_HotKey(null,null);
+            }
         }
 
         private void BtnRedo_Click(object sender, RoutedEventArgs e)
@@ -5198,6 +5207,14 @@ namespace Ink_Canvas
                                 newStrokes = new StrokeCollection();
                             }
                         }
+                        else
+                        {
+                            isLastStrokeConverted = false;
+                            BtnRedo.Visibility = Visibility.Collapsed;
+                            BtnRedo.IsEnabled = false;
+                            BtnUndo.IsEnabled = true;
+                            BtnUndo.Visibility = Visibility.Visible;
+                        }
                     }
                     catch { }
                 }
@@ -5371,6 +5388,7 @@ namespace Ink_Canvas
 
         private void SetNewBackupOfStroke()
         {
+            isLastStrokeConverted = true;
             lastTouchDownStrokeCollection = inkCanvas.Strokes.Clone();
             int whiteboardIndex = CurrentWhiteboardIndex;
             if (currentMode == 0)
