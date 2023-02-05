@@ -135,8 +135,8 @@
     <Compile Include="RandWindow.xaml.cs">
       <DependentUpon>RandWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RestoreHiddenSlidesWindow.xaml.cs">
-      <DependentUpon>RestoreHiddenSlidesWindow.xaml</DependentUpon>
+    <Compile Include="YesOrNoNotificationWindow.xaml.cs">
+      <DependentUpon>YesOrNoNotificationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="SettingsPage.xaml.cs">
@@ -193,7 +193,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="RestoreHiddenSlidesWindow.xaml">
+    <Page Include="YesOrNoNotificationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
