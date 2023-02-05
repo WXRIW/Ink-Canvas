@@ -195,21 +195,25 @@ namespace Ink_Canvas
         }
         private void inkCanvas_EditingModeChanged(object sender, RoutedEventArgs e)
         {
+            var inkCanvas1 = sender as InkCanvas;
+            if (inkCanvas1 == null) return; 
             if (Settings.Canvas.IsShowCursor)
             {
-                if (((InkCanvas)sender).EditingMode == InkCanvasEditingMode.Ink || drawingShapeMode != 0)
+                if (inkCanvas1.EditingMode == InkCanvasEditingMode.Ink || drawingShapeMode != 0)
                 {
-                    ((InkCanvas)sender).ForceCursor = true;
+                    inkCanvas1.ForceCursor = true;
                 }
                 else
                 {
-                    ((InkCanvas)sender).ForceCursor = false;
+                    inkCanvas1.ForceCursor = false;
                 }
             }
             else
             {
-                ((InkCanvas)sender).ForceCursor = false;
+                inkCanvas1.ForceCursor = false;
             }
+
+            if (inkCanvas1.EditingMode == InkCanvasEditingMode.Ink) forcePointEraser = !forcePointEraser;
         }
 
         #endregion Ink Canvas
@@ -821,10 +825,11 @@ namespace Ink_Canvas
         private void BtnErase_Click(object sender, RoutedEventArgs e)
         {
             forceEraser = true;
-            inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
-            inkCanvas.EraserShape = new EllipseStylusShape(5, 5);
+            forcePointEraser = !forcePointEraser;
+            inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
+            inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50,50) : new EllipseStylusShape(5, 5);
             drawingShapeMode = 0;
-            EraserContainer.Background = new SolidColorBrush(Colors.Cyan);
+            EraserContainer.Background = forcePointEraser ? new SolidColorBrush(Colors.Cyan) : new SolidColorBrush(Colors.LawnGreen);
             inkCanvas_EditingModeChanged(inkCanvas, null);
             CancelSingleFingerDragMode();
         }
@@ -1567,6 +1572,8 @@ namespace Ink_Canvas
 
         Point iniP = new Point(0, 0);
         bool isLastTouchEraser = false;
+        private bool forcePointEraser = true;
+        
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
         {
             BorderClearInDelete.Visibility = Visibility.Collapsed;
@@ -1621,17 +1628,17 @@ namespace Ink_Canvas
                     }
                     else
                     {
-                        inkCanvas.EraserShape = new EllipseStylusShape(5, 5);
+                        inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50,50) : new EllipseStylusShape(5, 5);
                         //inkCanvas.EraserShape = new RectangleStylusShape(8, 8);
                         //inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
-                        inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
+                        inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
                     }
                 }
             }
             else
             {
                 isLastTouchEraser = false;
-                inkCanvas.EraserShape = new EllipseStylusShape(5, 5);
+                inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50,50) : new EllipseStylusShape(5, 5);
                 if (forceEraser) return;
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             }
