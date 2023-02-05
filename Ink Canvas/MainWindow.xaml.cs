@@ -3185,6 +3185,8 @@ namespace Ink_Canvas
         {
             forceEraser = true;
             drawingShapeMode = 0;
+            if (inkCanvas.EditingMode == InkCanvasEditingMode.Select)
+                inkCanvas.Select(inkCanvas.Strokes);
             inkCanvas.EditingMode = InkCanvasEditingMode.Select;
             inkCanvas.IsManipulationEnabled = false;
         }
