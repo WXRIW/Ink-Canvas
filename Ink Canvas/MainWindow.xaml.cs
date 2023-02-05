@@ -1816,7 +1816,6 @@ namespace Ink_Canvas
             {
                 pptApplication = (Microsoft.Office.Interop.PowerPoint.Application)Marshal.GetActiveObject("PowerPoint.Application");
                 //pptApplication.SlideShowWindows[1].View.Next();
-
                 if (pptApplication != null)
                 {
                     //获得演示文稿对象
@@ -1952,7 +1951,6 @@ namespace Ink_Canvas
                         break;
                     }
                 }
-
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (isHaveHiddenSlide && !IsShowingRestoreHiddenSlidesWindow)
@@ -2009,6 +2007,7 @@ namespace Ink_Canvas
         }
 
         bool isPresentationHaveBlackSpace = false;
+ 
 
         private string pptName = null;
         //bool isButtonBackgroundTransparent = true; //此变量仅用于保存用于幻灯片放映时的优化
@@ -2140,6 +2139,7 @@ namespace Ink_Canvas
                 }
 
                 isEnteredSlideShowEndEvent = false;
+                PptNavigationTextBlock.Text = $"{Wn.View.CurrentShowPosition}/{Wn.Presentation.Slides.Count}";
                 LogHelper.NewLog("PowerPoint Slide Show Loading process complete");
 
                 new Thread(new ThreadStart(() =>
@@ -2319,8 +2319,11 @@ namespace Ink_Canvas
                     }
                     catch
                     { }
+
+                    PptNavigationTextBlock.Text = $"{Wn.View.CurrentShowPosition}/{Wn.Presentation.Slides.Count}";
                 });
                 previousSlideID = Wn.View.CurrentShowPosition;
+
             }
         }
 
@@ -2368,7 +2371,15 @@ namespace Ink_Canvas
                 StackPanelPPTControls.Visibility = Visibility.Collapsed;
             }
         }
-
+        
+        
+        private void PPTNavigationBtn_Click(object sender, MouseButtonEventArgs e)
+        {
+            Main_Grid.Background = new SolidColorBrush(StringToColor("#01FFFFFF"));
+            BtnHideInkCanvas_Click(sender, e);
+            pptApplication.Presentations[1].SlideShowWindow.SlideNavigation.Visible = true;
+        }
+        
         private void BtnPPTSlideShow_Click(object sender, RoutedEventArgs e)
         {
             new Thread(new ThreadStart(() =>
@@ -6252,6 +6263,8 @@ namespace Ink_Canvas
             }
         }
 
+        
+        
         #endregion
 
         #region Multi-finger Inking

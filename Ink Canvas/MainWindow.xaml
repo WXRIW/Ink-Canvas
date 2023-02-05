@@ -167,6 +167,11 @@
                             </Grid>
                         </Border>
                         <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                            <Grid MouseUp="PPTNavigationBtn_Click">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=PptNavigationTextBlock, Path=Foreground}" FontSize="{Binding ElementName=PptNavigationTextBlock, Path=FontSize}" Text="{Binding ElementName=PptNavigationTextBlock, Path=Text}" />
+                            </Grid>
+                        </Border>
+                        <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
                             <Grid Margin="6" MouseUp="GridPPTControlNext_MouseUp">
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
                             </Grid>
@@ -774,6 +779,11 @@
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
+                        <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                            <Grid MouseUp="PPTNavigationBtn_Click">
+                                <TextBlock Foreground="#FF666666" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="PptNavigationTextBlock" Text="0/0" />
+                            </Grid>
+                        </Border>
                         <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
                             <Grid Margin="6">
                                 <Image Name="ImagePPTControlNextPressed" Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideSelected}"/>
@@ -787,6 +797,11 @@
                         <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
                             <Grid Margin="6">
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
+                            </Grid>
+                        </Border>
+                        <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                            <Grid MouseUp="PPTNavigationBtn_Click">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=PptNavigationTextBlock, Path=Foreground}" FontSize="{Binding ElementName=PptNavigationTextBlock, Path=FontSize}" Text="{Binding ElementName=PptNavigationTextBlock, Path=Text}" />
                             </Grid>
                         </Border>
                         <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
