@@ -28,7 +28,8 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 [点击下载](https://aka.ms/SegoeFonts "SegoeFonts") SegoeFonts 文件，安装压缩包中 `SegMDL2.ttf` 字体后重启即可解决
 
 ### **安装后**程序无法正常启动？
-请检查你的电脑上是否安装了 `.Net Framework 4.7.2` 或更高版本。若没有，请前往官网下载
+请检查你的电脑上是否安装了 `.Net Framework 4.7.2` 或更高版本。若没有，请前往官网下载  
+如果仍无法运行，请检查你的电脑上是否安装了 `Microsoft Office`。若没有，请安装后再试
 
 ### 我该如何提出功能需求和错误报告？
 1. 你可以选择在GitHub issues里提出
@@ -45,7 +46,7 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 
 ## 感谢
 感谢 [yuwenhui2020](https://github.com/yuwenhui2020) 为 `Ink Canvas 使用说明` 做出的贡献！  
-感谢 [CN-Ironegg](https://github.com/CN-Ironegg)、 [jiajiaxd](https://github.com/jiajiaxd) 为本项目贡献代码！  
+感谢 [CN-Ironegg](https://github.com/CN-Ironegg)、 [jiajiaxd](https://github.com/jiajiaxd)、 [Kengwang](https://github.com/kengwang) 为本项目贡献代码！  
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FWXRIW%2FInk-Canvas.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FWXRIW%2FInk-Canvas?ref=badge_large)
