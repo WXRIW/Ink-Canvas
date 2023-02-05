@@ -824,6 +824,7 @@ namespace Ink_Canvas
             inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
             inkCanvas.EraserShape = new EllipseStylusShape(5, 5);
             drawingShapeMode = 0;
+            EraserContainer.Background = new SolidColorBrush(Colors.Cyan);
             inkCanvas_EditingModeChanged(inkCanvas, null);
             CancelSingleFingerDragMode();
         }
@@ -1250,6 +1251,7 @@ namespace Ink_Canvas
 
         private void ColorSwitchCheck()
         {
+            EraserContainer.Background = null;
             if (Main_Grid.Background == Brushes.Transparent)
             {
                 if (currentMode == 1)
@@ -3712,6 +3714,7 @@ namespace Ink_Canvas
                 {
                     return;
                 }
+                EraserContainer.Background = null;
                 if (isWaitUntilNextTouchDown) return;
                 if (dec.Count > 1)
                 {
