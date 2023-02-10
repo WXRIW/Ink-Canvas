@@ -2,15 +2,32 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" Topmost="True" KeyDown="Window_KeyDown"
-        xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019"
-        AllowsTransparency="True" WindowStyle="None" ResizeMode="NoResize"
-        mc:Ignorable="d" WindowState="Maximized" Loaded="Window_Loaded" Background="Transparent" ShowInTaskbar="False"
-        Title="Ink Canvas 画板" Closing="Window_Closing" Closed="Window_Closed" PreviewKeyDown="Main_Grid_PreviewKeyDown"
-        Height="1000" Width="1000" FontFamily="Microsoft YaHei UI" MouseWheel="Window_MouseWheel"
-        Foreground="Black" Stylus.IsPressAndHoldEnabled="False">
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Ink_Canvas"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:c="clr-namespace:Ink_Canvas.Converter"
+        mc:Ignorable="d"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowState="Maximized"
+        Loaded="Window_Loaded"
+        Background="Transparent"
+        ShowInTaskbar="False"
+        Title="Ink Canvas 画板"
+        Topmost="True"
+        KeyDown="Window_KeyDown"
+        Closing="Window_Closing"
+        Closed="Window_Closed"
+        PreviewKeyDown="Main_Grid_PreviewKeyDown"
+        Height="1000" Width="1000"
+        FontFamily="Microsoft YaHei UI"
+        MouseWheel="Window_MouseWheel"
+        Foreground="Black"
+        Stylus.IsPressAndHoldEnabled="False">
     <!--资源中添加命令-->
     <Window.Resources>
+        <c:VisibilityConverter x:Key="VisibilityConverter"/>
         <RoutedUICommand x:Key="KeyExit" Text=" "/>
         <RoutedUICommand x:Key="back_HotKey_Command" Text=" "/>
     </Window.Resources>
@@ -879,7 +896,57 @@
                                 </Border>
                             </ui:SimpleStackPanel>
                             <Grid x:Name="EraserContainer" Width="21" Height="24" Margin="0,1.5,-2,0" MouseDown="Border_MouseDown" MouseUp="ImageEraser_MouseUp" Visibility="{Binding ElementName=BtnErase, Path=Visibility}">
-                                <Image Margin="0,-4,-1,-2" Source="{DynamicResource ImageSource.RubberNormal}" RenderTransformOrigin="0.5,0.5"/>
+                                <Image Name="ImageEraser" Margin="0,-4,-1,-2" Source="{DynamicResource ImageSource.RubberNormal}" RenderTransformOrigin="0.5,0.5"/>
+                                <Image Name="ImageEraserMask" Visibility="{Binding Visibility, ElementName=ImageEraser, Converter={StaticResource VisibilityConverter}}" Margin="0,-2.5,0,0" RenderTransformOrigin="0.5,0.5">
+                                    <Image.Source>
+                                        <DrawingImage>
+                                            <DrawingImage.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing>
+                                                            <GeometryDrawing.Brush>
+                                                                <SolidColorBrush
+								                                    Color="#FFD8D8D8"
+								                                    Opacity="0" />
+                                                            </GeometryDrawing.Brush>
+                                                            <GeometryDrawing.Pen>
+                                                                <Pen
+								                                    Thickness="1"
+								                                    StartLineCap="Flat"
+								                                    EndLineCap="Flat"
+								                                    LineJoin="Miter">
+                                                                    <Pen.Brush>
+                                                                        <SolidColorBrush
+										                                    Color="#FF979797"
+										                                    Opacity="0" />
+                                                                    </Pen.Brush>
+                                                                </Pen>
+                                                            </GeometryDrawing.Pen>
+                                                            <GeometryDrawing.Geometry>
+                                                                <PathGeometry
+								                                    FillRule="EvenOdd"
+								                                    Figures="M31,31L32,31 32,32 31,32 31,31z M0,0L1,0 1,1 0,1 0,0z" />
+                                                            </GeometryDrawing.Geometry>
+                                                        </GeometryDrawing>
+                                                        <DrawingGroup
+						                                    Transform="-0.707106781186548,-0.707106781186547,-0.707106781186547,0.707106781186548,31.4055917955108,13.0208154846605">
+                                                            <DrawingGroup.Children>
+                                                                <GeometryDrawing x:Name="GeometryDrawingEraser"
+								                                    Brush="#FF666666">
+                                                                    <GeometryDrawing.Geometry>
+                                                                        <PathGeometry
+										                                    FillRule="EvenOdd"
+										                                    Figures="M16.7928932,16.2426407L16.7928932,0.788350252C16.7928932,0.248156103,16.3447877,-0.207106781,15.7920216,-0.207106781L1.79376488,-0.207106781C1.23752408,-0.207106781,0.792893219,0.238574513,0.792893219,0.788350252L0.792893219,16.2426407 16.7928932,16.2426407z M16.7928932,18.2426407L16.7928932,23.7974362C16.7928932,24.3472119,16.3482624,24.7928932,15.7920216,24.7928932L1.79376488,24.7928932C1.24099872,24.7928932,0.792893219,24.3376303,0.792893219,23.7974362L0.792893219,18.2426407 16.7928932,18.2426407z" />
+                                                                    </GeometryDrawing.Geometry>
+                                                                </GeometryDrawing>
+                                                            </DrawingGroup.Children>
+                                                        </DrawingGroup>
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingImage.Drawing>
+                                        </DrawingImage>
+                                    </Image.Source>
+                                </Image>
                             </Grid>
                             <Grid Margin="0,0,0,0" Width="20">
                                 <ui:SymbolIcon Symbol="Delete" Foreground="#666666" MouseDown="Border_MouseDown" MouseUp="SymbolIconDelete_MouseUp"/>

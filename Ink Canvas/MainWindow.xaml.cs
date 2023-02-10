@@ -829,7 +829,8 @@ namespace Ink_Canvas
             inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
             inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50,50) : new EllipseStylusShape(5, 5);
             drawingShapeMode = 0;
-            EraserContainer.Background = forcePointEraser ? new SolidColorBrush(Colors.Cyan) : new SolidColorBrush(Colors.LawnGreen);
+            GeometryDrawingEraser.Brush = forcePointEraser ? new SolidColorBrush(Color.FromRgb(0x23, 0xA9, 0xF2)) : new SolidColorBrush(Color.FromRgb(0x66, 0x66, 0x66));
+            ImageEraser.Visibility = Visibility.Collapsed;
             inkCanvas_EditingModeChanged(inkCanvas, null);
             CancelSingleFingerDragMode();
         }
@@ -1256,7 +1257,8 @@ namespace Ink_Canvas
 
         private void ColorSwitchCheck()
         {
-            EraserContainer.Background = null;
+            //EraserContainer.Background = null;
+            ImageEraser.Visibility = Visibility.Visible;
             if (Main_Grid.Background == Brushes.Transparent)
             {
                 if (currentMode == 1)
@@ -3732,7 +3734,8 @@ namespace Ink_Canvas
                 {
                     return;
                 }
-                EraserContainer.Background = null;
+                //EraserContainer.Background = null;
+                ImageEraser.Visibility = Visibility.Visible;
                 if (isWaitUntilNextTouchDown) return;
                 if (dec.Count > 1)
                 {
