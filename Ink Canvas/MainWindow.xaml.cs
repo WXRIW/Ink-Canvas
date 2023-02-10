@@ -2308,6 +2308,9 @@ namespace Ink_Canvas
                     ms.Position = 0;
                     memoryStreams[previousSlideID] = ms;
 
+                    if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+                        SaveScreenShot(true, Wn.Presentation.Name + "/" + Wn.View.CurrentShowPosition);
+                    
                     BtnRedo.IsEnabled = false;
                     BtnRedo.Visibility = Visibility.Collapsed;
 
@@ -2340,8 +2343,6 @@ namespace Ink_Canvas
                 GridBackgroundCover.Visibility = Visibility.Collapsed;
                 currentMode = 0;
             }
-            if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
-                SaveScreenShot(true, pptApplication.Presentations[1].Name + "/" + pptApplication.Presentations[1].SlideShowWindow.View.CurrentShowPosition);
 
             try
             {
@@ -2365,8 +2366,7 @@ namespace Ink_Canvas
                 GridBackgroundCover.Visibility = Visibility.Collapsed;
                 currentMode = 0;
             }
-            if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
-                SaveScreenShot(true, pptApplication.Presentations[1].Name + "/" + pptApplication.Presentations[1].SlideShowWindow.View.CurrentShowPosition);
+
             try
             {
                 new Thread(new ThreadStart(() =>
