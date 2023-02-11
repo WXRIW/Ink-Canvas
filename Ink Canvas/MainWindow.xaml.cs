@@ -1170,15 +1170,7 @@ namespace Ink_Canvas
                     {
                         if (Settings.Automation.IsAutoSaveStrokesAtClear)
                         {
-                            try
-                            {
-                                SaveScreenShot(true);
-                            }
-                            catch
-                            {
-                                // ignore
-                            }
-                            
+                            BtnScreenshot_Click(true, null);
                         }
                         BtnClear_Click(BtnClear, null);
                     }
@@ -2355,7 +2347,7 @@ namespace Ink_Canvas
             {
                 new Thread(new ThreadStart(() =>
                 {
-                    pptApplication.SlideShowWindows[1].View.Application.SlideShowWindows[1].Activate();
+                    pptApplication.SlideShowWindows[1].Activate();
                     pptApplication.SlideShowWindows[1].View.Previous();
                 })).Start();
             }
@@ -2380,7 +2372,7 @@ namespace Ink_Canvas
             {
                 new Thread(new ThreadStart(() =>
                 {
-                    pptApplication.SlideShowWindows[1].View.Application.SlideShowWindows[1].Activate();
+                    pptApplication.SlideShowWindows[1].Activate();
                     pptApplication.SlideShowWindows[1].View.Next();
                 })).Start();
             }
