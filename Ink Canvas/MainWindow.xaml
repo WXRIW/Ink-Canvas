@@ -798,7 +798,7 @@
                         </Border>
                         <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
                             <Grid MouseUp="PPTNavigationBtn_Click">
-                                <TextBlock Foreground="#FF666666" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="PptNavigationTextBlock" Text="0/0" />
+                                <TextBlock Name="PptNavigationTextBlock" FontSize="10" Foreground="#FF666666" HorizontalAlignment="Center" VerticalAlignment="Center" Text="0/0" />
                             </Grid>
                         </Border>
                         <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">

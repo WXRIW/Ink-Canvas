@@ -2384,11 +2384,20 @@ namespace Ink_Canvas
         }
         
         
-        private void PPTNavigationBtn_Click(object sender, MouseButtonEventArgs e)
+        private async void PPTNavigationBtn_Click(object sender, MouseButtonEventArgs e)
         {
             Main_Grid.Background = new SolidColorBrush(StringToColor("#01FFFFFF"));
             BtnHideInkCanvas_Click(sender, e);
             pptApplication.Presentations[1].SlideShowWindow.SlideNavigation.Visible = true;
+            // 控制居中
+            if (BtnPPTSlideShowEnd.Visibility == Visibility.Visible)
+            {
+                if (ViewboxFloatingBar.Margin == new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200))
+                {
+                    await Task.Delay(100);
+                    ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
+                }
+            }
         }
         
         private void BtnPPTSlideShow_Click(object sender, RoutedEventArgs e)
@@ -5799,7 +5808,7 @@ namespace Ink_Canvas
             HideSubPanels();
         }
 
-        private void SymbolIconCursor_Click(object sender, RoutedEventArgs e)
+        private async void SymbolIconCursor_Click(object sender, RoutedEventArgs e)
         {
             if (currentMode != 0)
             {
@@ -5813,14 +5822,8 @@ namespace Ink_Canvas
                 {
                     if (ViewboxFloatingBar.Margin == new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200))
                     {
-                        new Thread(new ThreadStart(() =>
-                        {
-                            Thread.Sleep(100);
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
-                            });
-                        })).Start();
+                        await Task.Delay(100);
+                        ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
                     }
                 }
             }
