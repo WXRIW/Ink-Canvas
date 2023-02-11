@@ -2388,7 +2388,7 @@ namespace Ink_Canvas
         {
             Main_Grid.Background = new SolidColorBrush(StringToColor("#01FFFFFF"));
             BtnHideInkCanvas_Click(sender, e);
-            pptApplication.Presentations[1].SlideShowWindow.SlideNavigation.Visible = true;
+            pptApplication.SlideShowWindows[1].SlideNavigation.Visible = true;
             // 控制居中
             if (BtnPPTSlideShowEnd.Visibility == Visibility.Visible)
             {
