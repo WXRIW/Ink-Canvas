@@ -481,6 +481,9 @@
                                      <Bold>开发者:</Bold> XY Wang (WXRIW)
                                 </TextBlock>
                                 <TextBlock FontSize="14">
+                                     <Bold>贡献者:</Bold> Kengwang, jiajiaxd, CN-Ironegg
+                                </TextBlock>
+                                <TextBlock FontSize="14">
                                     <Bold>开源地址:</Bold>
                                     <Hyperlink Click="HyperlinkSource_Click">
                                            <TextBlock Text="https://github.com/WXRIW/Ink-Canvas"></TextBlock>
