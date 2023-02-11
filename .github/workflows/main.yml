@@ -40,7 +40,6 @@ jobs:
     # 编译整个项目
     - name: Build the solution
       run: |
-        move '.\Ink Canvas\Ink Canvas.csproj.actions' '.\Ink Canvas\Ink Canvas.csproj' -Force
         msbuild -t:restore /p:GitFlow="Github Action"
         msbuild /p:Configuration=Release /p:Platform="Any CPU" /p:GitFlow="Github Action"
       env:
