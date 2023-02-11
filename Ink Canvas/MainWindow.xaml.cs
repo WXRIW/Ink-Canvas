@@ -2310,9 +2310,9 @@ namespace Ink_Canvas
                     ms.Position = 0;
                     memoryStreams[previousSlideID] = ms;
 
-                    if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+                    if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint && !_isPptClickingBtnTurned)
                         SaveScreenShot(true, Wn.Presentation.Name + "/" + Wn.View.CurrentShowPosition);
-                    
+                    _isPptClickingBtnTurned = false;
                     BtnRedo.IsEnabled = false;
                     BtnRedo.Visibility = Visibility.Collapsed;
 
@@ -2338,6 +2338,8 @@ namespace Ink_Canvas
             }
         }
 
+        private bool _isPptClickingBtnTurned = false;
+        
         private void BtnPPTSlidesUp_Click(object sender, RoutedEventArgs e)
         {
             if (currentMode == 1)
@@ -2346,6 +2348,9 @@ namespace Ink_Canvas
                 currentMode = 0;
             }
 
+            _isPptClickingBtnTurned = true;
+            if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+                SaveScreenShot(true, pptApplication.SlideShowWindows[1].Presentation.Name + "/" + pptApplication.SlideShowWindows[1].View.CurrentShowPosition);
             try
             {
                 new Thread(new ThreadStart(() =>
@@ -2368,7 +2373,9 @@ namespace Ink_Canvas
                 GridBackgroundCover.Visibility = Visibility.Collapsed;
                 currentMode = 0;
             }
-
+            _isPptClickingBtnTurned = true;
+            if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+                SaveScreenShot(true, pptApplication.SlideShowWindows[1].Presentation.Name + "/" + pptApplication.SlideShowWindows[1].View.CurrentShowPosition);
             try
             {
                 new Thread(new ThreadStart(() =>
