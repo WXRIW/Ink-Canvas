@@ -83,6 +83,8 @@ namespace Ink_Canvas
         public bool IsShowLRSwitchButton { get; set; } = false;
         [JsonProperty("isShowModeFingerToggleSwitch")]
         public bool IsShowModeFingerToggleSwitch { get; set; } = true;
+        [JsonProperty("isShowPPTNavigation")]
+        public bool IsShowPPTNavigation { get; set; } = true;
     }
 
     public class Automation

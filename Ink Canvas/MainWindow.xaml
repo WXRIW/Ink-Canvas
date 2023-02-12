@@ -183,7 +183,7 @@
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
-                        <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                        <Border Visibility="{Binding ElementName=PptNavigationBtn, Path=Visibility}" Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
                             <Grid MouseUp="PPTNavigationBtn_Click">
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=PptNavigationTextBlock, Path=Foreground}" FontSize="{Binding ElementName=PptNavigationTextBlock, Path=FontSize}" Text="{Binding ElementName=PptNavigationTextBlock, Path=Text}" />
                             </Grid>
@@ -428,6 +428,7 @@
                         <GroupBox Name="GroupBoxAppearanceNewUI" Header="外观">
                             <ui:SimpleStackPanel Spacing="12">
                                 <ui:ToggleSwitch Header="显示“橡皮”按钮" IsOn="{Binding ElementName=ToggleSwitchShowButtonEraser, Path=IsOn}" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowButtonPPTNavigation" Header="显示 PPT 浏览切页按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonPPTNavigation_OnToggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="高级">
@@ -799,7 +800,7 @@
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
-                        <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                        <Border x:Name="PptNavigationBtn" Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
                             <Grid MouseUp="PPTNavigationBtn_Click">
                                 <TextBlock Name="PptNavigationTextBlock" FontSize="10" Foreground="#FF666666" HorizontalAlignment="Center" VerticalAlignment="Center" Text="0/0" />
                             </Grid>
@@ -819,7 +820,7 @@
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
-                        <Border Width="36" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
+                        <Border Width="36" Visibility="{Binding ElementName=PptNavigationBtn, Path=Visibility}" Height="36" CornerRadius="5" Background="#9FFFFFFF" BorderThickness="1" BorderBrush="#BF666666">
                             <Grid MouseUp="PPTNavigationBtn_Click">
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=PptNavigationTextBlock, Path=Foreground}" FontSize="{Binding ElementName=PptNavigationTextBlock, Path=FontSize}" Text="{Binding ElementName=PptNavigationTextBlock, Path=Text}" />
                             </Grid>
