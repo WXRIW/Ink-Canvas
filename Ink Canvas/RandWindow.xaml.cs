@@ -2,20 +2,11 @@
 using ModernWpf.Controls;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Ink_Canvas
 {
@@ -35,7 +26,8 @@ namespace Ink_Canvas
 
             isAutoClose = IsAutoClose;
 
-            new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() =>
+            {
                 Thread.Sleep(100);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -179,7 +171,8 @@ namespace Ink_Canvas
 
                     if (isAutoClose)
                     {
-                        new Thread(new ThreadStart(() => {
+                        new Thread(new ThreadStart(() =>
+                        {
                             Thread.Sleep(1500);
                             Application.Current.Dispatcher.Invoke(() =>
                             {

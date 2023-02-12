@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ink_Canvas.Helpers
 {
@@ -19,7 +15,7 @@ namespace Ink_Canvas.Helpers
 
         public static void NewLog(Exception ex)
         {
-            
+
         }
 
         public static void WriteLogToFile(string str, LogType logType = LogType.Info)

@@ -1,9 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ink_Canvas
 {
@@ -103,7 +98,7 @@ namespace Ink_Canvas
         public bool IsAutoSaveScreenShotInPowerPoint { get; set; } = false;
         [JsonProperty("isAutoClearWhenExitingWritingMode")]
         public bool IsAutoClearWhenExitingWritingMode { get; set; } = false;
-        
+
     }
 
     public class Advanced
@@ -113,7 +108,7 @@ namespace Ink_Canvas
         [JsonProperty("isLogEnabled")]
         public bool IsLogEnabled { get; set; } = true;
     }
-    
+
     public class InkToShape
     {
         [JsonProperty("isInkToShapeEnabled")]

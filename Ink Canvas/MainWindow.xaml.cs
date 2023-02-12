@@ -1,43 +1,36 @@
-﻿using ModernWpf;
+﻿using Ink_Canvas.Helpers;
+using IWshRuntimeLibrary;
+using Microsoft.Office.Interop.PowerPoint;
+using Microsoft.VisualBasic;
+using Microsoft.Win32;
+using ModernWpf;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Office.Interop.PowerPoint;
-using System.Runtime.InteropServices;
-using Application = System.Windows.Application;
-using System.Timers;
-using System.Threading;
-using Timer = System.Timers.Timer;
-using System.Diagnostics;
-using Newtonsoft.Json;
-using IWshRuntimeLibrary;
-using File = System.IO.File;
-using System.Collections.ObjectModel;
-using System.Net;
-using Microsoft.VisualBasic;
-using System.Reflection;
-using System.Collections.Generic;
-using Point = System.Windows.Point;
 using System.Windows.Input.StylusPlugIns;
-using MessageBox = System.Windows.MessageBox;
-using System.Drawing.Imaging;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Ink.AnalysisCore;
-using Ink_Canvas.Helpers;
-using Microsoft.Win32;
+using Application = System.Windows.Application;
+using File = System.IO.File;
+using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
+using Point = System.Windows.Point;
+using Timer = System.Timers.Timer;
 
 namespace Ink_Canvas
 {
@@ -123,7 +116,7 @@ namespace Ink_Canvas
                     if (processes.Length > 0)
                     {
                         arg += " /IM EasiNote.exe";
-                        
+
                     }
                 }
                 if (arg != "/F")
@@ -135,7 +128,7 @@ namespace Ink_Canvas
 
                     if (arg.Contains("EasiNote"))
                     {
-                        
+
                         BtnSwitch_Click(BtnSwitch, null);
                         MessageBox.Show("“希沃白板 5”已自动关闭");
                     }
@@ -196,7 +189,7 @@ namespace Ink_Canvas
         private void inkCanvas_EditingModeChanged(object sender, RoutedEventArgs e)
         {
             var inkCanvas1 = sender as InkCanvas;
-            if (inkCanvas1 == null) return; 
+            if (inkCanvas1 == null) return;
             if (Settings.Canvas.IsShowCursor)
             {
                 if (inkCanvas1.EditingMode == InkCanvasEditingMode.Ink || drawingShapeMode != 0)
@@ -222,8 +215,8 @@ namespace Ink_Canvas
 
         private void Window_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-	    if (StackPanelPPTControls.Visibility != Visibility.Visible || currentMode != 0) return;
-	    if (e.Delta >= 120)
+            if (StackPanelPPTControls.Visibility != Visibility.Visible || currentMode != 0) return;
+            if (e.Delta >= 120)
             {
                 BtnPPTSlidesUp_Click(BtnPPTSlidesUp, null);
             }
@@ -693,8 +686,8 @@ namespace Ink_Canvas
                 {
                     ToggleSwitchClearExitingWritingMode.IsOn = false;
                 }
-                
-                
+
+
                 if (Settings.Automation.IsAutoSaveStrokesAtClear)
                 {
                     ToggleSwitchAutoSaveStrokesAtClear.IsOn = true;
@@ -704,8 +697,8 @@ namespace Ink_Canvas
                     ToggleSwitchAutoSaveStrokesAtClear.IsOn = false;
                 }
 
-                
-                
+
+
                 if (Settings.Automation.IsAutoKillPptService)
                 {
                     ToggleSwitchAutoKillPptService.IsOn = true;
@@ -732,7 +725,7 @@ namespace Ink_Canvas
                 {
                     ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn = false;
                 }
-                
+
                 if (Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
                 {
                     ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn = true;
@@ -766,7 +759,7 @@ namespace Ink_Canvas
                     ToggleSwitchIsLogEnabled.IsOn = false;
                 }
             }
-            else 
+            else
             {
                 Settings.Advanced = new Advanced();
             }
@@ -789,7 +782,7 @@ namespace Ink_Canvas
         }
 
         #endregion Definations and Loading
-        
+
         #region Right Side Panel
 
         public static bool CloseIsFromButton = false;
@@ -831,7 +824,7 @@ namespace Ink_Canvas
             forceEraser = true;
             forcePointEraser = !forcePointEraser;
             inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
-            inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50,50) : new EllipseStylusShape(5, 5);
+            inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5);
             drawingShapeMode = 0;
             GeometryDrawingEraser.Brush = forcePointEraser ? new SolidColorBrush(Color.FromRgb(0x23, 0xA9, 0xF2)) : new SolidColorBrush(Color.FromRgb(0x66, 0x66, 0x66));
             ImageEraser.Visibility = Visibility.Collapsed;
@@ -1571,7 +1564,7 @@ namespace Ink_Canvas
         Point iniP = new Point(0, 0);
         bool isLastTouchEraser = false;
         private bool forcePointEraser = true;
-        
+
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
         {
             BorderClearInDelete.Visibility = Visibility.Collapsed;
@@ -1626,7 +1619,7 @@ namespace Ink_Canvas
                     }
                     else
                     {
-                        inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50,50) : new EllipseStylusShape(5, 5);
+                        inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5);
                         //inkCanvas.EraserShape = new RectangleStylusShape(8, 8);
                         //inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
                         inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
@@ -1636,7 +1629,7 @@ namespace Ink_Canvas
             else
             {
                 isLastTouchEraser = false;
-                inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50,50) : new EllipseStylusShape(5, 5);
+                inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5);
                 if (forceEraser) return;
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             }
@@ -1946,8 +1939,8 @@ namespace Ink_Canvas
                         }
                     }
                 });
-                
-                
+
+
                 //检查是否有隐藏幻灯片
                 bool isHaveHiddenSlide = false;
                 foreach (Slide slide in slides)
@@ -1963,7 +1956,7 @@ namespace Ink_Canvas
                     if (isHaveHiddenSlide && !IsShowingRestoreHiddenSlidesWindow)
                     {
                         IsShowingRestoreHiddenSlidesWindow = true;
-                        new YesOrNoNotificationWindow("检测到此演示文档中包含隐藏的幻灯片，是否取消隐藏？", 
+                        new YesOrNoNotificationWindow("检测到此演示文档中包含隐藏的幻灯片，是否取消隐藏？",
                             () =>
                         {
                             foreach (Slide slide in slides)
@@ -1975,8 +1968,8 @@ namespace Ink_Canvas
                             }
                         }).ShowDialog();
                     }
-                    
-                    
+
+
 
                     BtnPPTSlideShow.Visibility = Visibility.Visible;
                 });
@@ -2014,7 +2007,7 @@ namespace Ink_Canvas
         }
 
         bool isPresentationHaveBlackSpace = false;
- 
+
 
         private string pptName = null;
         //bool isButtonBackgroundTransparent = true; //此变量仅用于保存用于幻灯片放映时的优化
@@ -2047,7 +2040,7 @@ namespace Ink_Canvas
                         }
                     }
                 }
-                else if(screenRatio == -256 / 135)
+                else if (screenRatio == -256 / 135)
                 {
 
                 }
@@ -2197,7 +2190,7 @@ namespace Ink_Canvas
                 {
                     Directory.CreateDirectory(folderPath);
                 }
-                File.WriteAllText(folderPath+"/position", previousSlideID.ToString());
+                File.WriteAllText(folderPath + "/position", previousSlideID.ToString());
                 for (int i = 1; i <= Pres.Slides.Count; i++)
                 {
                     if (memoryStreams[i] != null)
@@ -2283,7 +2276,7 @@ namespace Ink_Canvas
                 {
                     BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
                 }
-                
+
                 if (pointDesktop != new Point(-1, -1))
                 {
                     ViewboxFloatingBar.Margin = new Thickness(pointDesktop.X, pointDesktop.Y, -2000, -200);
@@ -2335,7 +2328,7 @@ namespace Ink_Canvas
         }
 
         private bool _isPptClickingBtnTurned = false;
-        
+
         private void BtnPPTSlidesUp_Click(object sender, RoutedEventArgs e)
         {
             if (currentMode == 1)
@@ -2385,8 +2378,8 @@ namespace Ink_Canvas
                 StackPanelPPTControls.Visibility = Visibility.Collapsed;
             }
         }
-        
-        
+
+
         private async void PPTNavigationBtn_Click(object sender, MouseButtonEventArgs e)
         {
             Main_Grid.Background = new SolidColorBrush(StringToColor("#01FFFFFF"));
@@ -2402,7 +2395,7 @@ namespace Ink_Canvas
                 }
             }
         }
-        
+
         private void BtnPPTSlideShow_Click(object sender, RoutedEventArgs e)
         {
             new Thread(new ThreadStart(() =>
@@ -2713,7 +2706,7 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
             Settings.Automation.IsAutoSaveStrokesAtScreenshot = ToggleSwitchAutoSaveStrokesAtScreenshot.IsOn;
-            ToggleSwitchAutoSaveStrokesAtClear.Header = 
+            ToggleSwitchAutoSaveStrokesAtClear.Header =
                 ToggleSwitchAutoSaveStrokesAtScreenshot.IsOn ? "清屏时自动截图并保存墨迹" : "清屏时自动截图";
             SaveSettingsToFile();
         }
@@ -2724,8 +2717,8 @@ namespace Ink_Canvas
             Settings.Automation.IsAutoSaveStrokesAtClear = ToggleSwitchAutoSaveStrokesAtClear.IsOn;
             SaveSettingsToFile();
         }
-        
-        
+
+
         private void ToggleSwitchExitingWritingMode_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
@@ -2739,7 +2732,7 @@ namespace Ink_Canvas
             Settings.Automation.IsAutoSaveStrokesInPowerPoint = ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn;
             SaveSettingsToFile();
         }
-        
+
         private void ToggleSwitchAutoSaveScreenShotInPowerPoint_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
@@ -2823,7 +2816,8 @@ namespace Ink_Canvas
             }
             catch { }
             SymbolIconResetSuggestionComplete.Visibility = Visibility.Visible;
-            new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() =>
+            {
                 Thread.Sleep(5000);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -2844,7 +2838,8 @@ namespace Ink_Canvas
             }
             catch { }
             SymbolIconResetDefaultComplete.Visibility = Visibility.Visible;
-            new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() =>
+            {
                 Thread.Sleep(5000);
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -4789,7 +4784,7 @@ namespace Ink_Canvas
         {
             try
             {
-	    	if (WhiteboardStrokesStreams[CurrentWhiteboardIndex] == null) return; //防止白板打开后不居中
+                if (WhiteboardStrokesStreams[CurrentWhiteboardIndex] == null) return; //防止白板打开后不居中
                 if (isBackupMain)
                 {
                     if (WhiteboardStrokesStreams[0].Length > 0)
@@ -5442,7 +5437,7 @@ namespace Ink_Canvas
                     p2.Y -= x;
                 }
             }
-            else if(Math.Abs(p1.Y - p2.Y) / Math.Abs(p1.X - p2.X) > 8)
+            else if (Math.Abs(p1.Y - p2.Y) / Math.Abs(p1.X - p2.X) > 8)
             {
                 //垂直
                 double x = Math.Abs(p1.X - p2.X) / 2;
@@ -5618,7 +5613,8 @@ namespace Ink_Canvas
 
             GridNotifications.Visibility = Visibility.Collapsed;
 
-            new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() =>
+            {
                 Thread.Sleep(20);
                 try
                 {
@@ -5702,7 +5698,8 @@ namespace Ink_Canvas
             //GridNotifications.Opacity = 1;
             TextBlockNotice.Text = notice;
 
-            new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() =>
+            {
                 Thread.Sleep(notificationShowTime + 200);
                 if (Environment.TickCount - lastNotificationShowTime >= notificationShowTime)
                 {
@@ -6012,7 +6009,7 @@ namespace Ink_Canvas
             isStopInkReplay = false;
             InkCanvasForInkReplay.Strokes.Clear();
             StrokeCollection strokes = inkCanvas.Strokes.Clone();
-            if (inkCanvas.GetSelectedStrokes().Count!= 0)
+            if (inkCanvas.GetSelectedStrokes().Count != 0)
             {
                 strokes = inkCanvas.GetSelectedStrokes().Clone();
             }
@@ -6294,8 +6291,8 @@ namespace Ink_Canvas
             }
         }
 
-        
-        
+
+
         #endregion
 
         #region Multi-finger Inking
