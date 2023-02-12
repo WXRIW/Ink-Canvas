@@ -242,7 +242,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <!-- When Office is not installed -->
-  <ItemGroup Condition=" '$(GitFlow)' != '' ">
+  <ItemGroup>
     <PackageReference Include="Microsoft.Office.Interop.PowerPoint">
       <Version>15.0.4420.1018</Version>
     </PackageReference>
@@ -250,6 +250,27 @@
       <Version>15.0.0</Version>
     </PackageReference>
   </ItemGroup>
+  <!-- Ignore COM Reference of Office, use nuget instead -->
+  <!--<ItemGroup Condition="false">
+    <COMReference Include="Microsoft.Office.Interop.PowerPoint">
+      <Guid>{91493440-5A91-11CF-8700-00AA0060263B}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>12</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>-->
   <ItemGroup>
     <PackageReference Include="ModernWpfUI">
       <Version>0.9.4</Version>
@@ -268,6 +289,7 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+    
     <COMReference Include="stdole">
       <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>2</VersionMajor>
