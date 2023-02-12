@@ -5738,7 +5738,7 @@ namespace Ink_Canvas
         private void BtnCountdownTimer_Click(object sender, RoutedEventArgs e)
         {
             StackPanelToolButtons.Visibility = Visibility.Collapsed;
-            new CountdownTimerWindow().ShowDialog();
+            new CountdownTimerWindow().Show();
         }
 
         private void BtnRand_Click(object sender, RoutedEventArgs e)

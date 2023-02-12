@@ -36,6 +36,7 @@ namespace Ink_Canvas
                 timer.Stop();
                 return;
             }
+
             TimeSpan timeSpan = DateTime.Now - startTime;
             TimeSpan totalTimeSpan = new TimeSpan(hour, minute, second);
             TimeSpan leftTimeSpan = totalTimeSpan - timeSpan;
@@ -47,6 +48,7 @@ namespace Ink_Canvas
                 TextBlockHour.Text = leftTimeSpan.Hours.ToString("00");
                 TextBlockMinute.Text = leftTimeSpan.Minutes.ToString("00");
                 TextBlockSecond.Text = leftTimeSpan.Seconds.ToString("00");
+                TbCurrentTime.Text = leftTimeSpan.ToString(@"hh\:mm\:ss");
                 if (spentTimePercent >= 1)
                 {
                     ProcessBarTime.CurrentValue = 0;
@@ -269,7 +271,8 @@ namespace Ink_Canvas
                 Byte b2 = toByte(charArray[1]);
                 argb[i] = (Byte)(b2 | (b1 << 4));
             }
-            return Color.FromArgb(argb[0], argb[1], argb[2], argb[3]);//#FFFFFFFF
+
+            return Color.FromArgb(argb[0], argb[1], argb[2], argb[3]); //#FFFFFFFF
         }
 
         private static byte toByte(char c)
@@ -346,6 +349,35 @@ namespace Ink_Canvas
         private void BtnClose_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Close();
+        }
+
+        private bool _isInCompact = false;
+
+        private void BtnMinimal_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_isInCompact)
+            {
+                Width = 1100;
+                Height = 700;
+                BigViewController.Visibility = Visibility.Visible;
+                TbCurrentTime.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                if (WindowState == WindowState.Maximized) WindowState = WindowState.Normal;
+                Width = 400;
+                Height = 250;
+                BigViewController.Visibility = Visibility.Collapsed;
+                TbCurrentTime.Visibility = Visibility.Visible;
+            }
+
+            _isInCompact = !_isInCompact;
+        }
+
+        private void WindowDragMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                DragMove();
         }
     }
 }

@@ -12,10 +12,12 @@
         Title="Ink Canvas 画板 - 计时器" Height="700" Width="1100">
     <Border Background="#F0F3F9" CornerRadius="10" BorderThickness="1" BorderBrush="#0066BF" Margin="60">
         <Grid>
-            <Viewbox Margin="20,20,20,20">
+            <TextBlock x:Name="TbCurrentTime" MouseDown="BtnMinimal_OnMouseUp" Visibility="Collapsed" FontSize="56" FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Border MouseMove="WindowDragMove" Visibility="{Binding ElementName=TbCurrentTime, Path=Visibility}" Width="64" Height="15" CornerRadius="8" Background="Gray" Margin="0,0,0,5" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+            <Viewbox x:Name="BigViewController" Margin="20,20,20,20">
                 <Grid Height="180" Width="200">
                     <processbars:CycleProcessBar x:Name="ProcessBarTime" CurrentValue="0" Width="150" VerticalAlignment="Top"/>
-                    <ui:SimpleStackPanel Orientation="Horizontal" Height="28.5" Margin="0,0,0,25"
+                    <ui:SimpleStackPanel MouseMove="WindowDragMove" Orientation="Horizontal" Height="28.5" Margin="0,0,0,25"
                                          VerticalAlignment="Center"
                                          HorizontalAlignment="Center">
                         <TextBlock Name="TextBlockHour" FontFamily="Segeo UI"
@@ -216,11 +218,21 @@
                     </ui:SimpleStackPanel>
                 </Grid>
             </Viewbox>
-            <Viewbox Margin="20,20,20,20" HorizontalAlignment="Right">
+            <Viewbox Visibility="{Binding ElementName=BigViewController, Path=Visibility}" Margin="20,20,20,20" HorizontalAlignment="Right">
                 <ui:SimpleStackPanel Height="180" Orientation="Horizontal">
+                    <Border x:Name="BtnMinimal" Visibility="{Binding ElementName=BorderStopTime, Path=Visibility}" MouseUp="BtnMinimal_OnMouseUp" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                            Margin="5"
+                            Background="#FBFBFD" Height="20" Width="20" CornerRadius="100">
+                        <Border.Effect>
+                            <DropShadowEffect Direction="0" ShadowDepth="0" Opacity="0.1" BlurRadius="3"/>
+                        </Border.Effect>
+                        <Viewbox Margin="5.5">
+                            <ui:SymbolIcon Name="SymbolIconMinimal" Symbol="HideBcc" Foreground="Black"/>
+                        </Viewbox>
+                    </Border>
                     <Border x:Name="BtnFullscreen" MouseUp="BtnFullscreen_MouseUp" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                        Margin="5"
-                        Background="#FBFBFD" Height="20" Width="20" CornerRadius="100">
+                            Margin="5"
+                            Background="#FBFBFD" Height="20" Width="20" CornerRadius="100">
                         <Border.Effect>
                             <DropShadowEffect Direction="0" ShadowDepth="0" Opacity="0.1" BlurRadius="3"/>
                         </Border.Effect>
