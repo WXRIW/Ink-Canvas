@@ -517,6 +517,10 @@ namespace Ink_Canvas
                 BtnExit.Visibility = Visibility.Collapsed;
                 ToggleSwitchShowButtonExit.IsOn = false;
             }
+
+            PptNavigationBtn.Visibility =
+                Settings.Appearance.IsShowPPTNavigation ? Visibility.Visible : Visibility.Collapsed;
+            ToggleSwitchShowButtonPPTNavigation.IsOn = Settings.Appearance.IsShowPPTNavigation;
             if (Settings.Appearance.IsShowHideControlButton)
             {
                 BtnHideControl.Visibility = Visibility.Visible;
@@ -2540,6 +2544,16 @@ namespace Ink_Canvas
             {
                 BtnErase.Visibility = Visibility.Collapsed;
             }
+        }
+        private void ToggleSwitchShowButtonPPTNavigation_OnToggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Appearance.IsShowPPTNavigation = ToggleSwitchShowButtonPPTNavigation.IsOn;
+            SaveSettingsToFile();
+
+            PptNavigationBtn.Visibility =
+                Settings.Appearance.IsShowPPTNavigation ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void ToggleSwitchShowButtonHideControl_Toggled(object sender, RoutedEventArgs e)
