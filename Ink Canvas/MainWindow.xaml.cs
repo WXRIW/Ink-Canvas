@@ -267,7 +267,7 @@ namespace Ink_Canvas
             BtnPPTSlideShowEnd_Click(BtnPPTSlideShowEnd, null);
         }
 
-        private void ChangeToDrawTool(object sender, ExecutedRoutedEventArgs e)
+        private void KeyChangeToDrawTool(object sender, ExecutedRoutedEventArgs e)
         {
             if (inkCanvas.Visibility == Visibility.Collapsed)
             {
@@ -275,7 +275,7 @@ namespace Ink_Canvas
             }
         }
         
-        private void ChangeToSelect(object sender, ExecutedRoutedEventArgs e)
+        private void KeyChangeToSelect(object sender, ExecutedRoutedEventArgs e)
         {
             if (inkCanvas.Visibility == Visibility.Visible)
             {
@@ -283,7 +283,7 @@ namespace Ink_Canvas
             }
         }
         
-        private void ChangeToEraser(object sender, ExecutedRoutedEventArgs e)
+        private void KeyChangeToEraser(object sender, ExecutedRoutedEventArgs e)
         {
             if (ImageEraserMask.Visibility == Visibility.Visible)
             {
@@ -295,12 +295,17 @@ namespace Ink_Canvas
             }
         }
         
-        private void Capture(object sender, ExecutedRoutedEventArgs e)
+        private void KeyCapture(object sender, ExecutedRoutedEventArgs e)
         {
             BtnScreenshot_Click(sender,e);
         }
         
-        private void Hide(object sender, ExecutedRoutedEventArgs e)
+        private void KeyDrawLine(object sender, ExecutedRoutedEventArgs e)
+        {
+            BtnDrawLine_Click(lastMouseDownSender, e);
+        }
+        
+        private void KeyHide(object sender, ExecutedRoutedEventArgs e)
         {
             SymbolIconEmoji_MouseUp(sender, null);
         }
@@ -6337,7 +6342,7 @@ namespace Ink_Canvas
 
 
         #endregion
-
+        
     }
 
     #region Test for pen
