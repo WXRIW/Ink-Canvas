@@ -1912,6 +1912,7 @@ namespace Ink_Canvas
         {
             if (IsShowingRestoreHiddenSlidesWindow) return;
             try
+            
             {
                 Process[] processes = Process.GetProcessesByName("wpp");
                 if (processes.Length > 0 && !isWPSSupportOn)
@@ -1926,39 +1927,69 @@ namespace Ink_Canvas
                 //new ComAwareEventInfo(typeof(EApplication_Event), "SlideShowNextSlide").AddEventHandler(pptApplication, new EApplication_SlideShowNextSlideEventHandler(this.PptApplication_SlideShowNextSlide));
                 //ConfigHelper.Instance.IsInitApplicationSuccessful = true;
 
-                pptApplication = (Microsoft.Office.Interop.PowerPoint.Application)Marshal.GetActiveObject("PowerPoint.Application");
+                pptApplication = (Microsoft.Office.Interop.PowerPoint.Application)Activator.CreateInstance(Type.GetTypeFromProgID("PowerPoint.Application"));
 
                 if (pptApplication != null)
                 {
                     timerCheckPPT.Stop();
                     //获得演示文稿对象
-                    presentation = pptApplication.ActivePresentation;
+                    pptApplication.PresentationOpen += PptApplicationOnPresentationOpen;
                     pptApplication.PresentationClose += PptApplication_PresentationClose;
                     pptApplication.SlideShowBegin += PptApplication_SlideShowBegin;
                     pptApplication.SlideShowNextSlide += PptApplication_SlideShowNextSlide;
                     pptApplication.SlideShowEnd += PptApplication_SlideShowEnd;
-                    // 获得幻灯片对象集合
-                    slides = presentation.Slides;
-
-                    // 获得幻灯片的数量
-                    slidescount = slides.Count;
-                    memoryStreams = new MemoryStream[slidescount + 2];
-                    // 获得当前选中的幻灯片
-                    try
+                    if (pptApplication.Presentations.Count >= 1)
+                        PptApplicationOnPresentationOpen(pptApplication.Presentations[1]);
+                    //如果检测到已经开始放映，则立即进入画板模式
+                    if (pptApplication.SlideShowWindows.Count >= 1)
                     {
-                        // 在普通视图下这种方式可以获得当前选中的幻灯片对象
-                        // 然而在阅读模式下，这种方式会出现异常
-                        slide = slides[pptApplication.ActiveWindow.Selection.SlideRange.SlideNumber];
-                    }
-                    catch
-                    {
-                        // 在阅读模式下出现异常时，通过下面的方式来获得当前选中的幻灯片对象
-                        slide = pptApplication.SlideShowWindows[1].View.Slide;
+                        PptApplication_SlideShowBegin(pptApplication.SlideShowWindows[1]);
                     }
                 }
 
                 if (pptApplication == null) throw new Exception();
                 //BtnCheckPPT.Visibility = Visibility.Collapsed;
+            }
+            catch
+            {
+                //StackPanelPPTControls.Visibility = Visibility.Collapsed;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    BtnPPTSlideShow.Visibility = Visibility.Collapsed;
+                });
+                timerCheckPPT.Start();
+            }
+        }
+
+        private string _currentPresitationName;
+        private DateTime _lastOpenDatetime;
+        private void PptApplicationOnPresentationOpen(Presentation pres)
+        {
+            if (pres.FullName == _currentPresitationName && (DateTime.Now - _lastOpenDatetime).TotalSeconds < 3)
+                return;
+            _currentPresitationName = pres.FullName;
+            _lastOpenDatetime = DateTime.Now;
+            Task.Run(() =>
+            {
+                presentation = pres;
+                // 获得幻灯片对象集合
+                slides = presentation.Slides;
+
+                // 获得幻灯片的数量
+                slidescount = slides.Count;
+                memoryStreams = new MemoryStream[slidescount + 2];
+                // 获得当前选中的幻灯片
+                try
+                {
+                    // 在普通视图下这种方式可以获得当前选中的幻灯片对象
+                    // 然而在阅读模式下，这种方式会出现异常
+                    slide = slides[pptApplication.ActiveWindow.Selection.SlideRange.SlideNumber];
+                }
+                catch
+                {
+                    // 在阅读模式下出现异常时，通过下面的方式来获得当前选中的幻灯片对象
+                    slide = pptApplication.SlideShowWindows[1].View.Slide;
+                }
 
                 // 跳转到上次播放页
                 Application.Current.Dispatcher.Invoke(() =>
@@ -2004,46 +2035,32 @@ namespace Ink_Canvas
                         IsShowingRestoreHiddenSlidesWindow = true;
                         new YesOrNoNotificationWindow("检测到此演示文档中包含隐藏的幻灯片，是否取消隐藏？",
                             () =>
-                        {
-                            foreach (Slide slide in slides)
                             {
-                                if (slide.SlideShowTransition.Hidden == Microsoft.Office.Core.MsoTriState.msoTrue)
+                                foreach (Slide slide in slides)
                                 {
-                                    slide.SlideShowTransition.Hidden = Microsoft.Office.Core.MsoTriState.msoFalse;
+                                    if (slide.SlideShowTransition.Hidden == Microsoft.Office.Core.MsoTriState.msoTrue)
+                                    {
+                                        slide.SlideShowTransition.Hidden = Microsoft.Office.Core.MsoTriState.msoFalse;
+                                    }
                                 }
-                            }
-                        }).ShowDialog();
+                            }).ShowDialog();
                     }
-
-
 
                     BtnPPTSlideShow.Visibility = Visibility.Visible;
                 });
-
-                //如果检测到已经开始放映，则立即进入画板模式
-                if (pptApplication.SlideShowWindows.Count >= 1)
-                {
-                    PptApplication_SlideShowBegin(pptApplication.SlideShowWindows[1]);
-                }
-            }
-            catch
-            {
-                //StackPanelPPTControls.Visibility = Visibility.Collapsed;
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    BtnPPTSlideShow.Visibility = Visibility.Collapsed;
-                });
-                timerCheckPPT.Start();
-            }
+            });
+            
         }
 
         private void PptApplication_PresentationClose(Presentation Pres)
         {
+            /*
             pptApplication.PresentationClose -= PptApplication_PresentationClose;
             pptApplication.SlideShowBegin -= PptApplication_SlideShowBegin;
             pptApplication.SlideShowNextSlide -= PptApplication_SlideShowNextSlide;
             pptApplication.SlideShowEnd -= PptApplication_SlideShowEnd;
             pptApplication = null;
+            */
             timerCheckPPT.Start();
             Application.Current.Dispatcher.Invoke(() =>
             {
