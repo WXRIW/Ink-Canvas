@@ -243,6 +243,9 @@
   </ItemGroup>
   <!-- When Office is not installed -->
   <ItemGroup>
+    <PackageReference Include="Autoupdater.NET.Official">
+      <Version>1.7.6</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Office.Interop.PowerPoint">
       <Version>15.0.4420.1018</Version>
     </PackageReference>
@@ -289,7 +292,6 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
-    
     <COMReference Include="stdole">
       <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>2</VersionMajor>
