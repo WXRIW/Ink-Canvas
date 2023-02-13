@@ -1,4 +1,5 @@
-﻿using Ink_Canvas.Helpers;
+﻿using AutoUpdaterDotNET;
+using Ink_Canvas.Helpers;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -38,6 +39,11 @@ namespace Ink_Canvas
             }
 
             StartArgs = e.Args;
+            AutoUpdater.Start($"http://ink.wxriw.cn:1957/update");
+            AutoUpdater.ApplicationExitEvent += () =>
+            {
+                Environment.Exit(0);
+            };
         }
     }
 }
