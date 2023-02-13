@@ -267,6 +267,44 @@ namespace Ink_Canvas
             BtnPPTSlideShowEnd_Click(BtnPPTSlideShowEnd, null);
         }
 
+        private void ChangeToDrawTool(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (inkCanvas.Visibility == Visibility.Collapsed)
+            {
+                BtnHideInkCanvas_Click(sender, e);
+            }
+        }
+        
+        private void ChangeToSelect(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (inkCanvas.Visibility == Visibility.Visible)
+            {
+                BtnHideInkCanvas_Click(sender, e);
+            }
+        }
+        
+        private void ChangeToEraser(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (ImageEraserMask.Visibility == Visibility.Visible)
+            {
+                BtnColorRed_Click(sender, null);
+            }
+            else
+            {
+                BtnErase_Click(sender, e);
+            }
+        }
+        
+        private void Capture(object sender, ExecutedRoutedEventArgs e)
+        {
+            BtnScreenshot_Click(sender,e);
+        }
+        
+        private void Hide(object sender, ExecutedRoutedEventArgs e)
+        {
+            SymbolIconEmoji_MouseUp(sender, null);
+        }
+        
         #endregion Hotkeys
 
         #region Definations and Loading
@@ -6170,7 +6208,7 @@ namespace Ink_Canvas
         {
             isDragDropInEffect = false;
 
-            if (downPos.X == e.GetPosition(null).X && downPos.Y == e.GetPosition(null).Y)
+            if (e is null || (downPos.X == e.GetPosition(null).X && downPos.Y == e.GetPosition(null).Y))
             {
                 if (BorderFloatingBarMainControls.Visibility == Visibility.Visible)
                 {
@@ -6299,6 +6337,7 @@ namespace Ink_Canvas
 
 
         #endregion
+
     }
 
     #region Test for pen
