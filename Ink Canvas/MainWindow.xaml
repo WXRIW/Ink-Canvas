@@ -40,6 +40,7 @@
         <RoutedUICommand x:Key="HotKey_ChangeToPen3" Text=" "/>
         <RoutedUICommand x:Key="HotKey_ChangeToPen4" Text=" "/>
         <RoutedUICommand x:Key="HotKey_ChangeToPen5" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_DrawLine" Text=" "/>
     </Window.Resources>
     <!--输入命令绑定-->
     <Window.InputBindings>
@@ -55,6 +56,7 @@
         <KeyBinding Modifiers="Alt" Key="D4" Command="{StaticResource HotKey_ChangeToPen4}" />
         <KeyBinding Modifiers="Alt" Key="D5" Command="{StaticResource HotKey_ChangeToPen5}" />
         <KeyBinding Modifiers="Alt" Key="V" Command="{StaticResource HotKey_Hide}" />
+        <KeyBinding Modifiers="Alt" Key="L" Command="{StaticResource HotKey_DrawLine}" />
     </Window.InputBindings>
     <!--命令执行方法绑定-->
     <Window.CommandBindings>
@@ -66,19 +68,22 @@
                     Executed="KeyExit"/>
         <CommandBinding Command="{StaticResource HotKey_ChangeToDrawTool}"
                         CanExecute="CommandBinding_CanExecute"
-                        Executed="ChangeToDrawTool"/>
+                        Executed="KeyChangeToDrawTool"/>
         <CommandBinding Command="{StaticResource HotKey_ChangeToSelect}"
                         CanExecute="CommandBinding_CanExecute"
-                        Executed="ChangeToSelect"/>
+                        Executed="KeyChangeToSelect"/>
         <CommandBinding Command="{StaticResource HotKey_ChangeToEraser}"
                         CanExecute="CommandBinding_CanExecute"
-                        Executed="ChangeToEraser"/>
+                        Executed="KeyChangeToEraser"/>
         <CommandBinding Command="{StaticResource HotKey_Capture}"
                         CanExecute="CommandBinding_CanExecute"
-                        Executed="Capture"/>
+                        Executed="KeyCapture"/>
         <CommandBinding Command="{StaticResource HotKey_Hide}"
                         CanExecute="CommandBinding_CanExecute"
-                        Executed="Hide"/>
+                        Executed="KeyHide"/>
+        <CommandBinding Command="{StaticResource HotKey_DrawLine}"
+                        CanExecute="CommandBinding_CanExecute"
+                        Executed="KeyDrawLine"/>
     </Window.CommandBindings>
     <Grid x:Name="Main_Grid" Background="#01FFFFFF">
         <Grid Name="GridBackgroundCoverHolder">
