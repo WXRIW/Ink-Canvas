@@ -45,7 +45,7 @@
     <!--输入命令绑定-->
     <Window.InputBindings>
         <KeyBinding Gesture="Shift+Esc" Command="{StaticResource KeyExit}"/>
-        <KeyBinding Modifiers="Alt" Key="Z" Command="{StaticResource back_HotKey_Command}"/>
+        <KeyBinding Modifiers="Control" Key="Z" Command="{StaticResource back_HotKey_Command}"/>
         <KeyBinding Modifiers="Alt" Key="S" Command="{StaticResource HotKey_ChangeToSelect}" />
         <KeyBinding Modifiers="Alt" Key="D" Command="{StaticResource HotKey_ChangeToDrawTool}" />
         <KeyBinding Modifiers="Alt" Key="E" Command="{StaticResource HotKey_ChangeToEraser}" />
