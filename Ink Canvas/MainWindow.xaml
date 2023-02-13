@@ -30,11 +30,31 @@
         <c:VisibilityConverter x:Key="VisibilityConverter"/>
         <RoutedUICommand x:Key="KeyExit" Text=" "/>
         <RoutedUICommand x:Key="back_HotKey_Command" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_Capture" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_Hide" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToDrawTool" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToSelect" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToEraser" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToPen1" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToPen2" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToPen3" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToPen4" Text=" "/>
+        <RoutedUICommand x:Key="HotKey_ChangeToPen5" Text=" "/>
     </Window.Resources>
     <!--输入命令绑定-->
     <Window.InputBindings>
         <KeyBinding Gesture="Shift+Esc" Command="{StaticResource KeyExit}"/>
-        <KeyBinding Modifiers="Ctrl" Key="Z" Command="{StaticResource back_HotKey_Command}"/>
+        <KeyBinding Modifiers="Alt" Key="Z" Command="{StaticResource back_HotKey_Command}"/>
+        <KeyBinding Modifiers="Alt" Key="S" Command="{StaticResource HotKey_ChangeToSelect}" />
+        <KeyBinding Modifiers="Alt" Key="D" Command="{StaticResource HotKey_ChangeToDrawTool}" />
+        <KeyBinding Modifiers="Alt" Key="E" Command="{StaticResource HotKey_ChangeToEraser}" />
+        <KeyBinding Modifiers="Alt" Key="C" Command="{StaticResource HotKey_Capture}" />
+        <KeyBinding Modifiers="Alt" Key="D1" Command="{StaticResource HotKey_ChangeToPen1}" />
+        <KeyBinding Modifiers="Alt" Key="D2" Command="{StaticResource HotKey_ChangeToPen2}" />
+        <KeyBinding Modifiers="Alt" Key="D3" Command="{StaticResource HotKey_ChangeToPen3}" />
+        <KeyBinding Modifiers="Alt" Key="D4" Command="{StaticResource HotKey_ChangeToPen4}" />
+        <KeyBinding Modifiers="Alt" Key="D5" Command="{StaticResource HotKey_ChangeToPen5}" />
+        <KeyBinding Modifiers="Alt" Key="V" Command="{StaticResource HotKey_Hide}" />
     </Window.InputBindings>
     <!--命令执行方法绑定-->
     <Window.CommandBindings>
@@ -44,6 +64,21 @@
         <CommandBinding Command="{StaticResource KeyExit}"
                     CanExecute="CommandBinding_CanExecute"
                     Executed="KeyExit"/>
+        <CommandBinding Command="{StaticResource HotKey_ChangeToDrawTool}"
+                        CanExecute="CommandBinding_CanExecute"
+                        Executed="ChangeToDrawTool"/>
+        <CommandBinding Command="{StaticResource HotKey_ChangeToSelect}"
+                        CanExecute="CommandBinding_CanExecute"
+                        Executed="ChangeToSelect"/>
+        <CommandBinding Command="{StaticResource HotKey_ChangeToEraser}"
+                        CanExecute="CommandBinding_CanExecute"
+                        Executed="ChangeToEraser"/>
+        <CommandBinding Command="{StaticResource HotKey_Capture}"
+                        CanExecute="CommandBinding_CanExecute"
+                        Executed="Capture"/>
+        <CommandBinding Command="{StaticResource HotKey_Hide}"
+                        CanExecute="CommandBinding_CanExecute"
+                        Executed="Hide"/>
     </Window.CommandBindings>
     <Grid x:Name="Main_Grid" Background="#01FFFFFF">
         <Grid Name="GridBackgroundCoverHolder">
