@@ -1180,6 +1180,9 @@ namespace Ink_Canvas
                 GridBackgroundCoverHolder.Visibility = Visibility.Visible;
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
 
+                if (ImageEraserMask.Visibility == Visibility.Visible)
+                    BtnColorRed_Click(sender, null);
+
                 if (GridBackgroundCover.Visibility == Visibility.Collapsed)
                 {
                     if (BtnSwitchTheme.Content.ToString() == "浅色")
