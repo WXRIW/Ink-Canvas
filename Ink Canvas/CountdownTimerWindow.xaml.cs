@@ -352,6 +352,12 @@ namespace Ink_Canvas
                 Height = 700;
                 BigViewController.Visibility = Visibility.Visible;
                 TbCurrentTime.Visibility = Visibility.Collapsed;
+                
+                // Set to center
+                double screenWidth = System.Windows.SystemParameters.PrimaryScreenWidth;
+                double screenHeight = System.Windows.SystemParameters.PrimaryScreenHeight;
+                Left = (screenWidth / 2) - (Width / 2);
+                Top = (screenHeight / 2) - (Height / 2);
             }
             else
             {
