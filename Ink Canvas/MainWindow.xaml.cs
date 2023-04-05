@@ -5876,7 +5876,7 @@ namespace Ink_Canvas
         private void BtnRand_Click(object sender, RoutedEventArgs e)
         {
             StackPanelToolButtons.Visibility = Visibility.Collapsed;
-            new RandWindow().ShowDialog();
+            new RandWindow().Show();
         }
 
         #endregion Tools
