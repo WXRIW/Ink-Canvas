@@ -510,6 +510,17 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoSaveScreenShotInPowerPoint" Header="自动幻灯片截屏" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveScreenShotInPowerPoint_Toggled"/>
                                 <TextBlock Text="开启后将在结束幻灯片放映时自动将已有墨迹保存至此电脑，并在下次打开时自动加载（文件名和幻灯片页数都要相同）" TextWrapping="Wrap" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesInPowerPoint" Header="自动保存幻灯片墨迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveStrokesInPowerPoint_Toggled"/>
+                                <Slider x:Name="SideControlMinimumAutomationSlider"
+                                        HorizontalAlignment="Left"
+                                        Minimum="0" Maximum="10"
+                                        Width="320" FontFamily="Microsoft YaHei UI" 
+                                        ui:ControlHelper.Header="自动截图最小墨迹量"
+                                        IsSnapToTickEnabled="True" Value="0"
+                                        TickFrequency="1" TickPlacement="Both"
+                                        ValueChanged="SideControlMinimumAutomationSlider_ValueChanged"/>
+                                <TextBlock Text="{Binding Value, ElementName=SideControlMinimumAutomationSlider, Mode=OneWay}"
+                                           VerticalAlignment="Bottom" Margin="10,0,0,8"
+                                           FontSize="14" Width="25" HorizontalAlignment="Center"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="关于">

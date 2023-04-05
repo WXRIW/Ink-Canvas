@@ -768,6 +768,8 @@ namespace Ink_Canvas
                 {
                     ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn = false;
                 }
+
+                SideControlMinimumAutomationSlider.Value = Settings.Automation.MinimumAutomationStrokeNumber;
                 
                 if (Settings.Canvas.HideStrokeWhenSelecting)
                 {
@@ -1246,9 +1248,9 @@ namespace Ink_Canvas
                 {
                     if (inkCanvas.Strokes.Count > 0)
                     {
-                        if (Settings.Automation.IsAutoSaveStrokesAtClear)
+                        if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
                         {
-                            BtnScreenshot_Click(true, null);
+                            SaveScreenShot(true);
                         }
                         BtnClear_Click(BtnClear, null);
                     }
@@ -2383,7 +2385,7 @@ namespace Ink_Canvas
                     ms.Position = 0;
                     memoryStreams[previousSlideID] = ms;
 
-                    if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint && !_isPptClickingBtnTurned)
+                    if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber && Settings.Automation.IsAutoSaveScreenShotInPowerPoint && !_isPptClickingBtnTurned)
                         SaveScreenShot(true, Wn.Presentation.Name + "/" + Wn.View.CurrentShowPosition);
                     _isPptClickingBtnTurned = false;
                     BtnRedo.IsEnabled = false;
@@ -2422,7 +2424,8 @@ namespace Ink_Canvas
             }
 
             _isPptClickingBtnTurned = true;
-            if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+            if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber &&
+                Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
                 SaveScreenShot(true, pptApplication.SlideShowWindows[1].Presentation.Name + "/" + pptApplication.SlideShowWindows[1].View.CurrentShowPosition);
             try
             {
@@ -2447,7 +2450,8 @@ namespace Ink_Canvas
                 currentMode = 0;
             }
             _isPptClickingBtnTurned = true;
-            if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+            if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber &&
+                Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
                 SaveScreenShot(true, pptApplication.SlideShowWindows[1].Presentation.Name + "/" + pptApplication.SlideShowWindows[1].View.CurrentShowPosition);
             try
             {
@@ -2837,6 +2841,13 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
             Settings.Automation.IsAutoSaveStrokesInPowerPoint = ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn;
+            SaveSettingsToFile();
+        }
+        
+        private void SideControlMinimumAutomationSlider_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Automation.MinimumAutomationStrokeNumber = (int)SideControlMinimumAutomationSlider.Value;
             SaveSettingsToFile();
         }
 
@@ -4927,7 +4938,7 @@ namespace Ink_Canvas
 
         private void BtnWhiteBoardSwitchNext_Click(object sender, EventArgs e)
         {
-            if (Settings.Automation.IsAutoSaveStrokesAtClear)
+            if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
                 SaveScreenShot(true);
             SaveStrokes();
             if (CurrentWhiteboardIndex >= WhiteboardTotalCount)
@@ -4948,7 +4959,7 @@ namespace Ink_Canvas
         private void BtnWhiteBoardAdd_Click(object sender, EventArgs e)
         {
             if (WhiteboardTotalCount >= 99) return;
-            if (Settings.Automation.IsAutoSaveStrokesAtClear)
+            if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
                 SaveScreenShot(true);
             SaveStrokes();
             inkCanvas.Strokes.Clear();
@@ -5959,9 +5970,9 @@ namespace Ink_Canvas
             }
             else if (inkCanvas.Strokes.Count > 0)
             {
-                if (Settings.Automation.IsAutoSaveStrokesAtClear)
+                if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
                 {
-                    BtnScreenshot_Click(true, null);
+                    SaveScreenShot(true, null);
                 }
                 else
                 {

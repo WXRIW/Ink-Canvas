@@ -105,6 +105,9 @@ namespace Ink_Canvas
         [JsonProperty("isAutoClearWhenExitingWritingMode")]
         public bool IsAutoClearWhenExitingWritingMode { get; set; } = false;
 
+        [JsonProperty("minimumAutomationStrokeNumber")]
+        public int MinimumAutomationStrokeNumber { get; set; } = 0;
+
     }
 
     public class Advanced
