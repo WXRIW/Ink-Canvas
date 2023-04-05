@@ -3334,8 +3334,8 @@ namespace Ink_Canvas
             double borderTop = inkCanvas.GetSelectionBounds().Bottom + 15;
             if (borderLeft < 0) borderLeft = 0;
             if (borderTop < 0) borderTop = 0;
-            if (Width - borderLeft < BorderStrokeSelectionControlWidth) borderLeft = Width - BorderStrokeSelectionControlWidth;
-            if (Height - borderTop < BorderStrokeSelectionControlHeight) borderTop = Height - BorderStrokeSelectionControlHeight;
+            if (Width - borderLeft < BorderStrokeSelectionControlWidth || double.IsNaN(borderLeft)) borderLeft = Width - BorderStrokeSelectionControlWidth;
+            if (Height - borderTop < BorderStrokeSelectionControlHeight || double.IsNaN(borderTop)) borderTop = Height - BorderStrokeSelectionControlHeight;
             BorderStrokeSelectionControl.Margin = new Thickness(borderLeft, borderTop, 0, 0);
         }
 
