@@ -4866,15 +4866,15 @@ namespace Ink_Canvas
 
         private void BtnWhiteBoardSwitchNext_Click(object sender, EventArgs e)
         {
-            
+            if (Settings.Automation.IsAutoSaveStrokesAtClear)
+                SaveScreenShot(true);
+            SaveStrokes();
             if (CurrentWhiteboardIndex >= WhiteboardTotalCount)
             {
                 BtnWhiteBoardAdd_Click(sender, e);
                 return;
             }
-            if (Settings.Automation.IsAutoSaveStrokesAtClear)
-                SaveScreenShot(true);
-            SaveStrokes();
+
 
             inkCanvas.Strokes.Clear();
             CurrentWhiteboardIndex++;
