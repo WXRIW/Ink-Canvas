@@ -40,6 +40,12 @@ namespace Ink_Canvas
         public int InkStyle { get; set; } = 0;
         [JsonProperty("eraserSize")]
         public int EraserSize { get; set; } = 2;
+
+        [JsonProperty("hideStrokeWhenSelecting")]
+        public bool HideStrokeWhenSelecting { get; set; } = true;
+
+        [JsonProperty("usingWhiteboard")]
+        public bool UsingWhiteboard { get; set; }
     }
 
     public class Gesture
@@ -98,6 +104,9 @@ namespace Ink_Canvas
         public bool IsAutoSaveScreenShotInPowerPoint { get; set; } = false;
         [JsonProperty("isAutoClearWhenExitingWritingMode")]
         public bool IsAutoClearWhenExitingWritingMode { get; set; } = false;
+
+        [JsonProperty("minimumAutomationStrokeNumber")]
+        public int MinimumAutomationStrokeNumber { get; set; } = 0;
 
     }
 

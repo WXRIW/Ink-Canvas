@@ -1,4 +1,4 @@
-﻿using Ink_Canvas.Helpers;
+using Ink_Canvas.Helpers;
 using IWshRuntimeLibrary;
 using Microsoft.Office.Interop.PowerPoint;
 using Microsoft.VisualBasic;
@@ -769,6 +769,34 @@ namespace Ink_Canvas
                     ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn = false;
                 }
 
+                SideControlMinimumAutomationSlider.Value = Settings.Automation.MinimumAutomationStrokeNumber;
+                
+                if (Settings.Canvas.HideStrokeWhenSelecting)
+                {
+                    ToggleSwitchHideStrokeWhenSelecting.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchHideStrokeWhenSelecting.IsOn = false;
+                }
+
+                if (Settings.Canvas.UsingWhiteboard)
+                {
+                    ToggleSwitchUsingWhiteboard.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchUsingWhiteboard.IsOn = false;
+                }
+                if (Settings.Canvas.UsingWhiteboard)
+                {
+                    BtnSwitchTheme.Content = "浅色";
+                }
+                else
+                {
+                    BtnSwitchTheme.Content = "深色";
+                }
+                BtnSwitchTheme_Click(null , null);
                 if (Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
                 {
                     ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn = true;
@@ -1176,7 +1204,16 @@ namespace Ink_Canvas
             if (Main_Grid.Background == Brushes.Transparent)
             {
                 Main_Grid.Background = new SolidColorBrush(StringToColor("#01FFFFFF"));
-                inkCanvas.Visibility = Visibility.Visible;
+                if (Settings.Canvas.HideStrokeWhenSelecting)
+                {
+                    inkCanvas.Visibility = Visibility.Visible;
+                    inkCanvas.IsHitTestVisible = true;
+                }
+                else
+                {
+                    inkCanvas.IsHitTestVisible = true;
+                    inkCanvas.Visibility = Visibility.Visible;
+                }
                 GridBackgroundCoverHolder.Visibility = Visibility.Visible;
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
 
@@ -1211,20 +1248,23 @@ namespace Ink_Canvas
                 {
                     if (inkCanvas.Strokes.Count > 0)
                     {
-                        if (Settings.Automation.IsAutoSaveStrokesAtClear)
+                        if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
                         {
-                            BtnScreenshot_Click(true, null);
+                            SaveScreenShot(true);
                         }
                         BtnClear_Click(BtnClear, null);
                     }
-                    Main_Grid.Background = Brushes.Transparent;
-                    inkCanvas.Visibility = Visibility.Collapsed;
                 }
+
+                Main_Grid.Background = Brushes.Transparent;
+                if (Settings.Canvas.HideStrokeWhenSelecting)
+                    inkCanvas.Visibility = Visibility.Collapsed;
                 else
                 {
-                    Main_Grid.Background = Brushes.Transparent;
-                    inkCanvas.Visibility = Visibility.Collapsed;
+                    inkCanvas.IsHitTestVisible = false;
+                    inkCanvas.Visibility = Visibility.Visible;
                 }
+                
                 GridBackgroundCoverHolder.Visibility = Visibility.Collapsed;
                 if (currentMode != 0)
                 {
@@ -2046,6 +2086,8 @@ namespace Ink_Canvas
                             }).ShowDialog();
                     }
 
+
+
                     BtnPPTSlideShow.Visibility = Visibility.Visible;
                 });
             });
@@ -2362,7 +2404,7 @@ namespace Ink_Canvas
                     ms.Position = 0;
                     memoryStreams[previousSlideID] = ms;
 
-                    if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint && !_isPptClickingBtnTurned)
+                    if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber && Settings.Automation.IsAutoSaveScreenShotInPowerPoint && !_isPptClickingBtnTurned)
                         SaveScreenShot(true, Wn.Presentation.Name + "/" + Wn.View.CurrentShowPosition);
                     _isPptClickingBtnTurned = false;
                     BtnRedo.IsEnabled = false;
@@ -2401,7 +2443,8 @@ namespace Ink_Canvas
             }
 
             _isPptClickingBtnTurned = true;
-            if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+            if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber &&
+                Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
                 SaveScreenShot(true, pptApplication.SlideShowWindows[1].Presentation.Name + "/" + pptApplication.SlideShowWindows[1].View.CurrentShowPosition);
             try
             {
@@ -2426,7 +2469,8 @@ namespace Ink_Canvas
                 currentMode = 0;
             }
             _isPptClickingBtnTurned = true;
-            if (inkCanvas.Strokes.Count > 0 && Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+            if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber &&
+                Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
                 SaveScreenShot(true, pptApplication.SlideShowWindows[1].Presentation.Name + "/" + pptApplication.SlideShowWindows[1].View.CurrentShowPosition);
             try
             {
@@ -2787,12 +2831,42 @@ namespace Ink_Canvas
             if (!isLoaded) return;
             Settings.Automation.IsAutoClearWhenExitingWritingMode = ToggleSwitchClearExitingWritingMode.IsOn;
             SaveSettingsToFile();
+        } 
+        
+        private void ToggleSwitchHideStrokeWhenSelecting_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Canvas.HideStrokeWhenSelecting = ToggleSwitchHideStrokeWhenSelecting.IsOn;
+            SaveSettingsToFile();
+        }
+        
+        private void ToggleSwitchUsingWhiteboard_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Canvas.UsingWhiteboard = ToggleSwitchUsingWhiteboard.IsOn;
+            if (Settings.Canvas.UsingWhiteboard)
+            {
+                BtnSwitchTheme.Content = "浅色";
+            }
+            else
+            {
+                BtnSwitchTheme.Content = "深色";
+            }
+            BtnSwitchTheme_Click(sender , e);
+            SaveSettingsToFile();
         }
 
         private void ToggleSwitchAutoSaveStrokesInPowerPoint_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
             Settings.Automation.IsAutoSaveStrokesInPowerPoint = ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn;
+            SaveSettingsToFile();
+        }
+        
+        private void SideControlMinimumAutomationSlider_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Automation.MinimumAutomationStrokeNumber = (int)SideControlMinimumAutomationSlider.Value;
             SaveSettingsToFile();
         }
 
@@ -3290,8 +3364,8 @@ namespace Ink_Canvas
             double borderTop = inkCanvas.GetSelectionBounds().Bottom + 15;
             if (borderLeft < 0) borderLeft = 0;
             if (borderTop < 0) borderTop = 0;
-            if (Width - borderLeft < BorderStrokeSelectionControlWidth) borderLeft = Width - BorderStrokeSelectionControlWidth;
-            if (Height - borderTop < BorderStrokeSelectionControlHeight) borderTop = Height - BorderStrokeSelectionControlHeight;
+            if (Width - borderLeft < BorderStrokeSelectionControlWidth || double.IsNaN(borderLeft)) borderLeft = Width - BorderStrokeSelectionControlWidth;
+            if (Height - borderTop < BorderStrokeSelectionControlHeight || double.IsNaN(borderTop)) borderTop = Height - BorderStrokeSelectionControlHeight;
             BorderStrokeSelectionControl.Margin = new Thickness(borderLeft, borderTop, 0, 0);
         }
 
@@ -4883,13 +4957,15 @@ namespace Ink_Canvas
 
         private void BtnWhiteBoardSwitchNext_Click(object sender, EventArgs e)
         {
+            if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
+                SaveScreenShot(true);
+            SaveStrokes();
             if (CurrentWhiteboardIndex >= WhiteboardTotalCount)
             {
                 BtnWhiteBoardAdd_Click(sender, e);
                 return;
             }
 
-            SaveStrokes();
 
             inkCanvas.Strokes.Clear();
             CurrentWhiteboardIndex++;
@@ -4902,7 +4978,8 @@ namespace Ink_Canvas
         private void BtnWhiteBoardAdd_Click(object sender, EventArgs e)
         {
             if (WhiteboardTotalCount >= 99) return;
-
+            if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
+                SaveScreenShot(true);
             SaveStrokes();
             inkCanvas.Strokes.Clear();
 
@@ -5818,7 +5895,7 @@ namespace Ink_Canvas
         private void BtnRand_Click(object sender, RoutedEventArgs e)
         {
             StackPanelToolButtons.Visibility = Visibility.Collapsed;
-            new RandWindow().ShowDialog();
+            new RandWindow().Show();
         }
 
         #endregion Tools
@@ -5912,9 +5989,9 @@ namespace Ink_Canvas
             }
             else if (inkCanvas.Strokes.Count > 0)
             {
-                if (Settings.Automation.IsAutoSaveStrokesAtClear)
+                if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
                 {
-                    BtnScreenshot_Click(true, null);
+                    SaveScreenShot(true, null);
                 }
                 else
                 {
