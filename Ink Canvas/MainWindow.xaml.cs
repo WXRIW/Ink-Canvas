@@ -778,6 +778,23 @@ namespace Ink_Canvas
                     ToggleSwitchHideStrokeWhenSelecting.IsOn = false;
                 }
 
+                if (Settings.Canvas.UsingWhiteboard)
+                {
+                    ToggleSwitchUsingWhiteboard.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchUsingWhiteboard.IsOn = false;
+                }
+                if (Settings.Canvas.UsingWhiteboard)
+                {
+                    BtnSwitchTheme.Content = "浅色";
+                }
+                else
+                {
+                    BtnSwitchTheme.Content = "深色";
+                }
+                BtnSwitchTheme_Click(null , null);
                 if (Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
                 {
                     ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn = true;
@@ -2797,6 +2814,22 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
             Settings.Canvas.HideStrokeWhenSelecting = ToggleSwitchHideStrokeWhenSelecting.IsOn;
+            SaveSettingsToFile();
+        }
+        
+        private void ToggleSwitchUsingWhiteboard_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Canvas.UsingWhiteboard = ToggleSwitchUsingWhiteboard.IsOn;
+            if (Settings.Canvas.UsingWhiteboard)
+            {
+                BtnSwitchTheme.Content = "浅色";
+            }
+            else
+            {
+                BtnSwitchTheme.Content = "深色";
+            }
+            BtnSwitchTheme_Click(sender , e);
             SaveSettingsToFile();
         }
 

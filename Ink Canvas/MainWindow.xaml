@@ -423,6 +423,7 @@
                                     <ComboBoxItem Content="大"  FontFamily="Microsoft YaHei UI"/>
                                 </ComboBox>
                                 <ui:ToggleSwitch Name="ToggleSwitchHideStrokeWhenSelecting" Header="切换到鼠标模式后隐藏墨迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchHideStrokeWhenSelecting_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchUsingWhiteboard" Header="使用白板 (白色背景)" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchUsingWhiteboard_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="手势">

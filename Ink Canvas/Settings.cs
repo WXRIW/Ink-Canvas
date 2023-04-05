@@ -43,6 +43,9 @@ namespace Ink_Canvas
 
         [JsonProperty("hideStrokeWhenSelecting")]
         public bool HideStrokeWhenSelecting { get; set; } = true;
+
+        [JsonProperty("usingWhiteboard")]
+        public bool UsingWhiteboard { get; set; }
     }
 
     public class Gesture
