@@ -118,6 +118,13 @@ namespace Ink_Canvas
                         arg += " /IM EasiNote.exe";
 
                     }
+                    
+                    Process[] processesa = Process.GetProcessesByName("swenserver");
+                    if (processesa.Length > 0)
+                    {
+                        arg += " /IM swenserver.exe";
+
+                    }
                 }
                 if (arg != "/F")
                 {
