@@ -768,6 +768,15 @@ namespace Ink_Canvas
                 {
                     ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn = false;
                 }
+                
+                if (Settings.Canvas.HideStrokeWhenSelecting)
+                {
+                    ToggleSwitchHideStrokeWhenSelecting.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchHideStrokeWhenSelecting.IsOn = false;
+                }
 
                 if (Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
                 {
@@ -1176,7 +1185,16 @@ namespace Ink_Canvas
             if (Main_Grid.Background == Brushes.Transparent)
             {
                 Main_Grid.Background = new SolidColorBrush(StringToColor("#01FFFFFF"));
-                inkCanvas.Visibility = Visibility.Visible;
+                if (Settings.Canvas.HideStrokeWhenSelecting)
+                {
+                    inkCanvas.Visibility = Visibility.Visible;
+                    inkCanvas.IsHitTestVisible = true;
+                }
+                else
+                {
+                    inkCanvas.IsHitTestVisible = true;
+                    inkCanvas.Visibility = Visibility.Visible;
+                }
                 GridBackgroundCoverHolder.Visibility = Visibility.Visible;
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
 
@@ -1217,14 +1235,17 @@ namespace Ink_Canvas
                         }
                         BtnClear_Click(BtnClear, null);
                     }
-                    Main_Grid.Background = Brushes.Transparent;
-                    inkCanvas.Visibility = Visibility.Collapsed;
                 }
+
+                Main_Grid.Background = Brushes.Transparent;
+                if (Settings.Canvas.HideStrokeWhenSelecting)
+                    inkCanvas.Visibility = Visibility.Collapsed;
                 else
                 {
-                    Main_Grid.Background = Brushes.Transparent;
-                    inkCanvas.Visibility = Visibility.Collapsed;
+                    inkCanvas.IsHitTestVisible = false;
+                    inkCanvas.Visibility = Visibility.Visible;
                 }
+                
                 GridBackgroundCoverHolder.Visibility = Visibility.Collapsed;
                 if (currentMode != 0)
                 {
@@ -2769,6 +2790,13 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
             Settings.Automation.IsAutoClearWhenExitingWritingMode = ToggleSwitchClearExitingWritingMode.IsOn;
+            SaveSettingsToFile();
+        } 
+        
+        private void ToggleSwitchHideStrokeWhenSelecting_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Canvas.HideStrokeWhenSelecting = ToggleSwitchHideStrokeWhenSelecting.IsOn;
             SaveSettingsToFile();
         }
 

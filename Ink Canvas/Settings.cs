@@ -40,6 +40,9 @@ namespace Ink_Canvas
         public int InkStyle { get; set; } = 0;
         [JsonProperty("eraserSize")]
         public int EraserSize { get; set; } = 2;
+
+        [JsonProperty("hideStrokeWhenSelecting")]
+        public bool HideStrokeWhenSelecting { get; set; } = true;
     }
 
     public class Gesture
