@@ -5974,10 +5974,7 @@ namespace Ink_Canvas
                 {
                     SaveScreenShot(true, null);
                 }
-                else
-                {
-                    BtnClear_Click(BtnClear, null);
-                }
+                BtnClear_Click(BtnClear, null);
             }
             else
             {
