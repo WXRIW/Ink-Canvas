@@ -116,14 +116,26 @@ namespace Ink_Canvas
                     if (processes.Length > 0)
                     {
                         arg += " /IM EasiNote.exe";
-
                     }
                     
-                    Process[] processesa = Process.GetProcessesByName("swenserver");
-                    if (processesa.Length > 0)
+                    if (Process.GetProcessesByName("swenserver").Length > 0)
                     {
                         arg += " /IM swenserver.exe";
-
+                    }
+                    
+                    if (Process.GetProcessesByName("EnMirror").Length > 0)
+                    {
+                        arg += " /IM EnMirror.exe";
+                    }
+                    
+                    if (Process.GetProcessesByName("EasiUpdateProtect").Length > 0)
+                    {
+                        arg += " /IM EasiUpdateProtect.exe";
+                    }
+                    
+                    if (Process.GetProcessesByName("EasiUpdate").Length > 0)
+                    {
+                        arg += " /IM EasiUpdate.exe";
                     }
                 }
                 if (arg != "/F")
