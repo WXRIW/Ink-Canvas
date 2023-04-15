@@ -820,7 +820,7 @@
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                         Click="BtnUndo_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
                         Background="{Binding ElementName=BtnExit, Path=Background}"
-                        IsEnabled="False" IsEnabledChanged="Btn_IsEnabledChanged">
+                        IsEnabled="False" Visibility="Collapsed" IsEnabledChanged="Btn_IsEnabledChanged">
                     <StackPanel Opacity="0.2">
                         <ui:SymbolIcon Symbol="Undo"/>
                         <TextBlock Text="撤销" Margin="0,4,0,0"/>
@@ -1101,7 +1101,7 @@
                                 </Border>
                             </Grid>
                             <Viewbox Margin="0,2">
-                                <Grid>
+                                <StackPanel Orientation="Horizontal">
                                     <ui:SymbolIcon Symbol="Undo" Foreground="#666666"
                                                 Visibility="{Binding ElementName=BtnUndo, Path=Visibility}"
                                                 IsEnabled="{Binding ElementName=BtnUndo, Path=IsEnabled}"
@@ -1110,7 +1110,7 @@
                                                 Visibility="{Binding ElementName=BtnRedo, Path=Visibility}"
                                                 IsEnabled="{Binding ElementName=BtnRedo, Path=IsEnabled}"
                                                 MouseUp="SymbolIconRedo_MouseUp" MouseDown="Border_MouseDown"/>
-                                </Grid>
+                                </StackPanel>
                             </Viewbox>
                         </ui:SimpleStackPanel>
                         <ui:SimpleStackPanel Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">

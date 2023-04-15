@@ -79,7 +79,11 @@ namespace Ink_Canvas
             if (File.Exists("debug.ini")) Label.Visibility = Visibility.Visible;
 
             InitTimers();
+            timeMachine.OnRedoStateChanged += TimeMachine_OnRedoStateChanged;
+            timeMachine.OnUndoStateChanged += TimeMachine_OnUndoStateChanged;
         }
+
+        
 
         #endregion
 
@@ -311,6 +315,25 @@ namespace Ink_Canvas
         }
         
         #endregion Hotkeys
+
+        #region TimeMachine
+
+        public TimeMachine timeMachine= new TimeMachine();
+        private void TimeMachine_OnUndoStateChanged(bool status)
+        {
+            var result = status ? Visibility.Visible : Visibility.Collapsed;
+            BtnUndo.Visibility = result;
+            BtnUndo.IsEnabled = status;
+        }
+
+        private void TimeMachine_OnRedoStateChanged(bool status)
+        {
+            var result = status ? Visibility.Visible : Visibility.Collapsed;
+            BtnRedo.Visibility = result;
+            BtnRedo.IsEnabled = status;
+        }
+
+        #endregion
 
         #region Definations and Loading
 
@@ -916,12 +939,7 @@ namespace Ink_Canvas
                     whiteboardIndex = 0;
                 }
                 strokeCollections[whiteboardIndex] = inkCanvas.Strokes.Clone();
-
-                BtnUndo.IsEnabled = true;
-                BtnUndo.Visibility = Visibility.Visible;
-
-                BtnRedo.IsEnabled = false;
-                BtnRedo.Visibility = Visibility.Collapsed;
+                
             }
 
             inkCanvas.Strokes.Clear();
@@ -1037,6 +1055,7 @@ namespace Ink_Canvas
                                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
                             }
                         }
+
                         StackPanelPPTButtons.Visibility = Visibility.Visible;
                         break;
                     case 1: //黑板或白板模式
@@ -1060,16 +1079,11 @@ namespace Ink_Canvas
                             SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
                             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
                         }
+
                         StackPanelPPTButtons.Visibility = Visibility.Collapsed;
                         break;
                 }
             }
-
-            BtnUndo.IsEnabled = false;
-            BtnUndo.Visibility = Visibility.Visible;
-
-            BtnRedo.IsEnabled = false;
-            BtnRedo.Visibility = Visibility.Collapsed;
         }
 
         private void BtnSwitchTheme_Click(object sender, RoutedEventArgs e)
@@ -1784,12 +1798,6 @@ namespace Ink_Canvas
                         whiteboardIndex = 0;
                     }
                     strokeCollections[whiteboardIndex] = lastTouchDownStrokeCollection;
-
-                    BtnUndo.IsEnabled = true;
-                    BtnUndo.Visibility = Visibility.Visible;
-
-                    BtnRedo.IsEnabled = false;
-                    BtnRedo.Visibility = Visibility.Collapsed;
                 }
             }
         }
@@ -2208,12 +2216,6 @@ namespace Ink_Canvas
                 //    GridBackgroundCover.Visibility = Visibility.Hidden;
                 //}
 
-                BtnRedo.IsEnabled = false;
-                BtnRedo.Visibility = Visibility.Collapsed;
-
-                BtnUndo.IsEnabled = false;
-                BtnUndo.Visibility = Visibility.Visible;
-
                 inkCanvas.Strokes.Clear();
 
                 BorderFloatingBarMainControls.Visibility = Visibility.Visible;
@@ -2349,12 +2351,7 @@ namespace Ink_Canvas
                 //{
                 //    SaveStrokes();
                 //}
-
-                BtnRedo.IsEnabled = false;
-                BtnRedo.Visibility = Visibility.Collapsed;
-
-                BtnUndo.IsEnabled = false;
-                BtnUndo.Visibility = Visibility.Visible;
+                
 
                 inkCanvas.Strokes.Clear();
 
@@ -2388,11 +2385,6 @@ namespace Ink_Canvas
                     if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber && Settings.Automation.IsAutoSaveScreenShotInPowerPoint && !_isPptClickingBtnTurned)
                         SaveScreenShot(true, Wn.Presentation.Name + "/" + Wn.View.CurrentShowPosition);
                     _isPptClickingBtnTurned = false;
-                    BtnRedo.IsEnabled = false;
-                    BtnRedo.Visibility = Visibility.Collapsed;
-
-                    BtnUndo.IsEnabled = false;
-                    BtnUndo.Visibility = Visibility.Visible;
 
                     inkCanvas.Strokes.Clear();
 
@@ -3057,40 +3049,98 @@ namespace Ink_Canvas
 
         private void BtnUndo_Click(object sender, RoutedEventArgs e)
         {
-            int whiteboardIndex = CurrentWhiteboardIndex;
-            if (currentMode == 0)
+            var item = timeMachine.Undo();
+            if (item.CommitType == TimeMachineHistoryType.UserInput)
             {
-                whiteboardIndex = 0;
+                if (!item.IsReversed)
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        inkCanvas.Strokes.Remove(strokes);
+                    }
+                }
             }
-
-            StrokeCollection strokes = inkCanvas.Strokes.Clone();
-            inkCanvas.Strokes = strokeCollections[whiteboardIndex].Clone();
-            strokeCollections[whiteboardIndex] = strokes;
-
-            BtnRedo.IsEnabled = true;
-            BtnRedo.Visibility = Visibility.Visible;
-
-            BtnUndo.IsEnabled = false;
-            BtnUndo.Visibility = Visibility.Collapsed;
+            else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
+            {
+                if (item.IsReversed)
+                {
+                    
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        inkCanvas.Strokes.Remove(strokes);
+                    }
+                    foreach (var strokes in item.ShapeRecognitionReplacedStroke)
+                    {
+                        inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        inkCanvas.Strokes.Add(strokes);
+                    }
+                    foreach (var strokes in item.ShapeRecognitionReplacedStroke)
+                    {
+                        inkCanvas.Strokes.Remove(strokes);
+                    }
+                }
+            }
         }
 
         private void BtnRedo_Click(object sender, RoutedEventArgs e)
         {
-            int whiteboardIndex = CurrentWhiteboardIndex;
-            if (currentMode == 0)
+            var item = timeMachine.Redo();
+            if (item.CommitType == TimeMachineHistoryType.UserInput)
             {
-                whiteboardIndex = 0;
+                if (!item.IsReversed)
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        inkCanvas.Strokes.Remove(strokes);
+                    }
+                }
             }
+            else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
+            {
+                if (item.IsReversed)
+                {
 
-            StrokeCollection strokes = inkCanvas.Strokes.Clone();
-            inkCanvas.Strokes = strokeCollections[whiteboardIndex].Clone();
-            strokeCollections[whiteboardIndex] = strokes;
-
-            BtnUndo.IsEnabled = true;
-            BtnUndo.Visibility = Visibility.Visible;
-
-            BtnRedo.IsEnabled = false;
-            BtnRedo.Visibility = Visibility.Collapsed;
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        inkCanvas.Strokes.Remove(strokes);
+                    }
+                    foreach (var strokes in item.ShapeRecognitionReplacedStroke)
+                    {
+                        inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        inkCanvas.Strokes.Add(strokes);
+                    }
+                    foreach (var strokes in item.ShapeRecognitionReplacedStroke)
+                    {
+                        inkCanvas.Strokes.Remove(strokes);
+                    }
+                }
+            }
         }
 
         private void Btn_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -5058,6 +5108,7 @@ namespace Ink_Canvas
             try
             {
                 inkCanvas.Opacity = 1;
+                timeMachine.CommitStrokeUserInputHistory(new StrokeCollection{e.Stroke});
                 if (Settings.InkToShape.IsInkToShapeEnabled)
                 {
                     try
@@ -5138,6 +5189,7 @@ namespace Ink_Canvas
                                 };
                                 circles.Add(new Circle(result.Centroid, shape.Width / 2.0, stroke));
                                 SetNewBackupOfStroke();
+                                timeMachine.CommitStrokeShapeHistory(result.InkDrawingNode.Strokes,new StrokeCollection{stroke});
                                 inkCanvas.Strokes.Add(stroke);
                                 inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
                                 newStrokes = new StrokeCollection();
@@ -5221,8 +5273,17 @@ namespace Ink_Canvas
                                             {
                                                 DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                                             };
+                                            var _generateDashedLineEllipseStrokeCollection =
+                                                GenerateDashedLineEllipseStrokeCollection(iniP, endP, true, false);
+                                            
+                                            var resultStrokes = new StrokeCollection
+                                            {
+                                                _stroke,
+                                                _generateDashedLineEllipseStrokeCollection
+                                            };
                                             inkCanvas.Strokes.Add(_stroke.Clone());
-                                            inkCanvas.Strokes.Add(GenerateDashedLineEllipseStrokeCollection(iniP, endP, true, false));
+                                            inkCanvas.Strokes.Add(_generateDashedLineEllipseStrokeCollection);
+                                            timeMachine.CommitStrokeShapeHistory(result.InkDrawingNode.Strokes,resultStrokes);
                                             return;
                                         }
                                     }
@@ -5270,6 +5331,7 @@ namespace Ink_Canvas
                                 SetNewBackupOfStroke();
                                 inkCanvas.Strokes.Add(stroke);
                                 inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                timeMachine.CommitStrokeShapeHistory(result.InkDrawingNode.Strokes,new StrokeCollection{stroke});
                                 newStrokes = new StrokeCollection();
                             }
                         }
@@ -5338,6 +5400,7 @@ namespace Ink_Canvas
                                 SetNewBackupOfStroke();
                                 inkCanvas.Strokes.Add(stroke);
                                 inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                timeMachine.CommitStrokeShapeHistory(result.InkDrawingNode.Strokes,new StrokeCollection{stroke});
                                 newStrokes = new StrokeCollection();
                             }
                         }
@@ -5521,12 +5584,6 @@ namespace Ink_Canvas
                 whiteboardIndex = 0;
             }
             strokeCollections[whiteboardIndex] = lastTouchDownStrokeCollection;
-
-            BtnUndo.IsEnabled = true;
-            BtnUndo.Visibility = Visibility.Visible;
-
-            BtnRedo.IsEnabled = false;
-            BtnRedo.Visibility = Visibility.Collapsed;
         }
 
         public double GetDistance(Point point1, Point point2)
@@ -6321,7 +6378,7 @@ namespace Ink_Canvas
         {
             BtnPPTSlideShowEnd_Click(BtnPPTSlideShowEnd, null);
         }
-
+        
         #endregion
 
         #region Save & Open
