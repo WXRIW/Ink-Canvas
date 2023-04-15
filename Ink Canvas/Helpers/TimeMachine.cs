@@ -41,7 +41,13 @@ namespace Ink_Canvas.Helpers
 
         public void CommitStrokeEraseHistory(StrokeCollection stroke)
         {
-            _currentStrokeHistory.Add(new TimeMachineHistory(stroke, TimeMachineHistoryType.UserInput, false));
+            var col = new StrokeCollection();
+            foreach (var stroke1 in stroke)
+            {
+                col.Add(stroke1);
+            }
+            
+            _currentStrokeHistory.Add(new TimeMachineHistory(col, TimeMachineHistoryType.Clear, true));
             _currentIndex = _currentStrokeHistory.Count - 1;
             OnUndoStateChanged?.Invoke(true);
             OnRedoStateChanged?.Invoke(false);
@@ -107,6 +113,7 @@ namespace Ink_Canvas.Helpers
     public enum TimeMachineHistoryType
     {
         UserInput,
-        ShapeRecognition
+        ShapeRecognition,
+        Clear
     }
 }

@@ -190,6 +190,10 @@ namespace Ink_Canvas
             }
             catch { }
         }
+
+        private bool isPreviousErasing = false;
+        private StrokeCollection previousStrokes = new StrokeCollection();
+        
         private void inkCanvas_EditingModeChanged(object sender, RoutedEventArgs e)
         {
             var inkCanvas1 = sender as InkCanvas;
@@ -210,6 +214,21 @@ namespace Ink_Canvas
                 inkCanvas1.ForceCursor = false;
             }
 
+            if (inkCanvas1.EditingMode == InkCanvasEditingMode.EraseByPoint ||
+                inkCanvas1.EditingMode == InkCanvasEditingMode.EraseByStroke)
+            {
+                isPreviousErasing = true;
+                previousStrokes.Clear();
+                foreach (var inkCanvas1Stroke in inkCanvas1.Strokes)
+                {
+                    previousStrokes.Add(inkCanvas1Stroke);
+                }
+            }
+            else if (isPreviousErasing)
+            {
+                timeMachine.CommitStrokeEraseHistory(previousStrokes);
+                isPreviousErasing = false;
+            } 
             if (inkCanvas1.EditingMode == InkCanvasEditingMode.Ink) forcePointEraser = !forcePointEraser;
         }
 
@@ -942,7 +961,7 @@ namespace Ink_Canvas
                 
             }
 
-            inkCanvas.Strokes.Clear();
+            ClearStrokes();
             inkCanvas.Children.Clear();
 
             CancelSingleFingerDragMode();
@@ -992,7 +1011,7 @@ namespace Ink_Canvas
                     GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                     SaveStrokes(true);
-                    inkCanvas.Strokes.Clear();
+                    ClearStrokes();
                     RestoreStrokes();
 
                     if (BtnSwitchTheme.Content.ToString() == "浅色")
@@ -1029,7 +1048,7 @@ namespace Ink_Canvas
                         GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                         SaveStrokes();
-                        inkCanvas.Strokes.Clear();
+                        ClearStrokes();
                         RestoreStrokes(true);
 
                         if (BtnSwitchTheme.Content.ToString() == "浅色")
@@ -1063,7 +1082,7 @@ namespace Ink_Canvas
                         GridBackgroundCover.Visibility = Visibility.Visible;
 
                         SaveStrokes(true);
-                        inkCanvas.Strokes.Clear();
+                        ClearStrokes();
                         RestoreStrokes();
 
                         BtnSwitch.Content = "屏幕";
@@ -2195,7 +2214,7 @@ namespace Ink_Canvas
                         GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                         //SaveStrokes();
-                        inkCanvas.Strokes.Clear();
+                        ClearStrokes();
 
                         if (BtnSwitchTheme.Content.ToString() == "浅色")
                         {
@@ -2216,7 +2235,7 @@ namespace Ink_Canvas
                 //    GridBackgroundCover.Visibility = Visibility.Hidden;
                 //}
 
-                inkCanvas.Strokes.Clear();
+                ClearStrokes();
 
                 BorderFloatingBarMainControls.Visibility = Visibility.Visible;
                 BorderPenColorRed_MouseUp(BorderPenColorRed, null);
@@ -2334,7 +2353,7 @@ namespace Ink_Canvas
                     GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                     //SaveStrokes();
-                    inkCanvas.Strokes.Clear();
+                    ClearStrokes();
                     //RestoreStrokes(true);
 
                     if (BtnSwitchTheme.Content.ToString() == "浅色")
@@ -2353,7 +2372,7 @@ namespace Ink_Canvas
                 //}
                 
 
-                inkCanvas.Strokes.Clear();
+                ClearStrokes();
 
                 if (Main_Grid.Background != Brushes.Transparent)
                 {
@@ -2386,7 +2405,7 @@ namespace Ink_Canvas
                         SaveScreenShot(true, Wn.Presentation.Name + "/" + Wn.View.CurrentShowPosition);
                     _isPptClickingBtnTurned = false;
 
-                    inkCanvas.Strokes.Clear();
+                    ClearStrokes();
 
                     try
                     {
@@ -3056,7 +3075,8 @@ namespace Ink_Canvas
                 {
                     foreach (var strokes in item.CurrentStroke)
                     {
-                        inkCanvas.Strokes.Add(strokes);
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
                     }
                 }
                 else
@@ -3091,6 +3111,14 @@ namespace Ink_Canvas
                     {
                         inkCanvas.Strokes.Remove(strokes);
                     }
+                }
+            }
+            else if(item.CommitType == TimeMachineHistoryType.Clear)
+            {
+                inkCanvas.Strokes.Clear();
+                foreach (var stroke in item.CurrentStroke)
+                {
+                    inkCanvas.Strokes.Add(stroke);
                 }
             }
         }
@@ -3139,6 +3167,14 @@ namespace Ink_Canvas
                     {
                         inkCanvas.Strokes.Remove(strokes);
                     }
+                }
+            }
+            else if(item.CommitType == TimeMachineHistoryType.Clear)
+            {
+                inkCanvas.Strokes.Clear();
+                foreach (var stroke in item.CurrentStroke)
+                {
+                    inkCanvas.Strokes.Add(stroke);
                 }
             }
         }
@@ -4948,6 +4984,12 @@ namespace Ink_Canvas
             }
         }
 
+        private void ClearStrokes()
+        {
+            timeMachine.CommitStrokeEraseHistory(inkCanvas.Strokes);
+            inkCanvas.Strokes.Clear();
+        }
+        
         private void RestoreStrokes(bool isBackupMain = false)
         {
             try
@@ -4978,7 +5020,7 @@ namespace Ink_Canvas
 
             SaveStrokes();
 
-            inkCanvas.Strokes.Clear();
+            ClearStrokes();
             CurrentWhiteboardIndex--;
 
             RestoreStrokes();
@@ -4998,7 +5040,7 @@ namespace Ink_Canvas
             }
 
 
-            inkCanvas.Strokes.Clear();
+            ClearStrokes();
             CurrentWhiteboardIndex++;
 
             RestoreStrokes();
@@ -5012,7 +5054,7 @@ namespace Ink_Canvas
             if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
                 SaveScreenShot(true);
             SaveStrokes();
-            inkCanvas.Strokes.Clear();
+            ClearStrokes();
 
             WhiteboardTotalCount++;
             CurrentWhiteboardIndex++;
@@ -5034,7 +5076,7 @@ namespace Ink_Canvas
 
         private void BtnWhiteBoardDelete_Click(object sender, RoutedEventArgs e)
         {
-            inkCanvas.Strokes.Clear();
+            ClearStrokes();
 
             if (CurrentWhiteboardIndex != WhiteboardTotalCount)
             {
