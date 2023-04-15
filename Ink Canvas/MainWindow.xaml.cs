@@ -3172,10 +3172,6 @@ namespace Ink_Canvas
             else if(item.CommitType == TimeMachineHistoryType.Clear)
             {
                 inkCanvas.Strokes.Clear();
-                foreach (var stroke in item.CurrentStroke)
-                {
-                    inkCanvas.Strokes.Add(stroke);
-                }
             }
         }
 
