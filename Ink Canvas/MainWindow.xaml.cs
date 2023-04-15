@@ -5972,7 +5972,10 @@ namespace Ink_Canvas
             {
                 if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
                 {
-                    SaveScreenShot(true, null);
+                    if (BtnPPTSlideShowEnd.Visibility == Visibility.Visible)
+                        SaveScreenShot(true, $"{pptName}/{previousSlideID}_{DateTime.Now:HH-mm-ss}");
+                    else
+                        SaveScreenShot(true);
                 }
                 BtnClear_Click(BtnClear, null);
             }
