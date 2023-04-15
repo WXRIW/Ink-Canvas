@@ -108,6 +108,12 @@ namespace Ink_Canvas
         [JsonProperty("minimumAutomationStrokeNumber")]
         public int MinimumAutomationStrokeNumber { get; set; } = 0;
 
+        [JsonProperty("isNoClearStrokeOnSelectWhenInPowerPoint")]
+        public bool IsNoClearStrokeOnSelectWhenInPowerPoint { get; set; } = true;
+        
+        [JsonProperty("isShowStrokeOnSelectInPowerPoint")]
+        public bool IsShowStrokeOnSelectInPowerPoint { get; set; } = false;
+
     }
 
     public class Advanced

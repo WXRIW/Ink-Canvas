@@ -1242,28 +1242,71 @@ namespace Ink_Canvas
             }
             else
             {
+               
+                
                 // Auto-clear Strokes
                 // 很烦, 要重新来, 要等待截图完成再清理笔记
-                if (isLoaded && Settings.Automation.IsAutoClearWhenExitingWritingMode)
+                if (BtnPPTSlideShowEnd.Visibility != Visibility.Visible)
                 {
-                    if (inkCanvas.Strokes.Count > 0)
+                    if (isLoaded && Settings.Automation.IsAutoClearWhenExitingWritingMode)
                     {
-                        if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
+                        if (inkCanvas.Strokes.Count > 0)
                         {
-                            SaveScreenShot(true);
+                            if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count >
+                                Settings.Automation.MinimumAutomationStrokeNumber)
+                            {
+                                SaveScreenShot(true);
+                            }
+
+                            BtnClear_Click(BtnClear, null);
                         }
-                        BtnClear_Click(BtnClear, null);
+                    }
+                    if (Settings.Canvas.HideStrokeWhenSelecting)
+                        inkCanvas.Visibility = Visibility.Collapsed;
+                    else
+                    {
+                        inkCanvas.IsHitTestVisible = false;
+                        inkCanvas.Visibility = Visibility.Visible;
+                    }
+                }
+                else
+                {
+                    if (isLoaded && Settings.Automation.IsAutoClearWhenExitingWritingMode && !Settings.Automation.IsNoClearStrokeOnSelectWhenInPowerPoint)
+                    {
+                        if (inkCanvas.Strokes.Count > 0)
+                        {
+                            if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count >
+                                Settings.Automation.MinimumAutomationStrokeNumber)
+                            {
+                                SaveScreenShot(true);
+                            }
+
+                            BtnClear_Click(BtnClear, null);
+                        }
+                    }
+                    
+                    
+                    if (Settings.Automation.IsShowStrokeOnSelectInPowerPoint)
+                    {
+                        inkCanvas.Visibility = Visibility.Visible;
+                        inkCanvas.IsHitTestVisible = true;
+                    }
+                    else
+                    {
+                        if (Settings.Canvas.HideStrokeWhenSelecting)
+                            inkCanvas.Visibility = Visibility.Collapsed;
+                        else
+                        {
+                            inkCanvas.IsHitTestVisible = false;
+                            inkCanvas.Visibility = Visibility.Visible;
+                        }
                     }
                 }
 
+
+                
                 Main_Grid.Background = Brushes.Transparent;
-                if (Settings.Canvas.HideStrokeWhenSelecting)
-                    inkCanvas.Visibility = Visibility.Collapsed;
-                else
-                {
-                    inkCanvas.IsHitTestVisible = false;
-                    inkCanvas.Visibility = Visibility.Visible;
-                }
+
                 
                 GridBackgroundCoverHolder.Visibility = Visibility.Collapsed;
                 if (currentMode != 0)
