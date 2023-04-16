@@ -3356,10 +3356,24 @@ namespace Ink_Canvas
         {
             forceEraser = true;
             drawingShapeMode = 0;
-            if (inkCanvas.EditingMode == InkCanvasEditingMode.Select)
-                inkCanvas.Select(inkCanvas.Strokes);
-            inkCanvas.EditingMode = InkCanvasEditingMode.Select;
             inkCanvas.IsManipulationEnabled = false;
+            if (inkCanvas.EditingMode == InkCanvasEditingMode.Select)
+            {
+                if (inkCanvas.GetSelectedStrokes().Count == inkCanvas.Strokes.Count)
+                {
+                    inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+                    inkCanvas.IsManipulationEnabled = true;
+                }
+                else
+                {
+                    inkCanvas.Select(inkCanvas.Strokes);
+                }
+            }
+            else
+            {
+                inkCanvas.EditingMode = InkCanvasEditingMode.Select;
+                
+            }
         }
 
         double BorderStrokeSelectionControlWidth = 490.0;
