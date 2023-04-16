@@ -3105,7 +3105,8 @@ namespace Ink_Canvas
                 {
                     foreach (var strokes in item.CurrentStroke)
                     {
-                        inkCanvas.Strokes.Add(strokes);
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
                     }
                     foreach (var strokes in item.ShapeRecognitionReplacedStroke)
                     {
