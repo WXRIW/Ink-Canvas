@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -961,7 +962,7 @@ namespace Ink_Canvas
                 
             }
 
-            ClearStrokes();
+            ClearStrokes(false);
             inkCanvas.Children.Clear();
 
             CancelSingleFingerDragMode();
@@ -1011,7 +1012,7 @@ namespace Ink_Canvas
                     GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                     SaveStrokes(true);
-                    ClearStrokes();
+                    ClearStrokes(true);
                     RestoreStrokes();
 
                     if (BtnSwitchTheme.Content.ToString() == "浅色")
@@ -1048,7 +1049,7 @@ namespace Ink_Canvas
                         GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                         SaveStrokes();
-                        ClearStrokes();
+                        ClearStrokes(true);
                         RestoreStrokes(true);
 
                         if (BtnSwitchTheme.Content.ToString() == "浅色")
@@ -1082,7 +1083,7 @@ namespace Ink_Canvas
                         GridBackgroundCover.Visibility = Visibility.Visible;
 
                         SaveStrokes(true);
-                        ClearStrokes();
+                        ClearStrokes(true);
                         RestoreStrokes();
 
                         BtnSwitch.Content = "屏幕";
@@ -2214,7 +2215,7 @@ namespace Ink_Canvas
                         GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                         //SaveStrokes();
-                        ClearStrokes();
+                        ClearStrokes(true);
 
                         if (BtnSwitchTheme.Content.ToString() == "浅色")
                         {
@@ -2235,7 +2236,7 @@ namespace Ink_Canvas
                 //    GridBackgroundCover.Visibility = Visibility.Hidden;
                 //}
 
-                ClearStrokes();
+                ClearStrokes(true);
 
                 BorderFloatingBarMainControls.Visibility = Visibility.Visible;
                 BorderPenColorRed_MouseUp(BorderPenColorRed, null);
@@ -2353,7 +2354,7 @@ namespace Ink_Canvas
                     GridBackgroundCover.Visibility = Visibility.Collapsed;
 
                     //SaveStrokes();
-                    ClearStrokes();
+                    ClearStrokes(true);
                     //RestoreStrokes(true);
 
                     if (BtnSwitchTheme.Content.ToString() == "浅色")
@@ -2372,7 +2373,7 @@ namespace Ink_Canvas
                 //}
                 
 
-                ClearStrokes();
+                ClearStrokes(true);
 
                 if (Main_Grid.Background != Brushes.Transparent)
                 {
@@ -2405,7 +2406,7 @@ namespace Ink_Canvas
                         SaveScreenShot(true, Wn.Presentation.Name + "/" + Wn.View.CurrentShowPosition);
                     _isPptClickingBtnTurned = false;
 
-                    ClearStrokes();
+                    ClearStrokes(true);
 
                     try
                     {
@@ -3083,7 +3084,8 @@ namespace Ink_Canvas
                 {
                     foreach (var strokes in item.CurrentStroke)
                     {
-                        inkCanvas.Strokes.Remove(strokes);
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
                     }
                 }
             }
@@ -3094,22 +3096,26 @@ namespace Ink_Canvas
                     
                     foreach (var strokes in item.CurrentStroke)
                     {
-                        inkCanvas.Strokes.Remove(strokes);
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
                     }
                     foreach (var strokes in item.ShapeRecognitionReplacedStroke)
                     {
-                        inkCanvas.Strokes.Add(strokes);
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
                     }
                 }
                 else
                 {
                     foreach (var strokes in item.CurrentStroke)
                     {
-                        inkCanvas.Strokes.Add(strokes);
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
                     }
                     foreach (var strokes in item.ShapeRecognitionReplacedStroke)
                     {
-                        inkCanvas.Strokes.Remove(strokes);
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
                     }
                 }
             }
@@ -3132,14 +3138,16 @@ namespace Ink_Canvas
                 {
                     foreach (var strokes in item.CurrentStroke)
                     {
-                        inkCanvas.Strokes.Add(strokes);
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
                     }
                 }
                 else
                 {
                     foreach (var strokes in item.CurrentStroke)
                     {
-                        inkCanvas.Strokes.Remove(strokes);
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
                     }
                 }
             }
@@ -3150,22 +3158,26 @@ namespace Ink_Canvas
 
                     foreach (var strokes in item.CurrentStroke)
                     {
-                        inkCanvas.Strokes.Remove(strokes);
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
                     }
                     foreach (var strokes in item.ShapeRecognitionReplacedStroke)
                     {
-                        inkCanvas.Strokes.Add(strokes);
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
                     }
                 }
                 else
                 {
                     foreach (var strokes in item.CurrentStroke)
                     {
-                        inkCanvas.Strokes.Add(strokes);
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
                     }
                     foreach (var strokes in item.ShapeRecognitionReplacedStroke)
                     {
-                        inkCanvas.Strokes.Remove(strokes);
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
                     }
                 }
             }
@@ -4963,26 +4975,27 @@ namespace Ink_Canvas
 
         int CurrentWhiteboardIndex = 1;
         int WhiteboardTotalCount = 1;
-        MemoryStream[] WhiteboardStrokesStreams = new MemoryStream[101]; //最多99页，0用来存储非白板时的墨迹以便还原
+        TimeMachineHistory[][] TimeMachineHistories = new TimeMachineHistory[101][]; //最多99页，0用来存储非白板时的墨迹以便还原
 
         private void SaveStrokes(bool isBackupMain = false)
         {
-            MemoryStream ms = new MemoryStream();
-            inkCanvas.Strokes.Save(ms);
-            ms.Position = 0;
             if (isBackupMain)
             {
-                WhiteboardStrokesStreams[0] = ms;
+                var timeMachineHistory = timeMachine.ExportTimeMachineHistory();
+                timeMachine.ClearStrokeHistory();
+                TimeMachineHistories[0] = timeMachineHistory;
             }
             else
             {
-                WhiteboardStrokesStreams[CurrentWhiteboardIndex] = ms;
+                var timeMachineHistory = timeMachine.ExportTimeMachineHistory();
+                timeMachine.ClearStrokeHistory();
+                TimeMachineHistories[CurrentWhiteboardIndex] = timeMachineHistory;
             }
         }
 
-        private void ClearStrokes()
+        private void ClearStrokes(bool IsErasedByCode)
         {
-            timeMachine.CommitStrokeEraseHistory(inkCanvas.Strokes);
+            if (!IsErasedByCode) timeMachine.CommitStrokeEraseHistory(inkCanvas.Strokes);
             inkCanvas.Strokes.Clear();
         }
         
@@ -4990,20 +5003,53 @@ namespace Ink_Canvas
         {
             try
             {
-                if (WhiteboardStrokesStreams[CurrentWhiteboardIndex] == null) return; //防止白板打开后不居中
+                if (TimeMachineHistories[CurrentWhiteboardIndex] == null) return; //防止白板打开后不居中
                 if (isBackupMain)
                 {
-                    if (WhiteboardStrokesStreams[0].Length > 0)
+                    foreach (var item in TimeMachineHistories[0])
                     {
-                        inkCanvas.Strokes = new System.Windows.Ink.StrokeCollection(WhiteboardStrokesStreams[0]);
+                        if (!item.IsReversed)
+                        {
+                            switch (item.CommitType)
+                            {
+                                case TimeMachineHistoryType.UserInput:
+                                    inkCanvas.Strokes.Add(item.CurrentStroke);
+                                    break;
+                                case TimeMachineHistoryType.ShapeRecognition:
+                                    inkCanvas.Strokes.Remove(item.ShapeRecognitionReplacedStroke);
+                                    inkCanvas.Strokes.Add(item.CurrentStroke);
+                                    break;
+                                case TimeMachineHistoryType.Clear:
+                                    inkCanvas.Strokes.Clear();
+                                    break;
+                            }
+                        }                               
+                        
                     }
+                    timeMachine.ImportTimeMachineHistory(TimeMachineHistories[0]);
                 }
                 else
                 {
-                    if (WhiteboardStrokesStreams[CurrentWhiteboardIndex].Length > 0)
+                    foreach (var item in TimeMachineHistories[CurrentWhiteboardIndex])
                     {
-                        inkCanvas.Strokes = new System.Windows.Ink.StrokeCollection(WhiteboardStrokesStreams[CurrentWhiteboardIndex]);
+                        if (!item.IsReversed)
+                        {
+                            switch (item.CommitType)
+                            {
+                                case TimeMachineHistoryType.UserInput:
+                                    inkCanvas.Strokes.Add(item.CurrentStroke);
+                                    break;
+                                case TimeMachineHistoryType.ShapeRecognition:
+                                    inkCanvas.Strokes.Remove(item.ShapeRecognitionReplacedStroke);
+                                    inkCanvas.Strokes.Add(item.CurrentStroke);
+                                    break;
+                                case TimeMachineHistoryType.Clear:
+                                    inkCanvas.Strokes.Clear();
+                                    break;  
+                            }
+                        }
                     }
+                    timeMachine.ImportTimeMachineHistory(TimeMachineHistories[CurrentWhiteboardIndex]);
                 }
                 AdjustStrokeColor();
             }
@@ -5016,7 +5062,7 @@ namespace Ink_Canvas
 
             SaveStrokes();
 
-            ClearStrokes();
+            ClearStrokes(true);
             CurrentWhiteboardIndex--;
 
             RestoreStrokes();
@@ -5036,7 +5082,7 @@ namespace Ink_Canvas
             }
 
 
-            ClearStrokes();
+            ClearStrokes(true);
             CurrentWhiteboardIndex++;
 
             RestoreStrokes();
@@ -5050,7 +5096,7 @@ namespace Ink_Canvas
             if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
                 SaveScreenShot(true);
             SaveStrokes();
-            ClearStrokes();
+            ClearStrokes(true);
 
             WhiteboardTotalCount++;
             CurrentWhiteboardIndex++;
@@ -5059,11 +5105,9 @@ namespace Ink_Canvas
             {
                 for (int i = WhiteboardTotalCount; i > CurrentWhiteboardIndex; i--)
                 {
-                    WhiteboardStrokesStreams[i] = WhiteboardStrokesStreams[i - 1];
+                    TimeMachineHistories[i] = TimeMachineHistories[i - 1];
                 }
             }
-
-            WhiteboardStrokesStreams[CurrentWhiteboardIndex] = new MemoryStream();
 
             UpdateIndexInfoDisplay();
 
@@ -5072,13 +5116,13 @@ namespace Ink_Canvas
 
         private void BtnWhiteBoardDelete_Click(object sender, RoutedEventArgs e)
         {
-            ClearStrokes();
+            ClearStrokes(true);
 
             if (CurrentWhiteboardIndex != WhiteboardTotalCount)
             {
                 for (int i = CurrentWhiteboardIndex; i <= WhiteboardTotalCount; i++)
                 {
-                    WhiteboardStrokesStreams[i] = WhiteboardStrokesStreams[i + 1];
+                    TimeMachineHistories[i] = TimeMachineHistories[i + 1];
                 }
             }
             else
@@ -5097,12 +5141,6 @@ namespace Ink_Canvas
 
         private void UpdateIndexInfoDisplay()
         {
-            BtnUndo.IsEnabled = false;
-            BtnUndo.Visibility = Visibility.Visible;
-
-            BtnRedo.IsEnabled = false;
-            BtnRedo.Visibility = Visibility.Collapsed;
-
             TextBlockWhiteBoardIndexInfo.Text = string.Format("{0} / {1}", CurrentWhiteboardIndex, WhiteboardTotalCount);
 
             if (CurrentWhiteboardIndex == 1)

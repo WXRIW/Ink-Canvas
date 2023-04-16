@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Documents;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Ink;
 
 namespace Ink_Canvas.Helpers
@@ -22,6 +20,10 @@ namespace Ink_Canvas.Helpers
         
         public void CommitStrokeUserInputHistory(StrokeCollection stroke)
         {
+            if (_currentIndex + 1 < _currentStrokeHistory.Count)
+            {
+                _currentStrokeHistory.RemoveRange(_currentIndex +1 , (_currentStrokeHistory.Count - 1) - _currentIndex);
+            }
             _currentStrokeHistory.Add(new TimeMachineHistory(stroke, TimeMachineHistoryType.UserInput, false));
             _currentIndex = _currentStrokeHistory.Count - 1;
             OnUndoStateChanged?.Invoke(true);
@@ -30,6 +32,10 @@ namespace Ink_Canvas.Helpers
         
         public void CommitStrokeShapeHistory(StrokeCollection strokeToBeReplaced, StrokeCollection generatedStroke)
         {
+            if (_currentIndex + 1 < _currentStrokeHistory.Count)
+            {
+                _currentStrokeHistory.RemoveRange(_currentIndex +1 , (_currentStrokeHistory.Count - 1) - _currentIndex);
+            }
             _currentStrokeHistory.Add(new TimeMachineHistory(generatedStroke,
                 TimeMachineHistoryType.ShapeRecognition,
                 false,
@@ -41,6 +47,10 @@ namespace Ink_Canvas.Helpers
 
         public void CommitStrokeEraseHistory(StrokeCollection stroke)
         {
+            if (_currentIndex + 1 < _currentStrokeHistory.Count)
+            {
+                _currentStrokeHistory.RemoveRange(_currentIndex +1 , (_currentStrokeHistory.Count - 1) - _currentIndex);
+            }
             var col = new StrokeCollection();
             foreach (var stroke1 in stroke)
             {
@@ -78,13 +88,23 @@ namespace Ink_Canvas.Helpers
             if (_currentIndex != -1) OnRedoStateChanged?.Invoke(_currentStrokeHistory.Count - _currentIndex - 1 > 0);
             return item;
         }
-        public List<TimeMachineHistory> ExportTimeMachineHistory()
+        public TimeMachineHistory[] ExportTimeMachineHistory()
         {
-            throw new System.Exception();
+            if (_currentIndex + 1 < _currentStrokeHistory.Count)
+            {
+                _currentStrokeHistory.RemoveRange(_currentIndex +1 , (_currentStrokeHistory.Count - 1) - _currentIndex);
+            }
+            return _currentStrokeHistory.ToArray();
         }
-        public bool ImportTimeMachineHistory()
+
+        public bool ImportTimeMachineHistory(TimeMachineHistory[] sourceHistory)
         {
-            throw new System.Exception();
+            _currentStrokeHistory.Clear();
+            _currentStrokeHistory.AddRange(sourceHistory);
+            _currentIndex = _currentStrokeHistory.Count - 1;
+            OnUndoStateChanged?.Invoke(_currentIndex > -1);
+            OnRedoStateChanged?.Invoke(_currentStrokeHistory.Count - _currentIndex - 1 > 0);
+            return true;
         }
     }
 
