@@ -6061,6 +6061,7 @@ namespace Ink_Canvas
             if (sender != lastBorderMouseDownObject) return;
             if (inkCanvas.GetSelectedStrokes().Count > 0)
             {
+                timeMachine.CommitStrokeEraseHistory(inkCanvas.Strokes);
                 inkCanvas.Strokes.Remove(inkCanvas.GetSelectedStrokes());
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
             }
