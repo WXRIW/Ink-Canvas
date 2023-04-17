@@ -830,6 +830,16 @@ namespace Ink_Canvas
                 {
                     ToggleSwitchEraserBindTouchMultiplier.IsOn = false;
                 }
+
+                if (Settings.Advanced.IsSpecialScreen)
+                {
+                    ToggleSwitchIsSpecialScreen.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchIsSpecialScreen.IsOn = false;
+                }
+                TouchMultiplierSlider.Visibility = ToggleSwitchIsSpecialScreen.IsOn ? Visibility.Visible : Visibility.Collapsed;
             }
             else
             {
@@ -1671,7 +1681,7 @@ namespace Ink_Canvas
             inkCanvas.Opacity = 1;
             double boundsWidth = GetTouchBoundWidth(e);
             var eraserMultiplier = 1d;
-            if (!Settings.Advanced.EraserBindTouchMultiplier) eraserMultiplier = 1 / Settings.Advanced.TouchMultiplier;
+            if (!Settings.Advanced.EraserBindTouchMultiplier && Settings.Advanced.IsSpecialScreen) eraserMultiplier = 1 / Settings.Advanced.TouchMultiplier;
             if (boundsWidth > BoundsWidth)
             {
                 isLastTouchEraser = true;
@@ -1727,7 +1737,7 @@ namespace Ink_Canvas
         {
             var args = e.GetTouchPoint(null).Bounds;
             double value = args.Width;
-            value *= Settings.Advanced.TouchMultiplier;
+            if (Settings.Advanced.IsSpecialScreen) value *= Settings.Advanced.TouchMultiplier;
             return value;
         }
 
@@ -2982,7 +2992,15 @@ namespace Ink_Canvas
         #endregion
 
         #region Advanced
-
+        
+        private void ToggleSwitchIsSpecialScreen_OnToggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Advanced.IsSpecialScreen = ToggleSwitchIsSpecialScreen.IsOn;
+            TouchMultiplierSlider.Visibility = ToggleSwitchIsSpecialScreen.IsOn ? Visibility.Visible : Visibility.Collapsed;
+            SaveSettingsToFile();
+        }
+        
         private void TouchMultiplierSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (!isLoaded) return;
@@ -6427,7 +6445,6 @@ namespace Ink_Canvas
 
 
         #endregion
-        
     }
 
     #region Test for pen

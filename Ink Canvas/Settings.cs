@@ -112,8 +112,10 @@ namespace Ink_Canvas
 
     public class Advanced
     {
+        [JsonProperty("isSpecialScreen")]
+        public bool IsSpecialScreen { get; set; } = false;
         [JsonProperty("touchMultiplier")]
-        public double TouchMultiplier { get; set; } = 1d;
+        public double TouchMultiplier { get; set; } = 0.25;
         [JsonProperty("eraserBindTouchMultiplier")]
         public bool EraserBindTouchMultiplier { get; set; } = false;
         [JsonProperty("isLogEnabled")]

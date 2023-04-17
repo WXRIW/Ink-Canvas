@@ -476,20 +476,23 @@
                         <GroupBox Header="高级">
                             <ui:SimpleStackPanel Spacing="12">
                                 <TextBlock Text="可在手指触摸画板时显示圆形橡皮或手掌触摸画板时显示的橡皮比&#x000A;手掌大很多时调整" Foreground="#666666"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchIsSpecialScreen" Header="特殊屏幕模式" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchIsSpecialScreen_OnToggled"/>
                                 <StackPanel Orientation="Horizontal">
                                     <Slider x:Name="TouchMultiplierSlider"
-                                        HorizontalAlignment="Left"
-                                        Minimum="0" Maximum="1"
-                                        Width="300" FontFamily="Microsoft YaHei UI" 
-                                        ui:ControlHelper.Header="触摸大小倍数"
-                                        IsSnapToTickEnabled="True"
-                                        TickFrequency="0.1" TickPlacement="Both"
-                                        ValueChanged="TouchMultiplierSlider_ValueChanged"/>
+                                            HorizontalAlignment="Left"
+                                            Minimum="0" Maximum="1"
+                                            Width="300" FontFamily="Microsoft YaHei UI" 
+                                            ui:ControlHelper.Header="触摸大小倍数"
+                                            IsSnapToTickEnabled="True"
+                                            TickFrequency="0.05" TickPlacement="Both"
+                                            ValueChanged="TouchMultiplierSlider_ValueChanged"
+                                            Visibility="Collapsed"/>
                                     <TextBlock Text="{Binding Value, ElementName=TouchMultiplierSlider, Mode=OneWay}"
                                                VerticalAlignment="Bottom" Margin="10,0,0,8"
-                                               FontSize="14" Width="25" HorizontalAlignment="Center"/>
+                                               FontSize="14" Width="30" HorizontalAlignment="Center"
+                                               Visibility="{Binding Path=Visibility, ElementName=TouchMultiplierSlider, Mode=OneWay}"/>
                                 </StackPanel>
-                                <ui:ToggleSwitch Name="ToggleSwitchEraserBindTouchMultiplier" Header="橡皮擦绑定触摸大小倍数" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" IsOn="False" Toggled="ToggleSwitchEraserBindTouchMultiplier_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchEraserBindTouchMultiplier" Header="橡皮擦绑定触摸大小倍数" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" IsOn="False" Toggled="ToggleSwitchEraserBindTouchMultiplier_Toggled" Visibility="{Binding Path=Visibility, ElementName=TouchMultiplierSlider, Mode=OneWay}"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchIsLogEnabled" Header="记录日志" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" IsOn="True" Toggled="ToggleSwitchIsLogEnabled_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
@@ -548,7 +551,7 @@
                                      <Bold>开发者:</Bold> XY Wang (WXRIW)
                                 </TextBlock>
                                 <TextBlock FontSize="14">
-                                     <Bold>贡献者:</Bold> Kengwang, jiajiaxd, CN-Ironegg
+                                     <Bold>贡献者:</Bold> Kengwang, jiajiaxd, CN-Ironegg, Raspberry Kan
                                 </TextBlock>
                                 <TextBlock FontSize="14">
                                     <Bold>开源地址:</Bold>
