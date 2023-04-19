@@ -192,9 +192,6 @@ namespace Ink_Canvas
             catch { }
         }
 
-        private bool isPreviousErasing = false;
-        private StrokeCollection previousStrokes = new StrokeCollection();
-        
         private void inkCanvas_EditingModeChanged(object sender, RoutedEventArgs e)
         {
             var inkCanvas1 = sender as InkCanvas;
@@ -214,22 +211,6 @@ namespace Ink_Canvas
             {
                 inkCanvas1.ForceCursor = false;
             }
-
-            if (inkCanvas1.EditingMode == InkCanvasEditingMode.EraseByPoint ||
-                inkCanvas1.EditingMode == InkCanvasEditingMode.EraseByStroke)
-            {
-                isPreviousErasing = true;
-                previousStrokes.Clear();
-                foreach (var inkCanvas1Stroke in inkCanvas1.Strokes)
-                {
-                    previousStrokes.Add(inkCanvas1Stroke);
-                }
-            }
-            else if (isPreviousErasing)
-            {
-                timeMachine.CommitStrokeEraseHistory(previousStrokes);
-                isPreviousErasing = false;
-            } 
             if (inkCanvas1.EditingMode == InkCanvasEditingMode.Ink) forcePointEraser = !forcePointEraser;
         }
 
@@ -1821,7 +1802,11 @@ namespace Ink_Canvas
                 }
             }
         }
-
+        private void InkCanvas_OnStrokeErasing(object sender, InkCanvasStrokeErasingEventArgs e)
+        {
+            _previousIsErasing = true;
+            _erasedStrokeCollection.Add(e.Stroke);
+        }
         private void inkCanvas_ManipulationStarting(object sender, ManipulationStartingEventArgs e)
         {
             e.Mode = ManipulationModes.All;
@@ -3072,7 +3057,7 @@ namespace Ink_Canvas
             var item = timeMachine.Undo();
             if (item.CommitType == TimeMachineHistoryType.UserInput)
             {
-                if (!item.IsReversed)
+                if (!item.StrokeHasBeenCleared)
                 {
                     foreach (var strokes in item.CurrentStroke)
                     {
@@ -3091,7 +3076,7 @@ namespace Ink_Canvas
             }
             else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
             {
-                if (item.IsReversed)
+                if (item.StrokeHasBeenCleared)
                 {
                     
                     foreach (var strokes in item.CurrentStroke)
@@ -3099,7 +3084,7 @@ namespace Ink_Canvas
                         if (inkCanvas.Strokes.Contains(strokes))
                             inkCanvas.Strokes.Remove(strokes);
                     }
-                    foreach (var strokes in item.ShapeRecognitionReplacedStroke)
+                    foreach (var strokes in item.ReplacedStroke)
                     {
                         if (!inkCanvas.Strokes.Contains(strokes))
                             inkCanvas.Strokes.Add(strokes);
@@ -3112,7 +3097,7 @@ namespace Ink_Canvas
                         if (!inkCanvas.Strokes.Contains(strokes))
                             inkCanvas.Strokes.Add(strokes);
                     }
-                    foreach (var strokes in item.ShapeRecognitionReplacedStroke)
+                    foreach (var strokes in item.ReplacedStroke)
                     {
                         if (inkCanvas.Strokes.Contains(strokes))
                             inkCanvas.Strokes.Remove(strokes);
@@ -3121,10 +3106,21 @@ namespace Ink_Canvas
             }
             else if(item.CommitType == TimeMachineHistoryType.Clear)
             {
-                inkCanvas.Strokes.Clear();
-                foreach (var stroke in item.CurrentStroke)
+                if (!item.StrokeHasBeenCleared)
                 {
-                    inkCanvas.Strokes.Add(stroke);
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
+                    }
                 }
             }
         }
@@ -3134,7 +3130,7 @@ namespace Ink_Canvas
             var item = timeMachine.Redo();
             if (item.CommitType == TimeMachineHistoryType.UserInput)
             {
-                if (!item.IsReversed)
+                if (!item.StrokeHasBeenCleared)
                 {
                     foreach (var strokes in item.CurrentStroke)
                     {
@@ -3153,7 +3149,7 @@ namespace Ink_Canvas
             }
             else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
             {
-                if (item.IsReversed)
+                if (item.StrokeHasBeenCleared)
                 {
 
                     foreach (var strokes in item.CurrentStroke)
@@ -3161,7 +3157,7 @@ namespace Ink_Canvas
                         if (inkCanvas.Strokes.Contains(strokes))
                             inkCanvas.Strokes.Remove(strokes);
                     }
-                    foreach (var strokes in item.ShapeRecognitionReplacedStroke)
+                    foreach (var strokes in item.ReplacedStroke)
                     {
                         if (!inkCanvas.Strokes.Contains(strokes))
                             inkCanvas.Strokes.Add(strokes);
@@ -3174,7 +3170,7 @@ namespace Ink_Canvas
                         if (!inkCanvas.Strokes.Contains(strokes))
                             inkCanvas.Strokes.Add(strokes);
                     }
-                    foreach (var strokes in item.ShapeRecognitionReplacedStroke)
+                    foreach (var strokes in item.ReplacedStroke)
                     {
                         if (inkCanvas.Strokes.Contains(strokes))
                             inkCanvas.Strokes.Remove(strokes);
@@ -3183,7 +3179,22 @@ namespace Ink_Canvas
             }
             else if(item.CommitType == TimeMachineHistoryType.Clear)
             {
-                inkCanvas.Strokes.Clear();
+                if (!item.StrokeHasBeenCleared)
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
+                    }
+                }
             }
         }
 
@@ -4897,7 +4908,9 @@ namespace Ink_Canvas
                 MouseTouchMove(e.GetPosition(inkCanvas));
             }
         }
-
+        
+        private bool _previousIsErasing = false;
+        private StrokeCollection _erasedStrokeCollection = new StrokeCollection();
         private void inkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (drawingShapeMode == 5)
@@ -4954,6 +4967,12 @@ namespace Ink_Canvas
                 }
             }
             isMouseDown = false;
+            if (_previousIsErasing)
+            {
+                timeMachine.CommitStrokeEraseHistory(_erasedStrokeCollection);
+                _previousIsErasing = false;
+                _erasedStrokeCollection = new StrokeCollection();
+            }
         }
 
         private bool NeedUpdateIniP()
@@ -5008,7 +5027,7 @@ namespace Ink_Canvas
                 {
                     foreach (var item in TimeMachineHistories[0])
                     {
-                        if (!item.IsReversed)
+                        if (!item.StrokeHasBeenCleared)
                         {
                             switch (item.CommitType)
                             {
@@ -5016,7 +5035,7 @@ namespace Ink_Canvas
                                     inkCanvas.Strokes.Add(item.CurrentStroke);
                                     break;
                                 case TimeMachineHistoryType.ShapeRecognition:
-                                    inkCanvas.Strokes.Remove(item.ShapeRecognitionReplacedStroke);
+                                    inkCanvas.Strokes.Remove(item.ReplacedStroke);
                                     inkCanvas.Strokes.Add(item.CurrentStroke);
                                     break;
                                 case TimeMachineHistoryType.Clear:
@@ -5032,7 +5051,7 @@ namespace Ink_Canvas
                 {
                     foreach (var item in TimeMachineHistories[CurrentWhiteboardIndex])
                     {
-                        if (!item.IsReversed)
+                        if (!item.StrokeHasBeenCleared)
                         {
                             switch (item.CommitType)
                             {
@@ -5040,7 +5059,7 @@ namespace Ink_Canvas
                                     inkCanvas.Strokes.Add(item.CurrentStroke);
                                     break;
                                 case TimeMachineHistoryType.ShapeRecognition:
-                                    inkCanvas.Strokes.Remove(item.ShapeRecognitionReplacedStroke);
+                                    inkCanvas.Strokes.Remove(item.ReplacedStroke);
                                     inkCanvas.Strokes.Add(item.CurrentStroke);
                                     break;
                                 case TimeMachineHistoryType.Clear:
@@ -6551,7 +6570,6 @@ namespace Ink_Canvas
 
 
         #endregion
-        
     }
 
     #region Test for pen

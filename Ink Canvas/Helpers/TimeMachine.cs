@@ -51,13 +51,7 @@ namespace Ink_Canvas.Helpers
             {
                 _currentStrokeHistory.RemoveRange(_currentIndex +1 , (_currentStrokeHistory.Count - 1) - _currentIndex);
             }
-            var col = new StrokeCollection();
-            foreach (var stroke1 in stroke)
-            {
-                col.Add(stroke1);
-            }
-            
-            _currentStrokeHistory.Add(new TimeMachineHistory(col, TimeMachineHistoryType.Clear, true));
+            _currentStrokeHistory.Add(new TimeMachineHistory(stroke, TimeMachineHistoryType.Clear, true));
             _currentIndex = _currentStrokeHistory.Count - 1;
             OnUndoStateChanged?.Invoke(true);
             OnRedoStateChanged?.Invoke(false);
@@ -73,7 +67,7 @@ namespace Ink_Canvas.Helpers
         public TimeMachineHistory Undo()
         {
             var item = _currentStrokeHistory[_currentIndex];
-            item.IsReversed = !item.IsReversed;
+            item.StrokeHasBeenCleared = !item.StrokeHasBeenCleared;
             _currentIndex--;
             OnUndoStateChanged?.Invoke(_currentIndex > -1);
             OnRedoStateChanged?.Invoke(_currentStrokeHistory.Count - _currentIndex - 1 > 0);
@@ -83,7 +77,7 @@ namespace Ink_Canvas.Helpers
         public TimeMachineHistory Redo()
         {
             var item = _currentStrokeHistory[++_currentIndex];
-            item.IsReversed = !item.IsReversed;
+            item.StrokeHasBeenCleared = !item.StrokeHasBeenCleared;
             OnUndoStateChanged?.Invoke(_currentIndex > -1);
             if (_currentIndex != -1) OnRedoStateChanged?.Invoke(_currentStrokeHistory.Count - _currentIndex - 1 > 0);
             return item;
@@ -111,22 +105,22 @@ namespace Ink_Canvas.Helpers
     public class TimeMachineHistory
     {
         public TimeMachineHistoryType CommitType;
-        public bool IsReversed;
+        public bool StrokeHasBeenCleared;
         public StrokeCollection CurrentStroke;
-        public StrokeCollection ShapeRecognitionReplacedStroke;
-        public TimeMachineHistory(StrokeCollection currentStroke, TimeMachineHistoryType commitType, bool isReversed)
+        public StrokeCollection ReplacedStroke;
+        public TimeMachineHistory(StrokeCollection currentStroke, TimeMachineHistoryType commitType, bool strokeHasBeenCleared)
         {
             CommitType = commitType;
             CurrentStroke = currentStroke;
-            IsReversed = isReversed;
-            ShapeRecognitionReplacedStroke = null;
+            StrokeHasBeenCleared = strokeHasBeenCleared;
+            ReplacedStroke = null;
         }
-        public TimeMachineHistory(StrokeCollection currentStroke, TimeMachineHistoryType commitType, bool isReversed , StrokeCollection shapeRecognitionReplacedStroke)
+        public TimeMachineHistory(StrokeCollection currentStroke, TimeMachineHistoryType commitType, bool strokeHasBeenCleared , StrokeCollection replacedStroke)
         {
             CommitType = commitType;
             CurrentStroke = currentStroke;
-            IsReversed = isReversed;
-            ShapeRecognitionReplacedStroke = shapeRecognitionReplacedStroke;
+            StrokeHasBeenCleared = strokeHasBeenCleared;
+            ReplacedStroke = replacedStroke;
         }
     }
 
