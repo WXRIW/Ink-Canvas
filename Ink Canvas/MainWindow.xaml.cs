@@ -813,14 +813,7 @@ namespace Ink_Canvas
 
             if (Settings.Advanced != null)
             {
-                if (Settings.Advanced.IsSpecialScreen)
-                {
-                    ToggleSwitchIsSpecialScreen.IsOn = true;
-                }
-                else
-                {
-                    ToggleSwitchIsSpecialScreen.IsOn = false;
-                }
+                TouchMultiplierSlider.Value=Settings.Advanced.TouchMultiplier;
                 if (Settings.Advanced.IsLogEnabled)
                 {
                     ToggleSwitchIsLogEnabled.IsOn = true;
@@ -829,6 +822,24 @@ namespace Ink_Canvas
                 {
                     ToggleSwitchIsLogEnabled.IsOn = false;
                 }
+                if (Settings.Advanced.EraserBindTouchMultiplier)
+                {
+                    ToggleSwitchEraserBindTouchMultiplier.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchEraserBindTouchMultiplier.IsOn = false;
+                }
+
+                if (Settings.Advanced.IsSpecialScreen)
+                {
+                    ToggleSwitchIsSpecialScreen.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchIsSpecialScreen.IsOn = false;
+                }
+                TouchMultiplierSlider.Visibility = ToggleSwitchIsSpecialScreen.IsOn ? Visibility.Visible : Visibility.Collapsed;
             }
             else
             {
@@ -1711,8 +1722,9 @@ namespace Ink_Canvas
                 MouseTouchMove(iniP);
             }
             inkCanvas.Opacity = 1;
-
             double boundsWidth = GetTouchBoundWidth(e);
+            var eraserMultiplier = 1d;
+            if (!Settings.Advanced.EraserBindTouchMultiplier && Settings.Advanced.IsSpecialScreen) eraserMultiplier = 1 / Settings.Advanced.TouchMultiplier;
             if (boundsWidth > BoundsWidth)
             {
                 isLastTouchEraser = true;
@@ -1735,7 +1747,7 @@ namespace Ink_Canvas
                             k = 1.8;
                             break;
                     }
-                    inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5 * k, boundsWidth * 1.5 * k);
+                    inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5 * k * eraserMultiplier, boundsWidth * 1.5 * k * eraserMultiplier);
                     inkCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
                 }
                 else
@@ -1766,8 +1778,9 @@ namespace Ink_Canvas
 
         public double GetTouchBoundWidth(TouchEventArgs e)
         {
-            double value = e.GetTouchPoint(null).Bounds.Width;
-            if (Settings.Advanced.IsSpecialScreen) value /= 3.75;
+            var args = e.GetTouchPoint(null).Bounds;
+            double value = args.Width;
+            if (Settings.Advanced.IsSpecialScreen) value *= Settings.Advanced.TouchMultiplier;
             return value;
         }
 
@@ -3022,11 +3035,26 @@ namespace Ink_Canvas
         #endregion
 
         #region Advanced
-
-        private void ToggleSwitchIsSpecialScreen_Toggled(object sender, RoutedEventArgs e)
+        
+        private void ToggleSwitchIsSpecialScreen_OnToggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
             Settings.Advanced.IsSpecialScreen = ToggleSwitchIsSpecialScreen.IsOn;
+            TouchMultiplierSlider.Visibility = ToggleSwitchIsSpecialScreen.IsOn ? Visibility.Visible : Visibility.Collapsed;
+            SaveSettingsToFile();
+        }
+        
+        private void TouchMultiplierSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (!isLoaded) return;
+            Settings.Advanced.TouchMultiplier = e.NewValue;
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchEraserBindTouchMultiplier_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Advanced.EraserBindTouchMultiplier= ToggleSwitchEraserBindTouchMultiplier.IsOn;
             SaveSettingsToFile();
         }
 
@@ -6477,7 +6505,6 @@ namespace Ink_Canvas
 
 
         #endregion
-        
     }
 
     #region Test for pen
