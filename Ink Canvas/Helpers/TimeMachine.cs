@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Ink;
 
 namespace Ink_Canvas.Helpers
@@ -7,34 +6,34 @@ namespace Ink_Canvas.Helpers
     public class TimeMachine
     {
         private readonly List<TimeMachineHistory> _currentStrokeHistory = new List<TimeMachineHistory>();
-        
+
         private int _currentIndex = -1;
-        
+
         public delegate void OnUndoStateChange(bool status);
-        
+
         public event OnUndoStateChange OnUndoStateChanged;
 
         public delegate void OnRedoStateChange(bool status);
-        
+
         public event OnRedoStateChange OnRedoStateChanged;
-        
+
         public void CommitStrokeUserInputHistory(StrokeCollection stroke)
         {
             if (_currentIndex + 1 < _currentStrokeHistory.Count)
             {
-                _currentStrokeHistory.RemoveRange(_currentIndex +1 , (_currentStrokeHistory.Count - 1) - _currentIndex);
+                _currentStrokeHistory.RemoveRange(_currentIndex + 1, (_currentStrokeHistory.Count - 1) - _currentIndex);
             }
             _currentStrokeHistory.Add(new TimeMachineHistory(stroke, TimeMachineHistoryType.UserInput, false));
             _currentIndex = _currentStrokeHistory.Count - 1;
             OnUndoStateChanged?.Invoke(true);
             OnRedoStateChanged?.Invoke(false);
         }
-        
+
         public void CommitStrokeShapeHistory(StrokeCollection strokeToBeReplaced, StrokeCollection generatedStroke)
         {
             if (_currentIndex + 1 < _currentStrokeHistory.Count)
             {
-                _currentStrokeHistory.RemoveRange(_currentIndex +1 , (_currentStrokeHistory.Count - 1) - _currentIndex);
+                _currentStrokeHistory.RemoveRange(_currentIndex + 1, (_currentStrokeHistory.Count - 1) - _currentIndex);
             }
             _currentStrokeHistory.Add(new TimeMachineHistory(generatedStroke,
                 TimeMachineHistoryType.ShapeRecognition,
@@ -45,13 +44,13 @@ namespace Ink_Canvas.Helpers
             OnRedoStateChanged?.Invoke(false);
         }
 
-        public void CommitStrokeEraseHistory(StrokeCollection stroke)
+        public void CommitStrokeEraseHistory(StrokeCollection stroke, StrokeCollection sourceStroke = null)
         {
             if (_currentIndex + 1 < _currentStrokeHistory.Count)
             {
-                _currentStrokeHistory.RemoveRange(_currentIndex +1 , (_currentStrokeHistory.Count - 1) - _currentIndex);
+                _currentStrokeHistory.RemoveRange(_currentIndex + 1, (_currentStrokeHistory.Count - 1) - _currentIndex);
             }
-            _currentStrokeHistory.Add(new TimeMachineHistory(stroke, TimeMachineHistoryType.Clear, true));
+            _currentStrokeHistory.Add(new TimeMachineHistory(stroke, TimeMachineHistoryType.Clear, true, sourceStroke));
             _currentIndex = _currentStrokeHistory.Count - 1;
             OnUndoStateChanged?.Invoke(true);
             OnRedoStateChanged?.Invoke(false);
@@ -86,7 +85,7 @@ namespace Ink_Canvas.Helpers
         {
             if (_currentIndex + 1 < _currentStrokeHistory.Count)
             {
-                _currentStrokeHistory.RemoveRange(_currentIndex +1 , (_currentStrokeHistory.Count - 1) - _currentIndex);
+                _currentStrokeHistory.RemoveRange(_currentIndex + 1, (_currentStrokeHistory.Count - 1) - _currentIndex);
             }
             return _currentStrokeHistory.ToArray();
         }
@@ -115,7 +114,7 @@ namespace Ink_Canvas.Helpers
             StrokeHasBeenCleared = strokeHasBeenCleared;
             ReplacedStroke = null;
         }
-        public TimeMachineHistory(StrokeCollection currentStroke, TimeMachineHistoryType commitType, bool strokeHasBeenCleared , StrokeCollection replacedStroke)
+        public TimeMachineHistory(StrokeCollection currentStroke, TimeMachineHistoryType commitType, bool strokeHasBeenCleared, StrokeCollection replacedStroke)
         {
             CommitType = commitType;
             CurrentStroke = currentStroke;

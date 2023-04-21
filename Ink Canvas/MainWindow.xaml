@@ -107,7 +107,7 @@
                    ManipulationStarting="inkCanvas_ManipulationStarting"
                    SelectionChanged="inkCanvas_SelectionChanged"
                    StrokeCollected="inkCanvas_StrokeCollected"
-                   StrokeErasing="InkCanvas_OnStrokeErasing">
+                   >
             <!--<InkCanvas.DefaultDrawingAttributes>
                 <DrawingAttributes StylusTip="Ellipse" Height="8" Width="4" IgnorePressure="False" FitToCurve="True" >
                     <DrawingAttributes.StylusTipTransform>
