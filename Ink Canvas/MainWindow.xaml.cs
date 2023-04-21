@@ -25,6 +25,7 @@ using System.Windows.Input;
 using System.Windows.Input.StylusPlugIns;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using Application = System.Windows.Application;
 using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
@@ -555,8 +556,8 @@ namespace Ink_Canvas
             }
 
             PptNavigationBtn.Visibility =
-                Settings.Appearance.IsShowPPTNavigation ? Visibility.Visible : Visibility.Collapsed;
-            ToggleSwitchShowButtonPPTNavigation.IsOn = Settings.Appearance.IsShowPPTNavigation;
+                Settings.PowerPointSettings.IsShowPPTNavigation ? Visibility.Visible : Visibility.Collapsed;
+            ToggleSwitchShowButtonPPTNavigation.IsOn = Settings.PowerPointSettings.IsShowPPTNavigation;
             if (Settings.Appearance.IsShowHideControlButton)
             {
                 BtnHideControl.Visibility = Visibility.Visible;
@@ -605,7 +606,7 @@ namespace Ink_Canvas
                 }
             }
 
-            if (Settings.Behavior.PowerPointSupport)
+            if (Settings.PowerPointSettings.PowerPointSupport)
             {
                 ToggleSwitchSupportPowerPoint.IsOn = true;
                 timerCheckPPT.Start();
@@ -615,7 +616,7 @@ namespace Ink_Canvas
                 ToggleSwitchSupportPowerPoint.IsOn = false;
                 timerCheckPPT.Stop();
             }
-            if (Settings.Behavior.IsShowCanvasAtNewSlideShow)
+            if (Settings.PowerPointSettings.IsShowCanvasAtNewSlideShow)
             {
                 ToggleSwitchShowCanvasAtNewSlideShow.IsOn = true;
             }
@@ -652,7 +653,7 @@ namespace Ink_Canvas
             {
                 ToggleSwitchEnableTwoFingerRotationOnSelection.IsOn = false;
             }
-            if (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode)
+            if (Settings.PowerPointSettings.IsEnableTwoFingerGestureInPresentationMode)
             {
                 ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn = true;
             }
@@ -660,7 +661,7 @@ namespace Ink_Canvas
             {
                 ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn = false;
             }
-            if (Settings.Gesture.IsEnableFingerGestureSlideShowControl)
+            if (Settings.PowerPointSettings.IsEnableFingerGestureSlideShowControl)
             {
                 ToggleSwitchEnableFingerGestureSlideShowControl.IsOn = true;
             }
@@ -760,13 +761,49 @@ namespace Ink_Canvas
                     ToggleSwitchAutoSaveStrokesAtScreenshot.IsOn = false;
                 }
 
-                if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
+                if (Settings.PowerPointSettings.IsAutoSaveStrokesInPowerPoint)
                 {
                     ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn = true;
                 }
                 else
                 {
                     ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn = false;
+                }
+                
+                if (Settings.PowerPointSettings.IsNotifyPreviousPage)
+                {
+                    ToggleSwitchNotifyPreviousPage.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchNotifyPreviousPage.IsOn = false;
+                }
+                
+                if (Settings.PowerPointSettings.IsNotifyHiddenPage)
+                {
+                    ToggleSwitchNotifyHiddenPage.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchNotifyHiddenPage.IsOn = false;
+                }
+                
+                if (Settings.PowerPointSettings.IsNoClearStrokeOnSelectWhenInPowerPoint)
+                {
+                    ToggleSwitchNoStrokeClearInPowerPoint.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchNoStrokeClearInPowerPoint.IsOn = false;
+                }
+                
+                if (Settings.PowerPointSettings.IsShowStrokeOnSelectInPowerPoint)
+                {
+                    ToggleSwitchShowStrokeOnSelectInPowerPoint.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchShowStrokeOnSelectInPowerPoint.IsOn = false;
                 }
 
                 SideControlMinimumAutomationSlider.Value = Settings.Automation.MinimumAutomationStrokeNumber;
@@ -797,7 +834,7 @@ namespace Ink_Canvas
                     BtnSwitchTheme.Content = "深色";
                 }
                 BtnSwitchTheme_Click(null , null);
-                if (Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+                if (Settings.PowerPointSettings.IsAutoSaveScreenShotInPowerPoint)
                 {
                     ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn = true;
                 }
@@ -1282,7 +1319,7 @@ namespace Ink_Canvas
                 }
                 else
                 {
-                    if (isLoaded && Settings.Automation.IsAutoClearWhenExitingWritingMode && !Settings.Automation.IsNoClearStrokeOnSelectWhenInPowerPoint)
+                    if (isLoaded && Settings.Automation.IsAutoClearWhenExitingWritingMode && !Settings.PowerPointSettings.IsNoClearStrokeOnSelectWhenInPowerPoint)
                     {
                         if (inkCanvas.Strokes.Count > 0)
                         {
@@ -1297,7 +1334,7 @@ namespace Ink_Canvas
                     }
                     
                     
-                    if (Settings.Automation.IsShowStrokeOnSelectInPowerPoint)
+                    if (Settings.PowerPointSettings.IsShowStrokeOnSelectInPowerPoint)
                     {
                         inkCanvas.Visibility = Visibility.Visible;
                         inkCanvas.IsHitTestVisible = true;
@@ -1752,7 +1789,7 @@ namespace Ink_Canvas
                 }
                 else
                 {
-                    if (StackPanelPPTControls.Visibility == Visibility.Visible && inkCanvas.Strokes.Count == 0 && Settings.Gesture.IsEnableFingerGestureSlideShowControl)
+                    if (StackPanelPPTControls.Visibility == Visibility.Visible && inkCanvas.Strokes.Count == 0 && Settings.PowerPointSettings.IsEnableFingerGestureSlideShowControl)
                     {
                         isLastTouchEraser = false;
                         inkCanvas.EditingMode = InkCanvasEditingMode.GestureOnly;
@@ -1872,7 +1909,7 @@ namespace Ink_Canvas
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
             if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerZoom) return;
-            if ((dec.Count >= 2 && (Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible || StackPanelPPTButtons.Visibility == Visibility.Collapsed)) || isSingleFingerDragMode)
+            if ((dec.Count >= 2 && (Settings.PowerPointSettings.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible || StackPanelPPTButtons.Visibility == Visibility.Collapsed)) || isSingleFingerDragMode)
             {
                 ManipulationDelta md = e.DeltaManipulation;
                 Vector trans = md.Translation;  // 获得位移矢量
@@ -2053,68 +2090,76 @@ namespace Ink_Canvas
                     }
                 }
 
-                if (pptApplication == null) throw new Exception();
+                if (pptApplication == null) return;
                 //BtnCheckPPT.Visibility = Visibility.Collapsed;
 
                 // 跳转到上次播放页
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\Auto Saved\Presentations\";
-                    string folderPath = defaultFolderPath + presentation.Name + "_" + presentation.Slides.Count;
-                    if (File.Exists(folderPath + "/position"))
+                if (Settings.PowerPointSettings.IsNotifyPreviousPage)
+                    Application.Current.Dispatcher.BeginInvoke(() =>
                     {
-                        if (int.TryParse(File.ReadAllText(folderPath + "/position"), out var page))
+                        string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
+                                                   @"\Ink Canvas Strokes\Auto Saved\Presentations\";
+                        string folderPath = defaultFolderPath + presentation.Name + "_" + presentation.Slides.Count;
+                        if (File.Exists(folderPath + "/position"))
                         {
-                            IsShowingRestoreHiddenSlidesWindow = true;
-                            new YesOrNoNotificationWindow($"上次播放到了第 {page} 页, 是否立即跳转", () =>
+                            if (int.TryParse(File.ReadAllText(folderPath + "/position"), out var page))
                             {
-                                if (pptApplication.SlideShowWindows.Count >= 1)
+                                if (page <= 0 ) return;
+                                new YesOrNoNotificationWindow($"上次播放到了第 {page} 页, 是否立即跳转", () =>
                                 {
-                                    // 如果已经播放了的话, 跳转
-                                    presentation.SlideShowWindow.View.GotoSlide(page);
-                                }
-                                else
-                                {
-                                    presentation.Windows[1].View.GotoSlide(page);
-                                }
-                            }).ShowDialog();
+                                    if (pptApplication.SlideShowWindows.Count >= 1)
+                                    {
+                                        // 如果已经播放了的话, 跳转
+                                        presentation.SlideShowWindow.View.GotoSlide(page);
+                                    }
+                                    else
+                                    {
+                                        presentation.Windows[1].View.GotoSlide(page);
+                                    }
+                                }).ShowDialog();
+                            }
                         }
-                    }
-                });
+                    }, DispatcherPriority.Normal);
 
 
                 //检查是否有隐藏幻灯片
-                bool isHaveHiddenSlide = false;
-                foreach (Slide slide in slides)
+                if (Settings.PowerPointSettings.IsNotifyHiddenPage)
                 {
-                    if (slide.SlideShowTransition.Hidden == Microsoft.Office.Core.MsoTriState.msoTrue)
+                    bool isHaveHiddenSlide = false;
+                    foreach (Slide slide in slides)
                     {
-                        isHaveHiddenSlide = true;
-                        break;
-                    }
-                }
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    if (isHaveHiddenSlide && !IsShowingRestoreHiddenSlidesWindow)
-                    {
-                        IsShowingRestoreHiddenSlidesWindow = true;
-                        new YesOrNoNotificationWindow("检测到此演示文档中包含隐藏的幻灯片，是否取消隐藏？",
-                            () =>
+                        if (slide.SlideShowTransition.Hidden == Microsoft.Office.Core.MsoTriState.msoTrue)
                         {
-                            foreach (Slide slide in slides)
-                            {
-                                if (slide.SlideShowTransition.Hidden == Microsoft.Office.Core.MsoTriState.msoTrue)
-                                {
-                                    slide.SlideShowTransition.Hidden = Microsoft.Office.Core.MsoTriState.msoFalse;
-                                }
-                            }
-                        }).ShowDialog();
+                            isHaveHiddenSlide = true;
+                            break;
+                        }
                     }
 
+                    Application.Current.Dispatcher.BeginInvoke(() =>
+                    {
+                        if (isHaveHiddenSlide && !IsShowingRestoreHiddenSlidesWindow)
+                        {
+                            IsShowingRestoreHiddenSlidesWindow = true;
+                            new YesOrNoNotificationWindow("检测到此演示文档中包含隐藏的幻灯片，是否取消隐藏？",
+                                () =>
+                                {
+                                    foreach (Slide slide in slides)
+                                    {
+                                        if (slide.SlideShowTransition.Hidden ==
+                                            Microsoft.Office.Core.MsoTriState.msoTrue)
+                                        {
+                                            slide.SlideShowTransition.Hidden =
+                                                Microsoft.Office.Core.MsoTriState.msoFalse;
+                                        }
+                                    }
+                                }).ShowDialog();
+                        }
 
 
-                    BtnPPTSlideShow.Visibility = Visibility.Visible;
-                });
+
+                        BtnPPTSlideShow.Visibility = Visibility.Visible;
+                    }, DispatcherPriority.Normal);
+                }
 
                 //如果检测到已经开始放映，则立即进入画板模式
                 if (pptApplication.SlideShowWindows.Count >= 1)
@@ -2196,7 +2241,7 @@ namespace Ink_Canvas
                 LogHelper.NewLog("Slides Count: " + slidescount.ToString());
 
                 //检查是否有已有墨迹，并加载
-                if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
+                if (Settings.PowerPointSettings.IsAutoSaveStrokesInPowerPoint)
                 {
                     string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\Auto Saved\Presentations\";
                     if (Directory.Exists(defaultFolderPath + Wn.Presentation.Name + "_" + Wn.Presentation.Slides.Count))
@@ -2235,7 +2280,7 @@ namespace Ink_Canvas
                 BtnPPTSlideShowEnd.Visibility = Visibility.Visible;
                 ViewBoxStackPanelMain.Margin = new Thickness(10, 10, 10, 10);
 
-                if (Settings.Behavior.IsShowCanvasAtNewSlideShow && Main_Grid.Background == Brushes.Transparent)
+                if (Settings.PowerPointSettings.IsShowCanvasAtNewSlideShow && Main_Grid.Background == Brushes.Transparent)
                 {
                     if (currentMode != 0)
                     {
@@ -2275,7 +2320,7 @@ namespace Ink_Canvas
                 BorderFloatingBarMainControls.Visibility = Visibility.Visible;
                 BorderPenColorRed_MouseUp(BorderPenColorRed, null);
 
-                if (Settings.Behavior.IsShowCanvasAtNewSlideShow == false)
+                if (Settings.PowerPointSettings.IsShowCanvasAtNewSlideShow == false)
                 {
                     BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
                 }
@@ -2324,7 +2369,7 @@ namespace Ink_Canvas
                 return;
             }
             isEnteredSlideShowEndEvent = true;
-            if (Settings.Automation.IsAutoSaveStrokesInPowerPoint)
+            if (Settings.PowerPointSettings.IsAutoSaveStrokesInPowerPoint)
             {
                 string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Ink Canvas Strokes\Auto Saved\Presentations\";
                 string folderPath = defaultFolderPath + Pres.Name + "_" + Pres.Slides.Count;
@@ -2441,7 +2486,7 @@ namespace Ink_Canvas
                     ms.Position = 0;
                     memoryStreams[previousSlideID] = ms;
 
-                    if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber && Settings.Automation.IsAutoSaveScreenShotInPowerPoint && !_isPptClickingBtnTurned)
+                    if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber && Settings.PowerPointSettings.IsAutoSaveScreenShotInPowerPoint && !_isPptClickingBtnTurned)
                         SaveScreenShot(true, Wn.Presentation.Name + "/" + Wn.View.CurrentShowPosition);
                     _isPptClickingBtnTurned = false;
                     BtnRedo.IsEnabled = false;
@@ -2481,7 +2526,7 @@ namespace Ink_Canvas
 
             _isPptClickingBtnTurned = true;
             if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber &&
-                Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+                Settings.PowerPointSettings.IsAutoSaveScreenShotInPowerPoint)
                 SaveScreenShot(true, pptApplication.SlideShowWindows[1].Presentation.Name + "/" + pptApplication.SlideShowWindows[1].View.CurrentShowPosition);
             try
             {
@@ -2507,7 +2552,7 @@ namespace Ink_Canvas
             }
             _isPptClickingBtnTurned = true;
             if (inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber &&
-                Settings.Automation.IsAutoSaveScreenShotInPowerPoint)
+                Settings.PowerPointSettings.IsAutoSaveScreenShotInPowerPoint)
                 SaveScreenShot(true, pptApplication.SlideShowWindows[1].Presentation.Name + "/" + pptApplication.SlideShowWindows[1].View.CurrentShowPosition);
             try
             {
@@ -2598,10 +2643,10 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
 
-            Settings.Behavior.PowerPointSupport = ToggleSwitchSupportPowerPoint.IsOn;
+            Settings.PowerPointSettings.PowerPointSupport = ToggleSwitchSupportPowerPoint.IsOn;
             SaveSettingsToFile();
 
-            if (Settings.Behavior.PowerPointSupport)
+            if (Settings.PowerPointSettings.PowerPointSupport)
             {
                 timerCheckPPT.Start();
             }
@@ -2615,7 +2660,7 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
 
-            Settings.Behavior.IsShowCanvasAtNewSlideShow = ToggleSwitchShowCanvasAtNewSlideShow.IsOn;
+            Settings.PowerPointSettings.IsShowCanvasAtNewSlideShow = ToggleSwitchShowCanvasAtNewSlideShow.IsOn;
             SaveSettingsToFile();
         }
 
@@ -2686,11 +2731,11 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
 
-            Settings.Appearance.IsShowPPTNavigation = ToggleSwitchShowButtonPPTNavigation.IsOn;
+            Settings.PowerPointSettings.IsShowPPTNavigation = ToggleSwitchShowButtonPPTNavigation.IsOn;
             SaveSettingsToFile();
 
             PptNavigationBtn.Visibility =
-                Settings.Appearance.IsShowPPTNavigation ? Visibility.Visible : Visibility.Collapsed;
+                Settings.PowerPointSettings.IsShowPPTNavigation ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void ToggleSwitchShowButtonHideControl_Toggled(object sender, RoutedEventArgs e)
@@ -2896,7 +2941,36 @@ namespace Ink_Canvas
         private void ToggleSwitchAutoSaveStrokesInPowerPoint_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
-            Settings.Automation.IsAutoSaveStrokesInPowerPoint = ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn;
+            Settings.PowerPointSettings.IsAutoSaveStrokesInPowerPoint = ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn;
+            SaveSettingsToFile();
+        }
+        
+        private void ToggleSwitchNotifyPreviousPage_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.PowerPointSettings.IsNotifyPreviousPage = ToggleSwitchNotifyPreviousPage.IsOn;
+            SaveSettingsToFile();
+        } 
+        
+        private void ToggleSwitchNotifyHiddenPage_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.PowerPointSettings.IsNotifyHiddenPage = ToggleSwitchNotifyHiddenPage.IsOn;
+            SaveSettingsToFile();
+        }
+        
+        private void ToggleSwitchNoStrokeClearInPowerPoint_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.PowerPointSettings.IsNoClearStrokeOnSelectWhenInPowerPoint = ToggleSwitchNoStrokeClearInPowerPoint.IsOn;
+            SaveSettingsToFile();
+        }
+        
+        
+        private void ToggleSwitchShowStrokeOnSelectInPowerPoint_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.PowerPointSettings.IsShowStrokeOnSelectInPowerPoint = ToggleSwitchShowStrokeOnSelectInPowerPoint.IsOn;
             SaveSettingsToFile();
         }
         
@@ -2910,7 +2984,7 @@ namespace Ink_Canvas
         private void ToggleSwitchAutoSaveScreenShotInPowerPoint_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
-            Settings.Automation.IsAutoSaveScreenShotInPowerPoint = ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn;
+            Settings.PowerPointSettings.IsAutoSaveScreenShotInPowerPoint = ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn;
             SaveSettingsToFile();
         }
 
@@ -2923,7 +2997,7 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
 
-            Settings.Gesture.IsEnableFingerGestureSlideShowControl = ToggleSwitchEnableFingerGestureSlideShowControl.IsOn;
+            Settings.PowerPointSettings.IsEnableFingerGestureSlideShowControl = ToggleSwitchEnableFingerGestureSlideShowControl.IsOn;
 
             SaveSettingsToFile();
         }
@@ -2951,7 +3025,7 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
 
-            Settings.Gesture.IsEnableTwoFingerGestureInPresentationMode = ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn;
+            Settings.PowerPointSettings.IsEnableTwoFingerGestureInPresentationMode = ToggleSwitchEnableTwoFingerGestureInPresentationMode.IsOn;
 
             SaveSettingsToFile();
         }
