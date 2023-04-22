@@ -25,8 +25,7 @@ namespace Ink_Canvas.Helpers
             }
             _currentStrokeHistory.Add(new TimeMachineHistory(stroke, TimeMachineHistoryType.UserInput, false));
             _currentIndex = _currentStrokeHistory.Count - 1;
-            OnUndoStateChanged?.Invoke(true);
-            OnRedoStateChanged?.Invoke(false);
+            NotifyUndoRedoState();
         }
 
         public void CommitStrokeShapeHistory(StrokeCollection strokeToBeReplaced, StrokeCollection generatedStroke)
@@ -40,8 +39,7 @@ namespace Ink_Canvas.Helpers
                 false,
                 strokeToBeReplaced));
             _currentIndex = _currentStrokeHistory.Count - 1;
-            OnUndoStateChanged?.Invoke(true);
-            OnRedoStateChanged?.Invoke(false);
+            NotifyUndoRedoState();
         }
 
         public void CommitStrokeEraseHistory(StrokeCollection stroke, StrokeCollection sourceStroke = null)
@@ -52,16 +50,14 @@ namespace Ink_Canvas.Helpers
             }
             _currentStrokeHistory.Add(new TimeMachineHistory(stroke, TimeMachineHistoryType.Clear, true, sourceStroke));
             _currentIndex = _currentStrokeHistory.Count - 1;
-            OnUndoStateChanged?.Invoke(true);
-            OnRedoStateChanged?.Invoke(false);
+            NotifyUndoRedoState();
         }
 
         public void ClearStrokeHistory()
         {
             _currentStrokeHistory.Clear();
             _currentIndex = -1;
-            OnUndoStateChanged?.Invoke(true);
-            OnRedoStateChanged?.Invoke(false);
+            NotifyUndoRedoState();
         }
         public TimeMachineHistory Undo()
         {
@@ -77,8 +73,7 @@ namespace Ink_Canvas.Helpers
         {
             var item = _currentStrokeHistory[++_currentIndex];
             item.StrokeHasBeenCleared = !item.StrokeHasBeenCleared;
-            OnUndoStateChanged?.Invoke(_currentIndex > -1);
-            if (_currentIndex != -1) OnRedoStateChanged?.Invoke(_currentStrokeHistory.Count - _currentIndex - 1 > 0);
+            NotifyUndoRedoState();
             return item;
         }
         public TimeMachineHistory[] ExportTimeMachineHistory()
@@ -95,9 +90,13 @@ namespace Ink_Canvas.Helpers
             _currentStrokeHistory.Clear();
             _currentStrokeHistory.AddRange(sourceHistory);
             _currentIndex = _currentStrokeHistory.Count - 1;
+            NotifyUndoRedoState();
+            return true;
+        }
+        private void NotifyUndoRedoState()
+        {
             OnUndoStateChanged?.Invoke(_currentIndex > -1);
             OnRedoStateChanged?.Invoke(_currentStrokeHistory.Count - _currentIndex - 1 > 0);
-            return true;
         }
     }
 

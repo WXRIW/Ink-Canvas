@@ -5085,14 +5085,15 @@ namespace Ink_Canvas
             if (isBackupMain)
             {
                 var timeMachineHistory = timeMachine.ExportTimeMachineHistory();
-                timeMachine.ClearStrokeHistory();
                 TimeMachineHistories[0] = timeMachineHistory;
+                timeMachine.ClearStrokeHistory();
+                
             }
             else
             {
                 var timeMachineHistory = timeMachine.ExportTimeMachineHistory();
-                timeMachine.ClearStrokeHistory();
                 TimeMachineHistories[CurrentWhiteboardIndex] = timeMachineHistory;
+                timeMachine.ClearStrokeHistory();
             }
         }
 
@@ -5112,9 +5113,10 @@ namespace Ink_Canvas
                 if (TimeMachineHistories[CurrentWhiteboardIndex] == null) return; //防止白板打开后不居中
                 if (isBackupMain)
                 {
+                    IsCommitingByCode = true;
+                    timeMachine.ImportTimeMachineHistory(TimeMachineHistories[0]);
                     foreach (var item in TimeMachineHistories[0])
                     {
-                        IsCommitingByCode = true;
                         if (item.CommitType == TimeMachineHistoryType.UserInput)
                         {
                             if (!item.StrokeHasBeenCleared)
@@ -5202,16 +5204,16 @@ namespace Ink_Canvas
                                     }
                                 }
                             }
-                        }
-                        IsCommitingByCode = false;
+                        }               
                     }
-                    timeMachine.ImportTimeMachineHistory(TimeMachineHistories[0]);
+                    IsCommitingByCode = false;
                 }
                 else
                 {
+                    IsCommitingByCode = true;
+                    timeMachine.ImportTimeMachineHistory(TimeMachineHistories[CurrentWhiteboardIndex]);
                     foreach (var item in TimeMachineHistories[CurrentWhiteboardIndex])
                     {
-                        IsCommitingByCode = true;
                         if (item.CommitType == TimeMachineHistoryType.UserInput)
                         {
                             if (!item.StrokeHasBeenCleared)
@@ -5300,9 +5302,9 @@ namespace Ink_Canvas
                                 }
                             }
                         }
-                        IsCommitingByCode = false;
+
                     }
-                    timeMachine.ImportTimeMachineHistory(TimeMachineHistories[CurrentWhiteboardIndex]);
+                    IsCommitingByCode = false;
                 }
                 AdjustStrokeColor();
             }
@@ -5327,12 +5329,12 @@ namespace Ink_Canvas
         {
             if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
                 SaveScreenShot(true);
-            SaveStrokes();
             if (CurrentWhiteboardIndex >= WhiteboardTotalCount)
             {
                 BtnWhiteBoardAdd_Click(sender, e);
                 return;
             }
+            SaveStrokes();
 
 
             ClearStrokes(true);
@@ -6774,7 +6776,8 @@ namespace Ink_Canvas
                         fs.Close();
                         var memoryStream = new MemoryStream(File.ReadAllBytes(openFileDialog.FileName));
                         memoryStream.Position = 0;
-                        inkCanvas.Strokes = new StrokeCollection(memoryStream);
+                        ClearStrokes(true);
+                        inkCanvas.Strokes.Add(new StrokeCollection(memoryStream));
                         LogHelper.NewLog(string.Format("Strokes Insert (2): Strokes Count: {0}", inkCanvas.Strokes.Count.ToString()));
                     }
 
