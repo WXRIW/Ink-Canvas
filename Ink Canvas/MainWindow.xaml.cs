@@ -2434,12 +2434,13 @@ namespace Ink_Canvas
                     _isPptClickingBtnTurned = false;
 
                     ClearStrokes(true);
+                    timeMachine.ClearStrokeHistory();
 
                     try
                     {
-                        if (memoryStreams[Wn.View.CurrentShowPosition].Length > 0)
+                        if (memoryStreams[Wn.View.CurrentShowPosition] != null && memoryStreams[Wn.View.CurrentShowPosition].Length > 0)
                         {
-                            inkCanvas.Strokes = new System.Windows.Ink.StrokeCollection(memoryStreams[Wn.View.CurrentShowPosition]);
+                            inkCanvas.Strokes.Add(new StrokeCollection(memoryStreams[Wn.View.CurrentShowPosition]));
                         }
                     }
                     catch
@@ -2545,6 +2546,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Save(ms);
                     ms.Position = 0;
                     memoryStreams[pptApplication.SlideShowWindows[1].View.CurrentShowPosition] = ms;
+                    timeMachine.ClearStrokeHistory();
                 }
                 catch { }
             });
