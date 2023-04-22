@@ -10,8 +10,8 @@ namespace Ink_Canvas
         public Appearance Appearance { get; set; } = new Appearance();
         [JsonProperty("automation")]
         public Automation Automation { get; set; } = new Automation();
-        [JsonProperty("behavior")]
-        public Behavior Behavior { get; set; } = new Behavior();
+        [JsonProperty("powerpoint")]
+        public PowerPointSettings PowerPointSettings { get; set; } = new PowerPointSettings();
         [JsonProperty("canvas")]
         public Canvas Canvas { get; set; } = new Canvas();
         [JsonProperty("gesture")]
@@ -21,15 +21,7 @@ namespace Ink_Canvas
         [JsonProperty("startup")]
         public Startup Startup { get; set; } = new Startup();
     }
-
-    public class Behavior
-    {
-        [JsonProperty("powerPointSupport")]
-        public bool PowerPointSupport { get; set; } = true;
-        [JsonProperty("isShowCanvasAtNewSlideShow")]
-        public bool IsShowCanvasAtNewSlideShow { get; set; } = true;
-    }
-
+    
     public class Canvas
     {
         [JsonProperty("inkWidth")]
@@ -56,10 +48,7 @@ namespace Ink_Canvas
         public bool IsEnableTwoFingerRotation { get; set; } = false;
         [JsonProperty("isEnableTwoFingerRotationOnSelection")]
         public bool IsEnableTwoFingerRotationOnSelection { get; set; } = false;
-        [JsonProperty("isEnableTwoFingerGestureInPresentationMode")]
-        public bool IsEnableTwoFingerGestureInPresentationMode { get; set; } = false;
-        [JsonProperty("isEnableFingerGestureSlideShowControl")]
-        public bool IsEnableFingerGestureSlideShowControl { get; set; } = true;
+        
     }
 
     public class Startup
@@ -84,10 +73,36 @@ namespace Ink_Canvas
         public bool IsShowLRSwitchButton { get; set; } = false;
         [JsonProperty("isShowModeFingerToggleSwitch")]
         public bool IsShowModeFingerToggleSwitch { get; set; } = true;
-        [JsonProperty("isShowPPTNavigation")]
-        public bool IsShowPPTNavigation { get; set; } = true;
+
     }
 
+
+    public class PowerPointSettings
+    {
+        [JsonProperty("isShowPPTNavigation")]
+        public bool IsShowPPTNavigation { get; set; } = true;
+        [JsonProperty("powerPointSupport")]
+        public bool PowerPointSupport { get; set; } = true;
+        [JsonProperty("isShowCanvasAtNewSlideShow")]
+        public bool IsShowCanvasAtNewSlideShow { get; set; } = true;
+        [JsonProperty("isNoClearStrokeOnSelectWhenInPowerPoint")]
+        public bool IsNoClearStrokeOnSelectWhenInPowerPoint { get; set; } = true;
+        [JsonProperty("isShowStrokeOnSelectInPowerPoint")]
+        public bool IsShowStrokeOnSelectInPowerPoint { get; set; } = false;
+        [JsonProperty("isAutoSaveStrokesInPowerPoint")]
+        public bool IsAutoSaveStrokesInPowerPoint { get; set; } = true;
+        [JsonProperty("isAutoSaveScreenShotInPowerPoint")]
+        public bool IsAutoSaveScreenShotInPowerPoint { get; set; } = false;
+        [JsonProperty("isNotifyPreviousPage")]
+        public bool IsNotifyPreviousPage { get; set; } = true;
+        [JsonProperty("isNotifyHiddenPage")]
+        public bool IsNotifyHiddenPage { get; set; } = true;
+        [JsonProperty("isEnableTwoFingerGestureInPresentationMode")]
+        public bool IsEnableTwoFingerGestureInPresentationMode { get; set; } = false;
+        [JsonProperty("isEnableFingerGestureSlideShowControl")]
+        public bool IsEnableFingerGestureSlideShowControl { get; set; } = true;
+    }
+    
     public class Automation
     {
         [JsonProperty("isAutoKillPptService")]
@@ -98,10 +113,7 @@ namespace Ink_Canvas
         public bool IsAutoSaveStrokesAtScreenshot { get; set; } = false;
         [JsonProperty("isAutoSaveStrokesAtClear")]
         public bool IsAutoSaveStrokesAtClear { get; set; } = false;
-        [JsonProperty("isAutoSaveStrokesInPowerPoint")]
-        public bool IsAutoSaveStrokesInPowerPoint { get; set; } = true;
-        [JsonProperty("isAutoSaveScreenShotInPowerPoint")]
-        public bool IsAutoSaveScreenShotInPowerPoint { get; set; } = false;
+        
         [JsonProperty("isAutoClearWhenExitingWritingMode")]
         public bool IsAutoClearWhenExitingWritingMode { get; set; } = false;
 
@@ -114,6 +126,10 @@ namespace Ink_Canvas
     {
         [JsonProperty("isSpecialScreen")]
         public bool IsSpecialScreen { get; set; } = false;
+        [JsonProperty("touchMultiplier")]
+        public double TouchMultiplier { get; set; } = 0.25;
+        [JsonProperty("eraserBindTouchMultiplier")]
+        public bool EraserBindTouchMultiplier { get; set; } = false;
         [JsonProperty("isLogEnabled")]
         public bool IsLogEnabled { get; set; } = true;
     }
