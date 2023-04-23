@@ -465,14 +465,13 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchShowButtonPPTNavigation" Header="显示 PPT 浏览切页按钮" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowButtonPPTNavigation_OnToggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
-                        <GroupBox Header="PowerPoint 集成">
+                        <GroupBox Header="PowerPoint 相关">
                             <ui:SimpleStackPanel Spacing="12">
-                                <TextBlock Text="此分区的设置项将会在幻灯片播放时使用，优先级高于其他设置项" Foreground="#666666"/>
+                                <TextBlock Text="此部分的设置项将会在幻灯片播放时使用，优先级高于其他设置项" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchSupportPowerPoint" Header="Microsoft PowerPoint 支持" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportPowerPoint_Toggled"/>
                                 <TextBlock Text="我们并不推荐使用 WPS Office，因为其对于触摸设备的较差支持。" Foreground="#666666"/>
-                                <TextBlock Text="对 WPS Office 支持时会导致 WPS Office 关闭时卡顿，仅测试用。" Foreground="#666666"/>
+                                <TextBlock Text="对 WPS Office 支持时会导致 WPS Office 关闭时卡顿，仅测试用。" Margin="0,-12,0,0" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchSupportWPS" Header="WPS Office 支持" IsOn="False" IsEnabled="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchSupportWPS_Toggled"/>
-                                <Grid />
                                 <ui:ToggleSwitch Name="ToggleSwitchShowCanvasAtNewSlideShow" Header="开始放映时自动启动画板" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCanvasAtNewSlideShow_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerGestureInPresentationMode" Header="允许幻灯片模式下的双指手势" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerGestureInPresentationMode_Toggled"/>
                                 <TextBlock Text="允许开启画板时使用手指手势进行幻灯片翻页（启用后，在幻灯片放映模式下，当画板无墨迹时，使用手指（笔尖或手掌无法识别）左右滑动即可控制幻灯片翻页。）" TextWrapping="Wrap" Foreground="#666666"/>
@@ -480,11 +479,11 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoSaveScreenShotInPowerPoint" Header="自动幻灯片截屏" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveScreenShotInPowerPoint_Toggled"/>
                                 <TextBlock Text="开启后将在结束幻灯片放映时自动将已有墨迹保存至此电脑，并在下次打开时自动加载（文件名和幻灯片页数都要相同）" TextWrapping="Wrap" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesInPowerPoint" Header="自动保存幻灯片墨迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveStrokesInPowerPoint_Toggled"/>
-                                <ui:ToggleSwitch Name="ToggleSwitchNotifyPreviousPage" Header="记忆并提示上次播放位置" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNotifyPreviousPage_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchNotifyPreviousPage" Header="记忆并提示上次播放位置" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNotifyPreviousPage_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchNotifyHiddenPage" Header="提示隐藏幻灯片" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNotifyHiddenPage_Toggled"/>
                                 
-                                <ui:ToggleSwitch Name="ToggleSwitchNoStrokeClearInPowerPoint" Header="进入鼠标模式不清除笔迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNoStrokeClearInPowerPoint_Toggled"/>
-                                <ui:ToggleSwitch Name="ToggleSwitchShowStrokeOnSelectInPowerPoint" Header="进入鼠标模式不隐藏笔迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowStrokeOnSelectInPowerPoint_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchNoStrokeClearInPowerPoint" Header="进入鼠标模式时不清除笔迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNoStrokeClearInPowerPoint_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowStrokeOnSelectInPowerPoint" Header="进入鼠标模式时不隐藏笔迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowStrokeOnSelectInPowerPoint_Toggled"/>
                             </ui:SimpleStackPanel>
                             
                         </GroupBox>
@@ -492,7 +491,7 @@
                             <ui:SimpleStackPanel Spacing="12">
                                 <TextBlock Text="可在手指触摸画板时显示圆形橡皮或手掌触摸画板时显示的橡皮比&#x000A;手掌大很多时调整" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchIsSpecialScreen" Header="特殊屏幕模式" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchIsSpecialScreen_OnToggled"/>
-                                <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal" Visibility="{Binding Visibility,ElementName=TouchMultiplierSlider}">
                                     <Slider x:Name="TouchMultiplierSlider"
                                             HorizontalAlignment="Left"
                                             Minimum="0" Maximum="1"
@@ -538,17 +537,19 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesAtScreenshot" Header="截图时自动保存墨迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveStrokesAtScreenshot_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesAtClear" Header="清屏时自动截图" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveStrokesAtClear_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchClearExitingWritingMode" Header="切换到鼠标模式后自动清屏" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchExitingWritingMode_Toggled"/>
-                                <Slider x:Name="SideControlMinimumAutomationSlider"
-                                        HorizontalAlignment="Left"
-                                        Minimum="0" Maximum="10"
-                                        Width="320" FontFamily="Microsoft YaHei UI" 
-                                        ui:ControlHelper.Header="自动截图最小墨迹量"
-                                        IsSnapToTickEnabled="True" Value="0"
-                                        TickFrequency="1" TickPlacement="Both"
-                                        ValueChanged="SideControlMinimumAutomationSlider_ValueChanged"/>
-                                <TextBlock Text="{Binding Value, ElementName=SideControlMinimumAutomationSlider, Mode=OneWay}"
+                                <StackPanel Orientation="Horizontal">
+                                    <Slider x:Name="SideControlMinimumAutomationSlider"
+                                            HorizontalAlignment="Left"
+                                            Minimum="0" Maximum="10"
+                                            Width="320" FontFamily="Microsoft YaHei UI" 
+                                            ui:ControlHelper.Header="自动截图最小墨迹量"
+                                            IsSnapToTickEnabled="True" Value="0"
+                                            TickFrequency="1" TickPlacement="Both"
+                                            ValueChanged="SideControlMinimumAutomationSlider_ValueChanged"/>
+                                    <TextBlock Text="{Binding Value, ElementName=SideControlMinimumAutomationSlider, Mode=OneWay}"
                                            VerticalAlignment="Bottom" Margin="10,0,0,8"
                                            FontSize="14" Width="25" HorizontalAlignment="Center"/>
+                                </StackPanel>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="关于">
@@ -562,7 +563,7 @@
                                 <TextBlock FontSize="14">
                                      <Bold>开发者:</Bold> XY Wang (WXRIW)
                                 </TextBlock>
-                                <TextBlock FontSize="14">
+                                <TextBlock FontSize="13.5">
                                      <Bold>贡献者:</Bold> Kengwang, jiajiaxd, CN-Ironegg, Raspberry Kan
                                 </TextBlock>
                                 <TextBlock FontSize="14">
