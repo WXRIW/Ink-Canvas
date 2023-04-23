@@ -318,6 +318,7 @@ namespace Ink_Canvas
         #region TimeMachine
 
         private bool IsCommitingByCode = false;
+        private bool IsCommitingByShapeDrawing = false;
         private bool IsEraseByShapeRecognition = false;
         private bool IsClearingCanvas = false;
         private bool IsEraseByPoint => inkCanvas.EditingMode == InkCanvasEditingMode.EraseByPoint;
@@ -339,7 +340,7 @@ namespace Ink_Canvas
         }
         private void StrokesOnStrokesChanged(object sender, StrokeCollectionChangedEventArgs e)
         {
-            if (IsCommitingByCode) return;
+            if (IsCommitingByCode || IsCommitingByShapeDrawing) return;
             if (e.Added.Count != 0 && e.Removed.Count != 0)
             {
                 if (IsEraseByPoint)
@@ -357,7 +358,6 @@ namespace Ink_Canvas
                 {
                     timeMachine.CommitStrokeShapeHistory(ReplacedStroke, e.Added);
                     ReplacedStroke = null;
-                    IsEraseByShapeRecognition = false;
                     return;
                 }
                 else
@@ -4242,6 +4242,7 @@ namespace Ink_Canvas
 
         private void MouseTouchMove(Point endP)
         {
+            IsCommitingByShapeDrawing = true;
             List<System.Windows.Point> pointList;
             StylusPointCollection point;
             Stroke stroke;
@@ -5166,8 +5167,6 @@ namespace Ink_Canvas
                                             (circle.Stroke.StylusPoints[0].Y + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].Y) / 2);
                 circles.Add(circle);
             }
-            lastTempStroke = null;
-            lastTempStrokeCollection = null;
             if (drawingShapeMode != 9 && drawingShapeMode != 0 && drawingShapeMode != 24 && drawingShapeMode != 25)
             {
                 if (isLongPressSelected)
@@ -5218,6 +5217,13 @@ namespace Ink_Canvas
                 AddedStroke = null;
                 ReplacedStroke = null;
             }
+            if (IsCommitingByShapeDrawing)
+            {
+                IsCommitingByShapeDrawing = false;
+                timeMachine.CommitStrokeUserInputHistory(lastTempStrokeCollection);
+            }
+            lastTempStroke = null;
+            lastTempStrokeCollection = null;
         }
 
         private bool NeedUpdateIniP()
@@ -5679,9 +5685,10 @@ namespace Ink_Canvas
                                     DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                                 };
                                 circles.Add(new Circle(result.Centroid, shape.Width / 2.0, stroke));
-                                SetNewBackupOfStroke();
-                                inkCanvas.Strokes.Add(stroke);
+                                SetNewBackupOfStroke(); 
+                                IsEraseByShapeRecognition = true;
                                 inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                inkCanvas.Strokes.Add(stroke);
                                 newStrokes = new StrokeCollection();
                             }
                         }
@@ -5754,6 +5761,7 @@ namespace Ink_Canvas
                                             double topB = endP.Y - iniP.Y;
 
                                             SetNewBackupOfStroke();
+                                            IsEraseByShapeRecognition = true;
                                             inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
                                             newStrokes = new StrokeCollection();
 
@@ -5818,8 +5826,9 @@ namespace Ink_Canvas
                                 }
 
                                 SetNewBackupOfStroke();
-                                inkCanvas.Strokes.Add(stroke);
+                                IsEraseByShapeRecognition = true;
                                 inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                inkCanvas.Strokes.Add(stroke);
                                 newStrokes = new StrokeCollection();
                             }
                         }
@@ -5849,8 +5858,9 @@ namespace Ink_Canvas
                                     DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                                 };
                                 SetNewBackupOfStroke();
-                                inkCanvas.Strokes.Add(stroke);
+                                IsEraseByShapeRecognition = true;
                                 inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                inkCanvas.Strokes.Add(stroke);
                                 newStrokes = new StrokeCollection();
                             }
                         }
@@ -5886,13 +5896,18 @@ namespace Ink_Canvas
                                     DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                                 };
                                 SetNewBackupOfStroke();
-                                inkCanvas.Strokes.Add(stroke);
+                                IsEraseByShapeRecognition = true;
                                 inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                inkCanvas.Strokes.Add(stroke);
                                 newStrokes = new StrokeCollection();
                             }
                         }
                     }
                     catch { }
+                    finally
+                    {
+                        IsEraseByShapeRecognition = false;
+                    }
                 }
 
                 // 检查是否是压感笔书写

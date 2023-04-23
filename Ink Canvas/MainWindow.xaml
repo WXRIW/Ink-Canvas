@@ -567,7 +567,7 @@
                                      <Bold>开发者:</Bold> XY Wang (WXRIW)
                                 </TextBlock>
                                 <TextBlock FontSize="14">
-                                     <Bold>贡献者:</Bold> Kengwang, jiajiaxd, CN-Ironegg, Raspberry Kan
+                                     <Bold>贡献者:</Bold> Kengwang, jiajiaxd, CN-Ironegg<LineBreak/>Raspberry Kan
                                 </TextBlock>
                                 <TextBlock FontSize="14">
                                     <Bold>开源地址:</Bold>
