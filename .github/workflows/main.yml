@@ -13,19 +13,19 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.5.2
       with:
         fetch-depth: 0
 
     # 安装 .NET Core
     - name: Install .NET Core
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v3.0.3
       with:
         dotnet-version: '6.0.x'
         
     # 安装 NuGet
     - name: Setup NuGet
-      uses: nuget/setup-nuget@v1
+      uses: NuGet/setup-nuget@v1.2.0
       with:
         nuget-version: '5.x'
 
@@ -35,7 +35,7 @@ jobs:
       
     # 添加 MSBuild.exe 到环境变量: https://github.com/microsoft/setup-msbuild
     - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v1.3.1
 
     # 编译整个项目
     - name: Build the solution
