@@ -1,6 +1,6 @@
 <div align="center">
 
-[![LOGO](https://github.com/WXRIW/Ink-Canvas/blob/master/Ink%20Canvas/Resources/InkCanvas.png?raw=true "LOGO")](# "LOGO")
+[![LOGO](Ink%20Canvas/Resources/InkCanvas.png?raw=true "LOGO")](# "LOGO")
 
 # Ink-Canvas
 
@@ -46,7 +46,7 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 
 ## 感谢
 感谢 [yuwenhui2020](https://github.com/yuwenhui2020) 为 `Ink Canvas 使用说明` 做出的贡献！  
-感谢 [CN-Ironegg](https://github.com/CN-Ironegg)、 [jiajiaxd](https://github.com/jiajiaxd)、 [Kengwang](https://github.com/kengwang) 为本项目贡献代码！  
+感谢 [CN-Ironegg](https://github.com/CN-Ironegg)、[jiajiaxd](https://github.com/jiajiaxd)、[Kengwang](https://github.com/kengwang)、[Raspberry Kan](https://github.com/Raspberry-Monster) 为本项目贡献代码！  
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FWXRIW%2FInk-Canvas.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FWXRIW%2FInk-Canvas?ref=badge_large)
