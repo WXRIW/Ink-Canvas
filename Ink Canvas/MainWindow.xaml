@@ -1,4 +1,4 @@
-﻿<Window x:Class="Ink_Canvas.MainWindow"
+<Window x:Class="Ink_Canvas.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -567,13 +567,8 @@
                                 <TextBlock FontSize="14">
                                      <Bold>开发者:</Bold> XY Wang (WXRIW)
                                 </TextBlock>
-<<<<<<< HEAD
-                                <TextBlock FontSize="14">
-                                     <Bold>贡献者:</Bold> Kengwang, jiajiaxd, CN-Ironegg<LineBreak/>Raspberry Kan
-=======
                                 <TextBlock FontSize="13.5">
                                      <Bold>贡献者:</Bold> Kengwang, jiajiaxd, CN-Ironegg, Raspberry Kan
->>>>>>> af719329c99731bc5697b7264548c1b5a5f13e23
                                 </TextBlock>
                                 <TextBlock FontSize="14">
                                     <Bold>开源地址:</Bold>
