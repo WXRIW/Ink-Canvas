@@ -10,7 +10,7 @@ namespace Ink_Canvas
         public Appearance Appearance { get; set; } = new Appearance();
         [JsonProperty("automation")]
         public Automation Automation { get; set; } = new Automation();
-        [JsonProperty("powerpoint")]
+        [JsonProperty("behavior")]
         public PowerPointSettings PowerPointSettings { get; set; } = new PowerPointSettings();
         [JsonProperty("canvas")]
         public Canvas Canvas { get; set; } = new Canvas();
@@ -76,7 +76,6 @@ namespace Ink_Canvas
 
     }
 
-
     public class PowerPointSettings
     {
         [JsonProperty("isShowPPTNavigation")]
@@ -94,7 +93,7 @@ namespace Ink_Canvas
         [JsonProperty("isAutoSaveScreenShotInPowerPoint")]
         public bool IsAutoSaveScreenShotInPowerPoint { get; set; } = false;
         [JsonProperty("isNotifyPreviousPage")]
-        public bool IsNotifyPreviousPage { get; set; } = true;
+        public bool IsNotifyPreviousPage { get; set; } = false;
         [JsonProperty("isNotifyHiddenPage")]
         public bool IsNotifyHiddenPage { get; set; } = true;
         [JsonProperty("isEnableTwoFingerGestureInPresentationMode")]
