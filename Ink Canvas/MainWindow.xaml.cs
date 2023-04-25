@@ -5637,26 +5637,8 @@ namespace Ink_Canvas
                                     result = newResult;
                                     break;
                                 }
-<<<<<<< HEAD
-
-                                Point iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
-                                Point endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
-                                var pointList = GenerateEllipseGeometry(iniP, endP);
-                                var point = new StylusPointCollection(pointList);
-                                var stroke = new Stroke(point)
-                                {
-                                    DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                                };
-                                circles.Add(new Circle(result.Centroid, shape.Width / 2.0, stroke));
-                                SetNewBackupOfStroke(); 
-                                IsEraseByShapeRecognition = true;
-                                inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                                inkCanvas.Strokes.Add(stroke);
-                                newStrokes = new StrokeCollection();
-=======
                                 //Label.Visibility = Visibility.Visible;
                                 Label.Content = circles.Count.ToString() + "\n" + newResult.InkDrawingNode.GetShapeName();
->>>>>>> ab83992ef82c63ba7a9d4ef428f11edc45718bb3
                             }
                             if (result.InkDrawingNode.GetShapeName() == "Circle")
                             {
@@ -5710,8 +5692,10 @@ namespace Ink_Canvas
                                     };
                                     circles.Add(new Circle(result.Centroid, shape.Width / 2.0, stroke));
                                     SetNewBackupOfStroke();
-                                    inkCanvas.Strokes.Add(stroke);
+                                    IsEraseByShapeRecognition = true;
                                     inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                    inkCanvas.Strokes.Add(stroke);
+                                    IsEraseByShapeRecognition = false;
                                     newStrokes = new StrokeCollection();
                                 }
                             }
@@ -5749,32 +5733,6 @@ namespace Ink_Canvas
                                             iniP = new Point(result.Centroid.X - shape.Width / 2, result.Centroid.Y - shape.Height / 2);
                                             endP = new Point(result.Centroid.X + shape.Width / 2, result.Centroid.Y + shape.Height / 2);
 
-<<<<<<< HEAD
-                                            double topB = endP.Y - iniP.Y;
-
-                                            SetNewBackupOfStroke();
-                                            IsEraseByShapeRecognition = true;
-                                            inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                                            newStrokes = new StrokeCollection();
-
-                                            var _pointList = GenerateEllipseGeometry(iniP, endP, false, true);
-                                            var _point = new StylusPointCollection(_pointList);
-                                            var _stroke = new Stroke(_point)
-                                            {
-                                                DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                                            };
-                                            var _generateDashedLineEllipseStrokeCollection =
-                                                GenerateDashedLineEllipseStrokeCollection(iniP, endP, true, false);
-
-                                            var resultStrokes = new StrokeCollection
-                                            {
-                                                _stroke,
-                                                _generateDashedLineEllipseStrokeCollection
-                                            };
-                                            inkCanvas.Strokes.Add(_stroke.Clone());
-                                            inkCanvas.Strokes.Add(_generateDashedLineEllipseStrokeCollection);
-                                            return;
-=======
                                             //再判断是否与圆相切
                                             if (Math.Abs(a - circle.R) / a < 0.2)
                                             {
@@ -5794,7 +5752,6 @@ namespace Ink_Canvas
                                                 }
                                             }
                                             break;
->>>>>>> ab83992ef82c63ba7a9d4ef428f11edc45718bb3
                                         }
                                         else if (Math.Abs(result.Centroid.X - circle.Centroid.X) / a < 0.2)
                                         {
@@ -5811,6 +5768,7 @@ namespace Ink_Canvas
                                                 double topB = endP.Y - iniP.Y;
 
                                                 SetNewBackupOfStroke();
+                                                IsEraseByShapeRecognition = true;
                                                 inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
                                                 newStrokes = new StrokeCollection();
 
@@ -5822,6 +5780,7 @@ namespace Ink_Canvas
                                                 };
                                                 inkCanvas.Strokes.Add(_stroke.Clone());
                                                 inkCanvas.Strokes.Add(GenerateDashedLineEllipseStrokeCollection(iniP, endP, true, false));
+                                                IsEraseByShapeRecognition = false;
                                                 return;
                                             }
                                         }
@@ -5867,8 +5826,10 @@ namespace Ink_Canvas
                                     }
 
                                     SetNewBackupOfStroke();
-                                    inkCanvas.Strokes.Add(stroke);
+                                    IsEraseByShapeRecognition = true;
                                     inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                    inkCanvas.Strokes.Add(stroke);
+                                    IsEraseByShapeRecognition = false;
                                     newStrokes = new StrokeCollection();
                                 }
                             }
@@ -5898,19 +5859,12 @@ namespace Ink_Canvas
                                         DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                                     };
                                     SetNewBackupOfStroke();
-                                    inkCanvas.Strokes.Add(stroke);
+                                    IsEraseByShapeRecognition = true;
                                     inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                    inkCanvas.Strokes.Add(stroke);
+                                    IsEraseByShapeRecognition = false;
                                     newStrokes = new StrokeCollection();
                                 }
-<<<<<<< HEAD
-
-                                SetNewBackupOfStroke();
-                                IsEraseByShapeRecognition = true;
-                                inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                                inkCanvas.Strokes.Add(stroke);
-                                newStrokes = new StrokeCollection();
-=======
->>>>>>> ab83992ef82c63ba7a9d4ef428f11edc45718bb3
                             }
                             else if (result.InkDrawingNode.GetShapeName().Contains("Rectangle") ||
                                      result.InkDrawingNode.GetShapeName().Contains("Diamond") ||
@@ -5922,53 +5876,6 @@ namespace Ink_Canvas
                                 if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) - Math.Min(Math.Min(Math.Min(p[0].X, p[1].X), p[2].X), p[3].X) >= 100 ||
                                     Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) - Math.Min(Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 100) && result.InkDrawingNode.HotPoints.Count == 4)
                                 {
-<<<<<<< HEAD
-                                    DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                                };
-                                SetNewBackupOfStroke();
-                                IsEraseByShapeRecognition = true;
-                                inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                                inkCanvas.Strokes.Add(stroke);
-                                newStrokes = new StrokeCollection();
-                            }
-                        }
-                        else if (result.InkDrawingNode.GetShapeName().Contains("Rectangle") ||
-                                 result.InkDrawingNode.GetShapeName().Contains("Diamond") ||
-                                 result.InkDrawingNode.GetShapeName().Contains("Parallelogram") ||
-                                 result.InkDrawingNode.GetShapeName().Contains("Square"))
-                        {
-                            var shape = result.InkDrawingNode.GetShape();
-                            var p = result.InkDrawingNode.HotPoints;
-                            if ((Math.Max(Math.Max(Math.Max(p[0].X, p[1].X), p[2].X), p[3].X) - Math.Min(Math.Min(Math.Min(p[0].X, p[1].X), p[2].X), p[3].X) >= 100 ||
-                                Math.Max(Math.Max(Math.Max(p[0].Y, p[1].Y), p[2].Y), p[3].Y) - Math.Min(Math.Min(Math.Min(p[0].Y, p[1].Y), p[2].Y), p[3].Y) >= 100) && result.InkDrawingNode.HotPoints.Count == 4)
-                            {
-                                //纠正垂直与水平关系
-                                var newPoints = FixPointsDirection(p[0], p[1]);
-                                p[0] = newPoints[0];
-                                p[1] = newPoints[1];
-                                newPoints = FixPointsDirection(p[1], p[2]);
-                                p[1] = newPoints[0];
-                                p[2] = newPoints[1];
-                                newPoints = FixPointsDirection(p[2], p[3]);
-                                p[2] = newPoints[0];
-                                p[3] = newPoints[1];
-                                newPoints = FixPointsDirection(p[3], p[0]);
-                                p[3] = newPoints[0];
-                                p[0] = newPoints[1];
-
-                                var pointList = p.ToList();
-                                pointList.Add(p[0]);
-                                var point = new StylusPointCollection(pointList);
-                                var stroke = new Stroke(GenerateFakePressureRectangle(point))
-                                {
-                                    DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
-                                };
-                                SetNewBackupOfStroke();
-                                IsEraseByShapeRecognition = true;
-                                inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
-                                inkCanvas.Strokes.Add(stroke);
-                                newStrokes = new StrokeCollection();
-=======
                                     //纠正垂直与水平关系
                                     var newPoints = FixPointsDirection(p[0], p[1]);
                                     p[0] = newPoints[0];
@@ -5991,24 +5898,17 @@ namespace Ink_Canvas
                                         DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                                     };
                                     SetNewBackupOfStroke();
-                                    inkCanvas.Strokes.Add(stroke);
+                                    IsEraseByShapeRecognition = true;
                                     inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
+                                    inkCanvas.Strokes.Add(stroke);
+                                    IsEraseByShapeRecognition = false;
                                     newStrokes = new StrokeCollection();
                                 }
->>>>>>> ab83992ef82c63ba7a9d4ef428f11edc45718bb3
                             }
                         }
                         catch { }
                     }
-<<<<<<< HEAD
-                    catch { }
-                    finally
-                    {
-                        IsEraseByShapeRecognition = false;
-                    }
-=======
                     InkToShapeProcess();
->>>>>>> ab83992ef82c63ba7a9d4ef428f11edc45718bb3
                 }
 
                 // 检查是否是压感笔书写
