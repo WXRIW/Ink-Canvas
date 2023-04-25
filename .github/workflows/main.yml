@@ -69,11 +69,11 @@ jobs:
     - name: Upload to artifact (x64)
       uses: actions/upload-artifact@main
       with:
-        name: Ink-Canvas
+        name: Ink-Canvas-x64
         path: Ink Canvas/bin/x64/Release
         
     - name: Upload to artifact (ARM64)
       uses: actions/upload-artifact@main
       with:
-        name: Ink-Canvas
+        name: Ink-Canvas-ARM64
         path: Ink Canvas/bin/ARM64/Release
