@@ -459,6 +459,10 @@ namespace Ink_Canvas
 
             //加载设置
             LoadSettings();
+            if (Environment.Is64BitProcess)
+            {
+                GroupBoxInkRecognition.Visibility = Visibility.Collapsed;
+            }
 
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
 

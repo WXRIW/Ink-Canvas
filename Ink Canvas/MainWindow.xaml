@@ -20,7 +20,7 @@
         Closing="Window_Closing"
         Closed="Window_Closed"
         PreviewKeyDown="Main_Grid_PreviewKeyDown"
-        Height="1000" Width="1000"
+        Height="10000" Width="1000"
         FontFamily="Microsoft YaHei UI"
         MouseWheel="Window_MouseWheel"
         Foreground="Black"
@@ -429,7 +429,7 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerRotationOnSelection" Header="允许双指旋转选中的墨迹" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerRotation_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
-                        <GroupBox Header="墨迹识别 (Beta)">
+                        <GroupBox Name="GroupBoxInkRecognition" Header="墨迹识别 (Beta)">
                             <ui:SimpleStackPanel Spacing="12">
                                 <TextBlock Text="墨迹识别功能目前处于开发阶段，目前可实现智能识别圆、三角形、&#x000A;矩形，并自动转换为规范图形。" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchEnableInkToShape" Header="启用墨迹识别" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableInkToShape_Toggled" IsOn="True"/>
