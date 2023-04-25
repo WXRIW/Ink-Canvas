@@ -25,7 +25,7 @@ namespace Ink_Canvas
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             MessageBox.Show("抱歉，出现未预期的异常，可能导致程序运行不稳定。\n请保存墨迹后重启应用。", "未预期的异常", MessageBoxButton.OK, MessageBoxImage.Error);
-            LogHelper.NewLog(e.ToString());
+            LogHelper.NewLog(e.Exception.ToString());
             e.Handled = true;
         }
 
