@@ -6371,7 +6371,12 @@ namespace Ink_Canvas
         int lastNotificationShowTime = 0;
         int notificationShowTime = 2500;
 
-        private void ShowNotification(string notice, bool isShowImmediately = true)
+        public static void ShowNewMessage(string notice, bool isShowImmediately = true)
+        {
+            (Application.Current?.Windows.Cast<Window>().FirstOrDefault(window => window is MainWindow) as MainWindow).ShowNotification(notice, isShowImmediately);
+        }
+
+        public void ShowNotification(string notice, bool isShowImmediately = true)
         {
             lastNotificationShowTime = Environment.TickCount;
 
