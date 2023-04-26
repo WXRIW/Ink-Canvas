@@ -324,6 +324,7 @@ namespace Ink_Canvas
         private bool IsEraseByPoint => inkCanvas.EditingMode == InkCanvasEditingMode.EraseByPoint;
         private StrokeCollection ReplacedStroke;
         private StrokeCollection AddedStroke;
+        private StrokeCollection CuboidStrokeCollection;
         private TimeMachine timeMachine = new TimeMachine();
         private void TimeMachine_OnUndoStateChanged(bool status)
         {
@@ -4246,7 +4247,6 @@ namespace Ink_Canvas
 
         private void MouseTouchMove(Point endP)
         {
-            IsCommitingByShapeDrawing = true;
             List<System.Windows.Point> pointList;
             StylusPointCollection point;
             Stroke stroke;
@@ -4255,6 +4255,7 @@ namespace Ink_Canvas
             switch (drawingShapeMode)
             {
                 case 1:
+                    IsCommitingByShapeDrawing = true;
                     pointList = new List<System.Windows.Point>{
                         new System.Windows.Point(iniP.X, iniP.Y),
                         new System.Windows.Point(endP.X, endP.Y)
@@ -4273,6 +4274,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 8:
+                    IsCommitingByShapeDrawing = true;
                     strokes.Add(GenerateDashedLineStrokeCollection(iniP, endP));
                     try
                     {
@@ -4283,6 +4285,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 18:
+                    IsCommitingByShapeDrawing = true;
                     strokes.Add(GenerateDotLineStrokeCollection(iniP, endP));
                     try
                     {
@@ -4293,6 +4296,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 2:
+                    IsCommitingByShapeDrawing = true;
                     double w = 30, h = 10;
                     double theta = Math.Atan2(iniP.Y - endP.Y, iniP.X - endP.X);
                     double sint = Math.Sin(theta);
@@ -4320,6 +4324,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 15:
+                    IsCommitingByShapeDrawing = true;
                     double d = GetDistance(iniP, endP);
                     if (d == 0) return;
                     double sinTheta = (iniP.Y - endP.Y) / d;
@@ -4372,6 +4377,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 11:
+                    IsCommitingByShapeDrawing = true;
                     strokes.Add(GenerateArrowLineStroke(new Point(2 * iniP.X - (endP.X - 20), iniP.Y), new Point(endP.X, iniP.Y)));
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, 2 * iniP.Y - (endP.Y + 20)), new Point(iniP.X, endP.Y)));
                     try
@@ -4383,6 +4389,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 12:
+                    IsCommitingByShapeDrawing = true;
                     if (Math.Abs(iniP.X - endP.X) < 0.01) return;
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X + (iniP.X - endP.X) / Math.Abs(iniP.X - endP.X) * 25, iniP.Y), new Point(endP.X, iniP.Y)));
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, 2 * iniP.Y - (endP.Y + 20)), new Point(iniP.X, endP.Y)));
@@ -4395,6 +4402,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 13:
+                    IsCommitingByShapeDrawing = true;
                     if (Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     strokes.Add(GenerateArrowLineStroke(new Point(2 * iniP.X - (endP.X - 20), iniP.Y), new Point(endP.X, iniP.Y)));
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, iniP.Y + (iniP.Y - endP.Y) / Math.Abs(iniP.Y - endP.Y) * 25), new Point(iniP.X, endP.Y)));
@@ -4407,6 +4415,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 14:
+                    IsCommitingByShapeDrawing = true;
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X + (iniP.X - endP.X) / Math.Abs(iniP.X - endP.X) * 25, iniP.Y), new Point(endP.X, iniP.Y)));
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, iniP.Y + (iniP.Y - endP.Y) / Math.Abs(iniP.Y - endP.Y) * 25), new Point(iniP.X, endP.Y)));
@@ -4419,6 +4428,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 17:
+                    IsCommitingByShapeDrawing = true;
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, iniP.Y), new Point(iniP.X + Math.Abs(endP.X - iniP.X), iniP.Y)));
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, iniP.Y), new Point(iniP.X, iniP.Y - Math.Abs(endP.Y - iniP.Y))));
                     d = (Math.Abs(iniP.X - endP.X) + Math.Abs(iniP.Y - endP.Y)) / 2;
@@ -4432,6 +4442,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 3:
+                    IsCommitingByShapeDrawing = true;
                     pointList = new List<System.Windows.Point>{
                         new System.Windows.Point(iniP.X, iniP.Y),
                         new System.Windows.Point(iniP.X, endP.Y),
@@ -4453,6 +4464,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 19:
+                    IsCommitingByShapeDrawing = true;
                     double a = iniP.X - endP.X;
                     double b = iniP.Y - endP.Y;
                     pointList = new List<System.Windows.Point>{
@@ -4476,6 +4488,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 4:
+                    IsCommitingByShapeDrawing = true;
                     pointList = GenerateEllipseGeometry(iniP, endP);
                     point = new StylusPointCollection(pointList);
                     stroke = new Stroke(point)
@@ -4491,6 +4504,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 5:
+                    IsCommitingByShapeDrawing = true;
                     double R = GetDistance(iniP, endP);
                     pointList = GenerateEllipseGeometry(new Point(iniP.X - R, iniP.Y - R), new Point(iniP.X + R, iniP.Y + R));
                     point = new StylusPointCollection(pointList);
@@ -4507,6 +4521,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 16:
+                    IsCommitingByShapeDrawing = true;
                     double halfA = endP.X - iniP.X;
                     double halfB = endP.Y - iniP.Y;
                     pointList = GenerateEllipseGeometry(new Point(iniP.X - halfA, iniP.Y - halfB), new Point(iniP.X + halfA, iniP.Y + halfB));
@@ -4524,6 +4539,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 23:
+                    IsCommitingByShapeDrawing = true;
                     a = Math.Abs(endP.X - iniP.X);
                     b = Math.Abs(endP.Y - iniP.Y);
                     pointList = GenerateEllipseGeometry(new Point(iniP.X - a, iniP.Y - b), new Point(iniP.X + a, iniP.Y + b));
@@ -4582,6 +4598,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 10:
+                    IsCommitingByShapeDrawing = true;
                     R = GetDistance(iniP, endP);
                     strokes = GenerateDashedLineEllipseStrokeCollection(new Point(iniP.X - R, iniP.Y - R), new Point(iniP.X + R, iniP.Y + R));
                     try
@@ -4594,6 +4611,7 @@ namespace Ink_Canvas
                     break;
                 case 24:
                 case 25:
+                            IsCommitingByShapeDrawing = true;
                     //双曲线 x^2/a^2 - y^2/b^2 = 1
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     var pointList2 = new List<Point>();
@@ -4667,6 +4685,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 20:
+                    IsCommitingByShapeDrawing = true;
                     //抛物线 y=ax^2
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     a = (iniP.Y - endP.Y) / ((iniP.X - endP.X) * (iniP.X - endP.X));
@@ -4698,6 +4717,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 21:
+                    IsCommitingByShapeDrawing = true;
                     //抛物线 y^2=ax
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     a = (iniP.X - endP.X) / ((iniP.Y - endP.Y) * (iniP.Y - endP.Y));
@@ -4729,6 +4749,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 22:
+                    IsCommitingByShapeDrawing = true;
                     //抛物线 y^2=ax, 含焦点
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     double p = (iniP.Y - endP.Y) * (iniP.Y - endP.Y) / (2 * (iniP.X - endP.X));
@@ -4769,6 +4790,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 6:
+                    IsCommitingByShapeDrawing = true;
                     newIniP = iniP;
                     if (iniP.Y > endP.Y)
                     {
@@ -4825,6 +4847,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 7:
+                    IsCommitingByShapeDrawing = true;
                     if (iniP.Y > endP.Y)
                     {
                         newIniP = new Point(iniP.X, endP.Y);
@@ -4872,6 +4895,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 9:
+                    IsCommitingByShapeDrawing = true;
                     if (isFirstTouchCuboid)
                     {
                         //分开画线条方便后期单独擦除某一条棱
@@ -5160,7 +5184,7 @@ namespace Ink_Canvas
                 MouseTouchMove(e.GetPosition(inkCanvas));
             }
         }
-
+        
         private void inkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (drawingShapeMode == 5)
@@ -5186,15 +5210,24 @@ namespace Ink_Canvas
             {
                 if (isFirstTouchCuboid)
                 {
+                    if (CuboidStrokeCollection == null) CuboidStrokeCollection = new StrokeCollection();
                     isFirstTouchCuboid = false;
                     Point newIniP = new Point(Math.Min(CuboidFrontRectIniP.X, CuboidFrontRectEndP.X), Math.Min(CuboidFrontRectIniP.Y, CuboidFrontRectEndP.Y));
                     Point newEndP = new Point(Math.Max(CuboidFrontRectIniP.X, CuboidFrontRectEndP.X), Math.Max(CuboidFrontRectIniP.Y, CuboidFrontRectEndP.Y));
                     CuboidFrontRectIniP = newIniP;
                     CuboidFrontRectEndP = newEndP;
+                    CuboidStrokeCollection.Add(lastTempStrokeCollection);
                 }
                 else
                 {
                     BtnPen_Click(null, null); //画完还原到笔模式
+                    if (IsCommitingByShapeDrawing)
+                    {
+                        CuboidStrokeCollection.Add(lastTempStrokeCollection);
+                        IsCommitingByShapeDrawing = false;
+                        timeMachine.CommitStrokeUserInputHistory(CuboidStrokeCollection);
+                        CuboidStrokeCollection = null;
+                    }
                 }
             }
             if (drawingShapeMode == 24 || drawingShapeMode == 25)
@@ -5221,7 +5254,7 @@ namespace Ink_Canvas
                 AddedStroke = null;
                 ReplacedStroke = null;
             }
-            if (IsCommitingByShapeDrawing)
+            if (IsCommitingByShapeDrawing && drawingShapeMode != 9)
             {
                 IsCommitingByShapeDrawing = false;
                 timeMachine.CommitStrokeUserInputHistory(lastTempStrokeCollection);
