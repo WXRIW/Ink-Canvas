@@ -3322,18 +3322,18 @@ namespace Ink_Canvas
                 }
                 else
                 {
-                    if (item.CurrentStroke != null)
-                    {
-                        foreach (var currentStroke in item.CurrentStroke)
-                        {
-                            if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
-                        }
-                    }
                     if (item.ReplacedStroke != null)
                     {
                         foreach (var replacedStroke in item.ReplacedStroke)
                         {
                             if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
+                        }
+                    }
+                    if (item.CurrentStroke != null)
+                    {
+                        foreach (var currentStroke in item.CurrentStroke)
+                        {
+                            if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
                         }
                     }
                 }
@@ -3417,18 +3417,18 @@ namespace Ink_Canvas
                 }
                 else
                 {
-                    if (item.CurrentStroke != null)
-                    {
-                        foreach (var currentStroke in item.CurrentStroke)
-                        {
-                            if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
-                        }
-                    }
                     if (item.ReplacedStroke != null)
                     {
                         foreach (var replacedStroke in item.ReplacedStroke)
                         {
                             if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
+                        }
+                    }
+                    if (item.CurrentStroke != null)
+                    {
+                        foreach (var currentStroke in item.CurrentStroke)
+                        {
+                            if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
                         }
                     }
                 }
