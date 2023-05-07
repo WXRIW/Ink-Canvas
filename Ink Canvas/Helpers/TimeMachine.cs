@@ -41,6 +41,19 @@ namespace Ink_Canvas.Helpers
             _currentIndex = _currentStrokeHistory.Count - 1;
             NotifyUndoRedoState();
         }
+        public void CommitStrokeRotateHistory(StrokeCollection strokeToBeReplaced, StrokeCollection generatedStroke)
+        {
+            if (_currentIndex + 1 < _currentStrokeHistory.Count)
+            {
+                _currentStrokeHistory.RemoveRange(_currentIndex + 1, (_currentStrokeHistory.Count - 1) - _currentIndex);
+            }
+            _currentStrokeHistory.Add(new TimeMachineHistory(generatedStroke,
+                TimeMachineHistoryType.Rotate,
+                false,
+                strokeToBeReplaced));
+            _currentIndex = _currentStrokeHistory.Count - 1;
+            NotifyUndoRedoState();
+        }
 
         public void CommitStrokeEraseHistory(StrokeCollection stroke, StrokeCollection sourceStroke = null)
         {
@@ -126,6 +139,7 @@ namespace Ink_Canvas.Helpers
     {
         UserInput,
         ShapeRecognition,
-        Clear
+        Clear,
+        Rotate
     }
 }

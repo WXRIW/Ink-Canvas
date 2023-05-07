@@ -317,10 +317,16 @@ namespace Ink_Canvas
 
         #region TimeMachine
 
-        private bool IsCommitingByCode = false;
-        private bool IsCommitingByShapeDrawing = false;
-        private bool IsEraseByShapeRecognition = false;
-        private bool IsClearingCanvas = false;
+        private enum CommitReason
+        {
+            UserInput,
+            CodeInput,
+            ShapeDrawing,
+            ShapeRecognition,
+            ClearingCanvas,
+            Rotate
+        }
+        private CommitReason _currentCommitType = CommitReason.UserInput;
         private bool IsEraseByPoint => inkCanvas.EditingMode == InkCanvasEditingMode.EraseByPoint;
         private StrokeCollection ReplacedStroke;
         private StrokeCollection AddedStroke;
@@ -341,7 +347,12 @@ namespace Ink_Canvas
         }
         private void StrokesOnStrokesChanged(object sender, StrokeCollectionChangedEventArgs e)
         {
-            if (IsCommitingByCode || IsCommitingByShapeDrawing) return;
+            if (_currentCommitType == CommitReason.CodeInput || _currentCommitType == CommitReason.ShapeDrawing) return;
+            if (_currentCommitType == CommitReason.Rotate)
+            {
+                timeMachine.CommitStrokeRotateHistory(e.Removed, e.Added);
+                return;
+            }
             if (e.Added.Count != 0 && e.Removed.Count != 0)
             {
                 if (IsEraseByPoint)
@@ -355,7 +366,7 @@ namespace Ink_Canvas
             }
             if (e.Added.Count != 0)
             {
-                if (IsEraseByShapeRecognition)
+                if (_currentCommitType == CommitReason.ShapeRecognition)
                 {
                     timeMachine.CommitStrokeShapeHistory(ReplacedStroke, e.Added);
                     ReplacedStroke = null;
@@ -370,12 +381,12 @@ namespace Ink_Canvas
 
             if (e.Removed.Count != 0)
             {
-                if (IsEraseByShapeRecognition)
+                if (_currentCommitType == CommitReason.ShapeRecognition)
                 {
                     ReplacedStroke = e.Removed;
                     return;
                 }
-                else if (!IsEraseByPoint || IsClearingCanvas)
+                else if (!IsEraseByPoint || _currentCommitType == CommitReason.ClearingCanvas)
                 {
                     timeMachine.CommitStrokeEraseHistory(e.Removed);
                     return;
@@ -3248,7 +3259,8 @@ namespace Ink_Canvas
 
         private void BtnUndo_Click(object sender, RoutedEventArgs e)
         {
-            IsCommitingByCode = true;
+            GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+            _currentCommitType = CommitReason.CodeInput;
             var item = timeMachine.Undo();
             if (item.CommitType == TimeMachineHistoryType.UserInput)
             {
@@ -3299,72 +3311,7 @@ namespace Ink_Canvas
                     }
                 }
             }
-            else if (item.CommitType == TimeMachineHistoryType.Clear)
-            {
-                if (!item.StrokeHasBeenCleared)
-                {
-                    if (item.CurrentStroke != null)
-                    {
-                        foreach (var currentStroke in item.CurrentStroke)
-                        {
-                            if (!inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Add(currentStroke);
-                        }
-
-                    }
-                    if (item.ReplacedStroke != null)
-                    {
-                        foreach (var replacedStroke in item.ReplacedStroke)
-                        {
-                            if (inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Remove(replacedStroke);
-                        }
-                    }
-
-                }
-                else
-                {
-                    if (item.ReplacedStroke != null)
-                    {
-                        foreach (var replacedStroke in item.ReplacedStroke)
-                        {
-                            if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
-                        }
-                    }
-                    if (item.CurrentStroke != null)
-                    {
-                        foreach (var currentStroke in item.CurrentStroke)
-                        {
-                            if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
-                        }
-                    }
-                }
-            }
-            IsCommitingByCode = false;
-        }
-
-        private void BtnRedo_Click(object sender, RoutedEventArgs e)
-        {
-            IsCommitingByCode = true;
-            var item = timeMachine.Redo();
-            if (item.CommitType == TimeMachineHistoryType.UserInput)
-            {
-                if (!item.StrokeHasBeenCleared)
-                {
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                }
-                else
-                {
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                }
-            }
-            else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
+            else if (item.CommitType == TimeMachineHistoryType.Rotate)
             {
                 if (item.StrokeHasBeenCleared)
                 {
@@ -3433,7 +3380,133 @@ namespace Ink_Canvas
                     }
                 }
             }
-            IsCommitingByCode = false;
+            _currentCommitType = CommitReason.UserInput;
+        }
+
+        private void BtnRedo_Click(object sender, RoutedEventArgs e)
+        {
+            GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+            _currentCommitType = CommitReason.CodeInput;
+            var item = timeMachine.Redo();
+            if (item.CommitType == TimeMachineHistoryType.UserInput)
+            {
+                if (!item.StrokeHasBeenCleared)
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
+                    }
+                }
+            }
+            else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
+            {
+                if (item.StrokeHasBeenCleared)
+                {
+
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
+                    }
+                    foreach (var strokes in item.ReplacedStroke)
+                    {
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
+                    }
+                    foreach (var strokes in item.ReplacedStroke)
+                    {
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
+                    }
+                }
+            }
+            else if (item.CommitType == TimeMachineHistoryType.Rotate)
+            {
+                if (item.StrokeHasBeenCleared)
+                {
+
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
+                    }
+                    foreach (var strokes in item.ReplacedStroke)
+                    {
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
+                    }
+                    foreach (var strokes in item.ReplacedStroke)
+                    {
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
+                    }
+                }
+            }
+            else if (item.CommitType == TimeMachineHistoryType.Clear)
+            {
+                if (!item.StrokeHasBeenCleared)
+                {
+                    if (item.CurrentStroke != null)
+                    {
+                        foreach (var currentStroke in item.CurrentStroke)
+                        {
+                            if (!inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Add(currentStroke);
+                        }
+
+                    }
+                    if (item.ReplacedStroke != null)
+                    {
+                        foreach (var replacedStroke in item.ReplacedStroke)
+                        {
+                            if (inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Remove(replacedStroke);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if (item.ReplacedStroke != null)
+                    {
+                        foreach (var replacedStroke in item.ReplacedStroke)
+                        {
+                            if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
+                        }
+                    }
+                    if (item.CurrentStroke != null)
+                    {
+                        foreach (var currentStroke in item.CurrentStroke)
+                        {
+                            if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
+                        }
+                    }
+                }
+            }
+            _currentCommitType = CommitReason.UserInput;
         }
 
         private void Btn_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -3554,11 +3627,18 @@ namespace Ink_Canvas
             // Update matrix to reflect translation/rotation
             m.ScaleAt(-1, 1, center.X, center.Y);  // 缩放
 
-            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
-            foreach (Stroke stroke in strokes)
+            StrokeCollection targetStrokes = inkCanvas.GetSelectedStrokes();
+            StrokeCollection resultStrokes = targetStrokes.Clone();
+            foreach (Stroke stroke in resultStrokes)
             {
                 stroke.Transform(m, false);
             }
+            _currentCommitType = CommitReason.Rotate;
+            inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
+            _currentCommitType = CommitReason.UserInput;
+            isProgramChangeStrokeSelection = true;
+            inkCanvas.Select(resultStrokes);
+            isProgramChangeStrokeSelection = false;
 
             //updateBorderStrokeSelectionControlLocation();
         }
@@ -3579,11 +3659,18 @@ namespace Ink_Canvas
             // Update matrix to reflect translation/rotation
             m.ScaleAt(1, -1, center.X, center.Y);  // 缩放
 
-            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
-            foreach (Stroke stroke in strokes)
+            StrokeCollection targetStrokes = inkCanvas.GetSelectedStrokes();
+            StrokeCollection resultStrokes = targetStrokes.Clone();
+            foreach (Stroke stroke in resultStrokes)
             {
                 stroke.Transform(m, false);
             }
+            _currentCommitType = CommitReason.Rotate;
+            inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
+            _currentCommitType = CommitReason.UserInput;
+            isProgramChangeStrokeSelection = true;
+            inkCanvas.Select(resultStrokes);
+            isProgramChangeStrokeSelection = false;
         }
 
         private void ImageRotate45_MouseUp(object sender, MouseButtonEventArgs e)
@@ -3602,11 +3689,18 @@ namespace Ink_Canvas
             // Update matrix to reflect translation/rotation
             m.RotateAt(45, center.X, center.Y);  // 旋转
 
-            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
-            foreach (Stroke stroke in strokes)
+            StrokeCollection targetStrokes = inkCanvas.GetSelectedStrokes();
+            StrokeCollection resultStrokes = targetStrokes.Clone();
+            foreach (Stroke stroke in resultStrokes)
             {
                 stroke.Transform(m, false);
             }
+            _currentCommitType = CommitReason.Rotate;
+            inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
+            _currentCommitType = CommitReason.UserInput;
+            isProgramChangeStrokeSelection = true;
+            inkCanvas.Select(resultStrokes);
+            isProgramChangeStrokeSelection = false;
         }
 
         private void ImageRotate90_MouseUp(object sender, MouseButtonEventArgs e)
@@ -3625,11 +3719,18 @@ namespace Ink_Canvas
             // Update matrix to reflect translation/rotation
             m.RotateAt(90, center.X, center.Y);  // 旋转
 
-            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
-            foreach (Stroke stroke in strokes)
+            StrokeCollection targetStrokes = inkCanvas.GetSelectedStrokes();
+            StrokeCollection resultStrokes = targetStrokes.Clone();
+            foreach (Stroke stroke in resultStrokes)
             {
                 stroke.Transform(m, false);
             }
+            _currentCommitType = CommitReason.Rotate;
+            inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
+            _currentCommitType = CommitReason.UserInput;
+            isProgramChangeStrokeSelection = true;
+            inkCanvas.Select(resultStrokes);
+            isProgramChangeStrokeSelection = false;
         }
 
         #endregion
@@ -4255,7 +4356,7 @@ namespace Ink_Canvas
             switch (drawingShapeMode)
             {
                 case 1:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     pointList = new List<System.Windows.Point>{
                         new System.Windows.Point(iniP.X, iniP.Y),
                         new System.Windows.Point(endP.X, endP.Y)
@@ -4274,7 +4375,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 8:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     strokes.Add(GenerateDashedLineStrokeCollection(iniP, endP));
                     try
                     {
@@ -4285,7 +4386,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 18:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     strokes.Add(GenerateDotLineStrokeCollection(iniP, endP));
                     try
                     {
@@ -4296,7 +4397,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 2:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     double w = 30, h = 10;
                     double theta = Math.Atan2(iniP.Y - endP.Y, iniP.X - endP.X);
                     double sint = Math.Sin(theta);
@@ -4324,7 +4425,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 15:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     double d = GetDistance(iniP, endP);
                     if (d == 0) return;
                     double sinTheta = (iniP.Y - endP.Y) / d;
@@ -4377,7 +4478,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 11:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     strokes.Add(GenerateArrowLineStroke(new Point(2 * iniP.X - (endP.X - 20), iniP.Y), new Point(endP.X, iniP.Y)));
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, 2 * iniP.Y - (endP.Y + 20)), new Point(iniP.X, endP.Y)));
                     try
@@ -4389,7 +4490,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 12:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     if (Math.Abs(iniP.X - endP.X) < 0.01) return;
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X + (iniP.X - endP.X) / Math.Abs(iniP.X - endP.X) * 25, iniP.Y), new Point(endP.X, iniP.Y)));
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, 2 * iniP.Y - (endP.Y + 20)), new Point(iniP.X, endP.Y)));
@@ -4402,7 +4503,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 13:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     if (Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     strokes.Add(GenerateArrowLineStroke(new Point(2 * iniP.X - (endP.X - 20), iniP.Y), new Point(endP.X, iniP.Y)));
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, iniP.Y + (iniP.Y - endP.Y) / Math.Abs(iniP.Y - endP.Y) * 25), new Point(iniP.X, endP.Y)));
@@ -4415,7 +4516,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 14:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X + (iniP.X - endP.X) / Math.Abs(iniP.X - endP.X) * 25, iniP.Y), new Point(endP.X, iniP.Y)));
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, iniP.Y + (iniP.Y - endP.Y) / Math.Abs(iniP.Y - endP.Y) * 25), new Point(iniP.X, endP.Y)));
@@ -4428,7 +4529,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 17:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, iniP.Y), new Point(iniP.X + Math.Abs(endP.X - iniP.X), iniP.Y)));
                     strokes.Add(GenerateArrowLineStroke(new Point(iniP.X, iniP.Y), new Point(iniP.X, iniP.Y - Math.Abs(endP.Y - iniP.Y))));
                     d = (Math.Abs(iniP.X - endP.X) + Math.Abs(iniP.Y - endP.Y)) / 2;
@@ -4442,7 +4543,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 3:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     pointList = new List<System.Windows.Point>{
                         new System.Windows.Point(iniP.X, iniP.Y),
                         new System.Windows.Point(iniP.X, endP.Y),
@@ -4464,7 +4565,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 19:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     double a = iniP.X - endP.X;
                     double b = iniP.Y - endP.Y;
                     pointList = new List<System.Windows.Point>{
@@ -4488,7 +4589,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 4:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     pointList = GenerateEllipseGeometry(iniP, endP);
                     point = new StylusPointCollection(pointList);
                     stroke = new Stroke(point)
@@ -4504,7 +4605,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 5:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     double R = GetDistance(iniP, endP);
                     pointList = GenerateEllipseGeometry(new Point(iniP.X - R, iniP.Y - R), new Point(iniP.X + R, iniP.Y + R));
                     point = new StylusPointCollection(pointList);
@@ -4521,7 +4622,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 16:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     double halfA = endP.X - iniP.X;
                     double halfB = endP.Y - iniP.Y;
                     pointList = GenerateEllipseGeometry(new Point(iniP.X - halfA, iniP.Y - halfB), new Point(iniP.X + halfA, iniP.Y + halfB));
@@ -4539,7 +4640,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(stroke);
                     break;
                 case 23:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     a = Math.Abs(endP.X - iniP.X);
                     b = Math.Abs(endP.Y - iniP.Y);
                     pointList = GenerateEllipseGeometry(new Point(iniP.X - a, iniP.Y - b), new Point(iniP.X + a, iniP.Y + b));
@@ -4598,7 +4699,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 10:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     R = GetDistance(iniP, endP);
                     strokes = GenerateDashedLineEllipseStrokeCollection(new Point(iniP.X - R, iniP.Y - R), new Point(iniP.X + R, iniP.Y + R));
                     try
@@ -4611,7 +4712,7 @@ namespace Ink_Canvas
                     break;
                 case 24:
                 case 25:
-                            IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     //双曲线 x^2/a^2 - y^2/b^2 = 1
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     var pointList2 = new List<Point>();
@@ -4685,7 +4786,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 20:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     //抛物线 y=ax^2
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     a = (iniP.Y - endP.Y) / ((iniP.X - endP.X) * (iniP.X - endP.X));
@@ -4717,7 +4818,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 21:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     //抛物线 y^2=ax
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     a = (iniP.X - endP.X) / ((iniP.Y - endP.Y) * (iniP.Y - endP.Y));
@@ -4749,7 +4850,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 22:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     //抛物线 y^2=ax, 含焦点
                     if (Math.Abs(iniP.X - endP.X) < 0.01 || Math.Abs(iniP.Y - endP.Y) < 0.01) return;
                     double p = (iniP.Y - endP.Y) * (iniP.Y - endP.Y) / (2 * (iniP.X - endP.X));
@@ -4790,7 +4891,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 6:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     newIniP = iniP;
                     if (iniP.Y > endP.Y)
                     {
@@ -4847,7 +4948,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 7:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     if (iniP.Y > endP.Y)
                     {
                         newIniP = new Point(iniP.X, endP.Y);
@@ -4895,7 +4996,7 @@ namespace Ink_Canvas
                     inkCanvas.Strokes.Add(strokes);
                     break;
                 case 9:
-                    IsCommitingByShapeDrawing = true;
+                    _currentCommitType = CommitReason.ShapeDrawing;
                     if (isFirstTouchCuboid)
                     {
                         //分开画线条方便后期单独擦除某一条棱
@@ -5221,10 +5322,10 @@ namespace Ink_Canvas
                 else
                 {
                     BtnPen_Click(null, null); //画完还原到笔模式
-                    if (IsCommitingByShapeDrawing)
+                    if (_currentCommitType == CommitReason.ShapeDrawing)
                     {
                         CuboidStrokeCollection.Add(lastTempStrokeCollection);
-                        IsCommitingByShapeDrawing = false;
+                        _currentCommitType = CommitReason.UserInput;
                         timeMachine.CommitStrokeUserInputHistory(CuboidStrokeCollection);
                         CuboidStrokeCollection = null;
                     }
@@ -5254,9 +5355,9 @@ namespace Ink_Canvas
                 AddedStroke = null;
                 ReplacedStroke = null;
             }
-            if (IsCommitingByShapeDrawing && drawingShapeMode != 9)
+            if (_currentCommitType == CommitReason.ShapeDrawing && drawingShapeMode != 9)
             {
-                IsCommitingByShapeDrawing = false;
+                _currentCommitType = CommitReason.UserInput;
                 timeMachine.CommitStrokeUserInputHistory(lastTempStrokeCollection);
             }
             lastTempStroke = null;
@@ -5303,11 +5404,11 @@ namespace Ink_Canvas
 
         private void ClearStrokes(bool isErasedByCode)
         {
-            if (isErasedByCode) IsCommitingByCode = true;
-            IsClearingCanvas = true;
+
+            _currentCommitType = CommitReason.ClearingCanvas;
+            if (isErasedByCode) _currentCommitType = CommitReason.CodeInput;
             inkCanvas.Strokes.Clear();
-            IsClearingCanvas = false;
-            if (isErasedByCode) IsCommitingByCode = false;
+            _currentCommitType = CommitReason.UserInput;
         }
 
         private void RestoreStrokes(bool isBackupMain = false)
@@ -5317,7 +5418,7 @@ namespace Ink_Canvas
                 if (TimeMachineHistories[CurrentWhiteboardIndex] == null) return; //防止白板打开后不居中
                 if (isBackupMain)
                 {
-                    IsCommitingByCode = true;
+                    _currentCommitType = CommitReason.CodeInput;
                     timeMachine.ImportTimeMachineHistory(TimeMachineHistories[0]);
                     foreach (var item in TimeMachineHistories[0])
                     {
@@ -5410,11 +5511,11 @@ namespace Ink_Canvas
                             }
                         }               
                     }
-                    IsCommitingByCode = false;
+                    _currentCommitType = CommitReason.UserInput;
                 }
                 else
                 {
-                    IsCommitingByCode = true;
+                    _currentCommitType = CommitReason.CodeInput;
                     timeMachine.ImportTimeMachineHistory(TimeMachineHistories[CurrentWhiteboardIndex]);
                     foreach (var item in TimeMachineHistories[CurrentWhiteboardIndex])
                     {
@@ -5508,7 +5609,7 @@ namespace Ink_Canvas
                         }
 
                     }
-                    IsCommitingByCode = false;
+                    _currentCommitType = CommitReason.UserInput;
                 }
                 AdjustStrokeColor();
             }
@@ -5725,10 +5826,10 @@ namespace Ink_Canvas
                                     };
                                     circles.Add(new Circle(result.Centroid, shape.Width / 2.0, stroke));
                                     SetNewBackupOfStroke();
-                                    IsEraseByShapeRecognition = true;
+                                    _currentCommitType = CommitReason.ShapeRecognition;
                                     inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
                                     inkCanvas.Strokes.Add(stroke);
-                                    IsEraseByShapeRecognition = false;
+                                    _currentCommitType = CommitReason.UserInput;
                                     newStrokes = new StrokeCollection();
                                 }
                             }
@@ -5801,7 +5902,7 @@ namespace Ink_Canvas
                                                 double topB = endP.Y - iniP.Y;
 
                                                 SetNewBackupOfStroke();
-                                                IsEraseByShapeRecognition = true;
+                                                _currentCommitType = CommitReason.ShapeRecognition;
                                                 inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
                                                 newStrokes = new StrokeCollection();
 
@@ -5813,7 +5914,7 @@ namespace Ink_Canvas
                                                 };
                                                 inkCanvas.Strokes.Add(_stroke.Clone());
                                                 inkCanvas.Strokes.Add(GenerateDashedLineEllipseStrokeCollection(iniP, endP, true, false));
-                                                IsEraseByShapeRecognition = false;
+                                                _currentCommitType = CommitReason.UserInput;
                                                 return;
                                             }
                                         }
@@ -5859,10 +5960,11 @@ namespace Ink_Canvas
                                     }
 
                                     SetNewBackupOfStroke();
-                                    IsEraseByShapeRecognition = true;
+                                    _currentCommitType = CommitReason.ShapeRecognition;
                                     inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
                                     inkCanvas.Strokes.Add(stroke);
-                                    IsEraseByShapeRecognition = false;
+                                    _currentCommitType = CommitReason.UserInput;
+                                    GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
                                     newStrokes = new StrokeCollection();
                                 }
                             }
@@ -5892,10 +5994,11 @@ namespace Ink_Canvas
                                         DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                                     };
                                     SetNewBackupOfStroke();
-                                    IsEraseByShapeRecognition = true;
+                                    _currentCommitType = CommitReason.ShapeRecognition;
                                     inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
                                     inkCanvas.Strokes.Add(stroke);
-                                    IsEraseByShapeRecognition = false;
+                                    _currentCommitType = CommitReason.UserInput;
+                                    GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
                                     newStrokes = new StrokeCollection();
                                 }
                             }
@@ -5931,10 +6034,11 @@ namespace Ink_Canvas
                                         DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                                     };
                                     SetNewBackupOfStroke();
-                                    IsEraseByShapeRecognition = true;
+                                    _currentCommitType = CommitReason.ShapeRecognition;
                                     inkCanvas.Strokes.Remove(result.InkDrawingNode.Strokes);
                                     inkCanvas.Strokes.Add(stroke);
-                                    IsEraseByShapeRecognition = false;
+                                    _currentCommitType = CommitReason.UserInput;
+                                    GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
                                     newStrokes = new StrokeCollection();
                                 }
                             }
