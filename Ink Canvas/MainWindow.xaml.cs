@@ -3259,7 +3259,11 @@ namespace Ink_Canvas
 
         private void BtnUndo_Click(object sender, RoutedEventArgs e)
         {
-            GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+            if (inkCanvas.GetSelectedStrokes().Count != 0)
+            {
+                GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+                inkCanvas.Select(new StrokeCollection());
+            }
             _currentCommitType = CommitReason.CodeInput;
             var item = timeMachine.Undo();
             if (item.CommitType == TimeMachineHistoryType.UserInput)
@@ -3385,7 +3389,12 @@ namespace Ink_Canvas
 
         private void BtnRedo_Click(object sender, RoutedEventArgs e)
         {
-            GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+            if(inkCanvas.GetSelectedStrokes().Count != 0)
+            {
+                GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
+                inkCanvas.Select(new StrokeCollection());
+            }
+
             _currentCommitType = CommitReason.CodeInput;
             var item = timeMachine.Redo();
             if (item.CommitType == TimeMachineHistoryType.UserInput)
