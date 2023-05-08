@@ -20,7 +20,7 @@
         Closing="Window_Closing"
         Closed="Window_Closed"
         PreviewKeyDown="Main_Grid_PreviewKeyDown"
-        Height="10000" Width="1000"
+        Height="1000" Width="1000"
         FontFamily="Microsoft YaHei UI"
         MouseWheel="Window_MouseWheel"
         Foreground="Black"
@@ -28,6 +28,7 @@
     <!--资源中添加命令-->
     <Window.Resources>
         <c:VisibilityConverter x:Key="VisibilityConverter"/>
+        <c:IsEnabledToOpacityConverter x:Key="IsEnabledToOpacityConverter"/>
         <RoutedUICommand x:Key="KeyExit" Text=" "/>
         <RoutedUICommand x:Key="back_HotKey_Command" Text=" "/>
         <RoutedUICommand x:Key="HotKey_Capture" Text=" "/>
@@ -1133,18 +1134,14 @@
                                     </Viewbox>
                                 </Border>
                             </Grid>
-                            <Viewbox Margin="0,2">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:SymbolIcon Symbol="Undo" Foreground="#666666"
-                                                Visibility="{Binding ElementName=BtnUndo, Path=Visibility}"
-                                                IsEnabled="{Binding ElementName=BtnUndo, Path=IsEnabled}"
-                                                MouseUp="SymbolIconUndo_MouseUp" MouseDown="Border_MouseDown"/>
-                                    <ui:SymbolIcon Symbol="Redo" Foreground="#666666"
-                                                Visibility="{Binding ElementName=BtnRedo, Path=Visibility}"
-                                                IsEnabled="{Binding ElementName=BtnRedo, Path=IsEnabled}"
-                                                MouseUp="SymbolIconRedo_MouseUp" MouseDown="Border_MouseDown"/>
-                                </StackPanel>
-                            </Viewbox>
+                            <ui:SymbolIcon Symbol="Undo" Foreground="#666666" Margin="0,0,-2,0"
+                                           Opacity="{Binding ElementName=BtnUndo, Path=IsEnabled, Converter={StaticResource IsEnabledToOpacityConverter}}"
+                                           IsEnabled="{Binding ElementName=BtnUndo, Path=IsEnabled}"
+                                           MouseUp="SymbolIconUndo_MouseUp" MouseDown="Border_MouseDown"/>
+                            <ui:SymbolIcon Symbol="Redo" Foreground="#666666" Margin="-2,0,0,0"
+                                           Opacity="{Binding ElementName=BtnRedo, Path=IsEnabled, Converter={StaticResource IsEnabledToOpacityConverter}}"
+                                           IsEnabled="{Binding ElementName=BtnRedo, Path=IsEnabled}"
+                                           MouseUp="SymbolIconRedo_MouseUp" MouseDown="Border_MouseDown"/>
                         </ui:SimpleStackPanel>
                         <ui:SimpleStackPanel Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
                             <Grid Width="20" Height="24" Margin="2,0,12,1">

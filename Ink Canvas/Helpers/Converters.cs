@@ -32,4 +32,21 @@ namespace Ink_Canvas.Converter
             }
         }
     }
+
+    public class IsEnabledToOpacityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            bool isChecked = (bool)value;
+            if (isChecked == true)
+            {
+                return 1d;
+            }
+            else
+            {
+                return 0.35;
+            }
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) { throw new NotImplementedException(); }
+    }
 }
