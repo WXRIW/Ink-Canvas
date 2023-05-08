@@ -6775,7 +6775,14 @@ namespace Ink_Canvas
                         ViewboxFloatingBar.Margin = new Thickness((SystemParameters.PrimaryScreenWidth - ViewboxFloatingBar.ActualWidth) / 2, SystemParameters.PrimaryScreenHeight - 60, -2000, -200);
                     });
                 })).Start();
-                BorderPenColorWhite_MouseUp(BorderPenColorWhite, null);
+                if (Settings.Canvas.UsingWhiteboard)
+                {
+                    BorderPenColorBlack_MouseUp(BorderPenColorBlack, null);
+                }
+                else
+                {
+                    BorderPenColorWhite_MouseUp(BorderPenColorWhite, null);
+                }
             }
             else
             {
