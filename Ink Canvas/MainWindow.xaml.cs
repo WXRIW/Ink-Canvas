@@ -2915,6 +2915,13 @@ namespace Ink_Canvas
             SaveSettingsToFile();
         }
 
+        private void ComboBoxHyperbolaAsymptoteOption_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Canvas.HyperbolaAsymptoteOption = (OptionalOperation)ComboBoxEraserSize.SelectedIndex;
+            SaveSettingsToFile();
+        }
+
         #endregion
 
         #region Automation
@@ -5352,11 +5359,26 @@ namespace Ink_Canvas
                 else
                 {
                     drawMultiStepShapeCurrentStep = 0;
-                    try
+                    if (drawMultiStepShapeSpecialStrokeCollection != null)
                     {
-                        inkCanvas.Strokes.Remove(drawMultiStepShapeSpecialStrokeCollection);
+                        bool opFlag = false;
+                        switch (Settings.Canvas.HyperbolaAsymptoteOption)
+                        {
+                            case OptionalOperation.Yes:
+                                opFlag = true;
+                                break;
+                            case OptionalOperation.No:
+                                opFlag = false;
+                                break;
+                            case OptionalOperation.Ask:
+                                opFlag = MessageBox.Show("是否移除渐近线？", "Ink Canvas", MessageBoxButton.YesNo) != MessageBoxResult.Yes;
+                                break;
+                        };
+                        if (!opFlag)
+                        {
+                            inkCanvas.Strokes.Remove(drawMultiStepShapeSpecialStrokeCollection);
+                        }
                     }
-                    catch { }
                     BtnPen_Click(null, null); //画完还原到笔模式
                 }
             }

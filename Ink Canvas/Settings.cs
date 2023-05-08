@@ -38,6 +38,16 @@ namespace Ink_Canvas
 
         [JsonProperty("usingWhiteboard")]
         public bool UsingWhiteboard { get; set; }
+
+        [JsonProperty("hyperbolaAsymptoteOption")]
+        public OptionalOperation HyperbolaAsymptoteOption { get; set; } = OptionalOperation.Ask;
+    }
+
+    public enum OptionalOperation
+    {
+        Yes,
+        No,
+        Ask
     }
 
     public class Gesture

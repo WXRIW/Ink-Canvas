@@ -20,7 +20,7 @@
         Closing="Window_Closing"
         Closed="Window_Closed"
         PreviewKeyDown="Main_Grid_PreviewKeyDown"
-        Height="1000" Width="1000"
+        Height="10000" Width="1000"
         FontFamily="Microsoft YaHei UI"
         MouseWheel="Window_MouseWheel"
         Foreground="Black"
@@ -424,6 +424,12 @@
                                 </ComboBox>
                                 <ui:ToggleSwitch Name="ToggleSwitchHideStrokeWhenSelecting" Header="切换到鼠标模式后隐藏墨迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchHideStrokeWhenSelecting_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchUsingWhiteboard" Header="使用白板 (白色背景)" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchUsingWhiteboard_Toggled"/>
+                                <TextBlock Text="保留双曲线渐近线" FontFamily="Microsoft YaHei UI" FontSize="14"/>
+                                <ComboBox Name="ComboBoxHyperbolaAsymptoteOption" FontFamily="Microsoft YaHei UI" SelectedIndex="2" SelectionChanged="ComboBoxHyperbolaAsymptoteOption_SelectionChanged">
+                                    <ComboBoxItem Content="是" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="否" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="每次询问" FontFamily="Microsoft YaHei UI"/>
+                                </ComboBox>
                             </ui:SimpleStackPanel>
                         </GroupBox>
                         <GroupBox Header="手势">
