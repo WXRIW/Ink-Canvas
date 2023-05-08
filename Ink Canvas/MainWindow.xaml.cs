@@ -917,13 +917,9 @@ namespace Ink_Canvas
                 }
                 if (Settings.Canvas.UsingWhiteboard)
                 {
-                    BtnSwitchTheme.Content = "浅色";
-                }
-                else
-                {
                     BtnSwitchTheme.Content = "深色";
+                    BtnSwitchTheme_Click(null, null);
                 }
-                BtnSwitchTheme_Click(null, null);
                 if (Settings.PowerPointSettings.IsAutoSaveScreenShotInPowerPoint)
                 {
                     ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn = true;
@@ -1211,12 +1207,7 @@ namespace Ink_Canvas
                     BtnSwitch.Content = "黑板";
                 }
                 BtnExit.Foreground = Brushes.White;
-                GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
-                BtnColorBlack.Background = Brushes.White;
-                BtnColorRed.Background = new SolidColorBrush(StringToColor("#FFFF3333"));
-                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
-                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
-                SymbolIconBtnColorBlackContent.Foreground = Brushes.Black;
+                GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                 if (inkColor == 0)
                 {
@@ -1239,12 +1230,7 @@ namespace Ink_Canvas
                     BtnSwitch.Content = "白板";
                 }
                 BtnExit.Foreground = Brushes.Black;
-                GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
-                BtnColorBlack.Background = Brushes.Black;
-                BtnColorRed.Background = Brushes.Red;
-                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
-                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
-                SymbolIconBtnColorBlackContent.Foreground = Brushes.White;
+                GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
                 if (inkColor == 0)
                 {
@@ -1259,58 +1245,9 @@ namespace Ink_Canvas
                     inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFF38B00");
                 }
             }
-            AdjustStrokeColor();
             if (!Settings.Appearance.IsTransparentButtonBackground)
             {
                 ToggleSwitchTransparentButtonBackground_Toggled(ToggleSwitchTransparentButtonBackground, null);
-            }
-        }
-
-        private void AdjustStrokeColor()
-        {
-            if (BtnSwitchTheme.Content.ToString() == "浅色")
-            {
-                foreach (Stroke stroke in inkCanvas.Strokes)
-                {
-                    if (stroke.DrawingAttributes.Color == Colors.Black)
-                    {
-                        stroke.DrawingAttributes.Color = Colors.White;
-                    }
-                    else if (stroke.DrawingAttributes.Color == Colors.Red)
-                    {
-                        stroke.DrawingAttributes.Color = StringToColor("#FFFF3333");
-                    }
-                    else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FF169141")))
-                    {
-                        stroke.DrawingAttributes.Color = StringToColor("#FF1ED760");
-                    }
-                    else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FFF38B00")))
-                    {
-                        stroke.DrawingAttributes.Color = StringToColor("#FFFFC000");
-                    }
-                }
-            }
-            else
-            {
-                foreach (Stroke stroke in inkCanvas.Strokes)
-                {
-                    if (stroke.DrawingAttributes.Color == Colors.White)
-                    {
-                        stroke.DrawingAttributes.Color = Colors.Black;
-                    }
-                    else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FFFF3333")))
-                    {
-                        stroke.DrawingAttributes.Color = Colors.Red;
-                    }
-                    else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FF1ED760")))
-                    {
-                        stroke.DrawingAttributes.Color = StringToColor("#FF169141");
-                    }
-                    else if (stroke.DrawingAttributes.Color.Equals(StringToColor("#FFFFC000")))
-                    {
-                        stroke.DrawingAttributes.Color = StringToColor("#FFF38B00");
-                    }
-                }
             }
         }
 
@@ -1573,14 +1510,7 @@ namespace Ink_Canvas
         {
             inkColor = 0;
             forceEraser = false;
-            if (BtnSwitchTheme.Content.ToString() == "浅色")
-            {
-                inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
-            }
-            else
-            {
-                inkCanvas.DefaultDrawingAttributes.Color = Colors.Black;
-            }
+            inkCanvas.DefaultDrawingAttributes.Color = Colors.Black;
 
             ColorSwitchCheck();
         }
@@ -2993,7 +2923,7 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
             Settings.Canvas.UsingWhiteboard = ToggleSwitchUsingWhiteboard.IsOn;
-            if (Settings.Canvas.UsingWhiteboard)
+            if (!Settings.Canvas.UsingWhiteboard)
             {
                 BtnSwitchTheme.Content = "浅色";
             }
@@ -5645,7 +5575,6 @@ namespace Ink_Canvas
                     }
                     _currentCommitType = CommitReason.UserInput;
                 }
-                AdjustStrokeColor();
             }
             catch { }
         }
