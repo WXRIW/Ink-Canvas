@@ -2918,7 +2918,7 @@ namespace Ink_Canvas
         private void ComboBoxHyperbolaAsymptoteOption_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!isLoaded) return;
-            Settings.Canvas.HyperbolaAsymptoteOption = (OptionalOperation)ComboBoxEraserSize.SelectedIndex;
+            Settings.Canvas.HyperbolaAsymptoteOption = (OptionalOperation)ComboBoxHyperbolaAsymptoteOption.SelectedIndex;
             SaveSettingsToFile();
         }
 
