@@ -326,12 +326,14 @@ namespace Ink_Canvas
             ClearingCanvas,
             Rotate
         }
+
         private CommitReason _currentCommitType = CommitReason.UserInput;
         private bool IsEraseByPoint => inkCanvas.EditingMode == InkCanvasEditingMode.EraseByPoint;
         private StrokeCollection ReplacedStroke;
         private StrokeCollection AddedStroke;
         private StrokeCollection CuboidStrokeCollection;
         private TimeMachine timeMachine = new TimeMachine();
+
         private void TimeMachine_OnUndoStateChanged(bool status)
         {
             var result = status ? Visibility.Visible : Visibility.Collapsed;
@@ -345,6 +347,7 @@ namespace Ink_Canvas
             BtnRedo.Visibility = result;
             BtnRedo.IsEnabled = status;
         }
+
         private void StrokesOnStrokesChanged(object sender, StrokeCollectionChangedEventArgs e)
         {
             if (_currentCommitType == CommitReason.CodeInput || _currentCommitType == CommitReason.ShapeDrawing) return;
@@ -856,7 +859,7 @@ namespace Ink_Canvas
                 {
                     ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn = false;
                 }
-                
+
                 if (Settings.PowerPointSettings.IsNotifyPreviousPage)
                 {
                     ToggleSwitchNotifyPreviousPage.IsOn = true;
@@ -865,7 +868,7 @@ namespace Ink_Canvas
                 {
                     ToggleSwitchNotifyPreviousPage.IsOn = false;
                 }
-                
+
                 if (Settings.PowerPointSettings.IsNotifyHiddenPage)
                 {
                     ToggleSwitchNotifyHiddenPage.IsOn = true;
@@ -874,7 +877,7 @@ namespace Ink_Canvas
                 {
                     ToggleSwitchNotifyHiddenPage.IsOn = false;
                 }
-                
+
                 if (Settings.PowerPointSettings.IsNoClearStrokeOnSelectWhenInPowerPoint)
                 {
                     ToggleSwitchNoStrokeClearInPowerPoint.IsOn = true;
@@ -883,7 +886,7 @@ namespace Ink_Canvas
                 {
                     ToggleSwitchNoStrokeClearInPowerPoint.IsOn = false;
                 }
-                
+
                 if (Settings.PowerPointSettings.IsShowStrokeOnSelectInPowerPoint)
                 {
                     ToggleSwitchShowStrokeOnSelectInPowerPoint.IsOn = true;
@@ -920,7 +923,7 @@ namespace Ink_Canvas
                 {
                     BtnSwitchTheme.Content = "深色";
                 }
-                BtnSwitchTheme_Click(null , null);
+                BtnSwitchTheme_Click(null, null);
                 if (Settings.PowerPointSettings.IsAutoSaveScreenShotInPowerPoint)
                 {
                     ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn = true;
@@ -937,7 +940,7 @@ namespace Ink_Canvas
 
             if (Settings.Advanced != null)
             {
-                TouchMultiplierSlider.Value=Settings.Advanced.TouchMultiplier;
+                TouchMultiplierSlider.Value = Settings.Advanced.TouchMultiplier;
                 if (Settings.Advanced.IsLogEnabled)
                 {
                     ToggleSwitchIsLogEnabled.IsOn = true;
@@ -1368,8 +1371,8 @@ namespace Ink_Canvas
             }
             else
             {
-               
-                
+
+
                 // Auto-clear Strokes
                 // 很烦, 要重新来, 要等待截图完成再清理笔记
                 if (BtnPPTSlideShowEnd.Visibility != Visibility.Visible)
@@ -1410,8 +1413,8 @@ namespace Ink_Canvas
                             BtnClear_Click(BtnClear, null);
                         }
                     }
-                    
-                    
+
+
                     if (Settings.PowerPointSettings.IsShowStrokeOnSelectInPowerPoint)
                     {
                         inkCanvas.Visibility = Visibility.Visible;
@@ -1430,10 +1433,10 @@ namespace Ink_Canvas
                 }
 
 
-                
+
                 Main_Grid.Background = Brushes.Transparent;
 
-                
+
                 GridBackgroundCoverHolder.Visibility = Visibility.Collapsed;
                 if (currentMode != 0)
                 {
@@ -2175,7 +2178,7 @@ namespace Ink_Canvas
                         {
                             if (int.TryParse(File.ReadAllText(folderPath + "/position"), out var page))
                             {
-                                if (page <= 0 ) return;
+                                if (page <= 0) return;
                                 new YesOrNoNotificationWindow($"上次播放到了第 {page} 页, 是否立即跳转", () =>
                                 {
                                     if (pptApplication.SlideShowWindows.Count >= 1)
@@ -3001,29 +3004,29 @@ namespace Ink_Canvas
             Settings.PowerPointSettings.IsAutoSaveStrokesInPowerPoint = ToggleSwitchAutoSaveStrokesInPowerPoint.IsOn;
             SaveSettingsToFile();
         }
-        
+
         private void ToggleSwitchNotifyPreviousPage_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
             Settings.PowerPointSettings.IsNotifyPreviousPage = ToggleSwitchNotifyPreviousPage.IsOn;
             SaveSettingsToFile();
-        } 
-        
+        }
+
         private void ToggleSwitchNotifyHiddenPage_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
             Settings.PowerPointSettings.IsNotifyHiddenPage = ToggleSwitchNotifyHiddenPage.IsOn;
             SaveSettingsToFile();
         }
-        
+
         private void ToggleSwitchNoStrokeClearInPowerPoint_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
             Settings.PowerPointSettings.IsNoClearStrokeOnSelectWhenInPowerPoint = ToggleSwitchNoStrokeClearInPowerPoint.IsOn;
             SaveSettingsToFile();
         }
-        
-        
+
+
         private void ToggleSwitchShowStrokeOnSelectInPowerPoint_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
@@ -3166,7 +3169,7 @@ namespace Ink_Canvas
         #endregion
 
         #region Advanced
-        
+
         private void ToggleSwitchIsSpecialScreen_OnToggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
@@ -3174,7 +3177,7 @@ namespace Ink_Canvas
             TouchMultiplierSlider.Visibility = ToggleSwitchIsSpecialScreen.IsOn ? Visibility.Visible : Visibility.Collapsed;
             SaveSettingsToFile();
         }
-        
+
         private void TouchMultiplierSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (!isLoaded) return;
@@ -3185,7 +3188,7 @@ namespace Ink_Canvas
         private void ToggleSwitchEraserBindTouchMultiplier_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
-            Settings.Advanced.EraserBindTouchMultiplier= ToggleSwitchEraserBindTouchMultiplier.IsOn;
+            Settings.Advanced.EraserBindTouchMultiplier = ToggleSwitchEraserBindTouchMultiplier.IsOn;
             SaveSettingsToFile();
         }
 
@@ -3389,7 +3392,7 @@ namespace Ink_Canvas
 
         private void BtnRedo_Click(object sender, RoutedEventArgs e)
         {
-            if(inkCanvas.GetSelectedStrokes().Count != 0)
+            if (inkCanvas.GetSelectedStrokes().Count != 0)
             {
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
                 inkCanvas.Select(new StrokeCollection());
@@ -3782,7 +3785,7 @@ namespace Ink_Canvas
             else
             {
                 inkCanvas.EditingMode = InkCanvasEditingMode.Select;
-                
+
             }
         }
 
@@ -5294,7 +5297,7 @@ namespace Ink_Canvas
                 MouseTouchMove(e.GetPosition(inkCanvas));
             }
         }
-        
+
         private void inkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (drawingShapeMode == 5)
@@ -5401,7 +5404,7 @@ namespace Ink_Canvas
                 var timeMachineHistory = timeMachine.ExportTimeMachineHistory();
                 TimeMachineHistories[0] = timeMachineHistory;
                 timeMachine.ClearStrokeHistory();
-                
+
             }
             else
             {
@@ -5518,7 +5521,7 @@ namespace Ink_Canvas
                                     }
                                 }
                             }
-                        }               
+                        }
                     }
                     _currentCommitType = CommitReason.UserInput;
                 }

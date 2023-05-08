@@ -41,6 +41,7 @@ namespace Ink_Canvas.Helpers
             _currentIndex = _currentStrokeHistory.Count - 1;
             NotifyUndoRedoState();
         }
+
         public void CommitStrokeRotateHistory(StrokeCollection strokeToBeReplaced, StrokeCollection generatedStroke)
         {
             if (_currentIndex + 1 < _currentStrokeHistory.Count)
@@ -72,6 +73,7 @@ namespace Ink_Canvas.Helpers
             _currentIndex = -1;
             NotifyUndoRedoState();
         }
+
         public TimeMachineHistory Undo()
         {
             var item = _currentStrokeHistory[_currentIndex];
@@ -89,6 +91,7 @@ namespace Ink_Canvas.Helpers
             NotifyUndoRedoState();
             return item;
         }
+
         public TimeMachineHistory[] ExportTimeMachineHistory()
         {
             if (_currentIndex + 1 < _currentStrokeHistory.Count)
