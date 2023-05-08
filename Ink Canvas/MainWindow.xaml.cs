@@ -488,7 +488,7 @@ namespace Ink_Canvas
                             if (!lastVersion.Contains(version.ToString()))
                             {
                                 LogHelper.WriteLogToFile("Change Log Window Show Dialog", LogHelper.LogType.Event);
-                                //new ChangeLogWindow().ShowDialog();
+                                new ChangeLogWindow().ShowDialog();
                                 lastVersion += "\n" + version.ToString();
                                 File.WriteAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini", lastVersion.Trim());
                             }
