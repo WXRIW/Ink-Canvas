@@ -21,7 +21,7 @@ namespace Ink_Canvas
         [JsonProperty("startup")]
         public Startup Startup { get; set; } = new Startup();
     }
-    
+
     public class Canvas
     {
         [JsonProperty("inkWidth")]
@@ -48,7 +48,7 @@ namespace Ink_Canvas
         public bool IsEnableTwoFingerRotation { get; set; } = false;
         [JsonProperty("isEnableTwoFingerRotationOnSelection")]
         public bool IsEnableTwoFingerRotationOnSelection { get; set; } = false;
-        
+
     }
 
     public class Startup
@@ -101,7 +101,7 @@ namespace Ink_Canvas
         [JsonProperty("isEnableFingerGestureSlideShowControl")]
         public bool IsEnableFingerGestureSlideShowControl { get; set; } = true;
     }
-    
+
     public class Automation
     {
         [JsonProperty("isAutoKillPptService")]
@@ -112,7 +112,7 @@ namespace Ink_Canvas
         public bool IsAutoSaveStrokesAtScreenshot { get; set; } = false;
         [JsonProperty("isAutoSaveStrokesAtClear")]
         public bool IsAutoSaveStrokesAtClear { get; set; } = false;
-        
+
         [JsonProperty("isAutoClearWhenExitingWritingMode")]
         public bool IsAutoClearWhenExitingWritingMode { get; set; } = false;
 

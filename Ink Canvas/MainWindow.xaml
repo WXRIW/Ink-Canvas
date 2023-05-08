@@ -1,4 +1,4 @@
-﻿<Window x:Class="Ink_Canvas.MainWindow"
+<Window x:Class="Ink_Canvas.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -20,7 +20,7 @@
         Closing="Window_Closing"
         Closed="Window_Closed"
         PreviewKeyDown="Main_Grid_PreviewKeyDown"
-        Height="10000" Width="1000"
+        Height="1000" Width="1000"
         FontFamily="Microsoft YaHei UI"
         MouseWheel="Window_MouseWheel"
         Foreground="Black"
@@ -28,6 +28,7 @@
     <!--资源中添加命令-->
     <Window.Resources>
         <c:VisibilityConverter x:Key="VisibilityConverter"/>
+        <c:IsEnabledToOpacityConverter x:Key="IsEnabledToOpacityConverter"/>
         <RoutedUICommand x:Key="KeyExit" Text=" "/>
         <RoutedUICommand x:Key="back_HotKey_Command" Text=" "/>
         <RoutedUICommand x:Key="HotKey_Capture" Text=" "/>
@@ -97,13 +98,17 @@
                    ManipulationDelta="Main_Grid_ManipulationDelta"
                    ManipulationCompleted="Main_Grid_ManipulationCompleted"
                    ManipulationInertiaStarting="inkCanvas_ManipulationInertiaStarting"
-                   IsManipulationEnabled="True" EditingModeChanged="inkCanvas_EditingModeChanged"
+                   IsManipulationEnabled="True"
+                   EditingModeChanged="inkCanvas_EditingModeChanged"
                    PreviewTouchDown="inkCanvas_PreviewTouchDown"
                    PreviewTouchUp="inkCanvas_PreviewTouchUp"
-                   MouseDown="inkCanvas_MouseDown" MouseMove="inkCanvas_MouseMove" MouseUp="inkCanvas_MouseUp"
+                   MouseDown="inkCanvas_MouseDown"
+                   MouseMove="inkCanvas_MouseMove"
+                   MouseUp="inkCanvas_MouseUp"
                    ManipulationStarting="inkCanvas_ManipulationStarting"
                    SelectionChanged="inkCanvas_SelectionChanged"
-                   StrokeCollected="inkCanvas_StrokeCollected">
+                   StrokeCollected="inkCanvas_StrokeCollected"
+                   >
             <!--<InkCanvas.DefaultDrawingAttributes>
                 <DrawingAttributes StylusTip="Ellipse" Height="8" Width="4" IgnorePressure="False" FitToCurve="True" >
                     <DrawingAttributes.StylusTipTransform>
@@ -849,7 +854,7 @@
                         Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                         Click="BtnUndo_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}"
                         Background="{Binding ElementName=BtnExit, Path=Background}"
-                        IsEnabled="False" IsEnabledChanged="Btn_IsEnabledChanged">
+                        IsEnabled="False" Visibility="Collapsed" IsEnabledChanged="Btn_IsEnabledChanged">
                     <StackPanel Opacity="0.2">
                         <ui:SymbolIcon Symbol="Undo"/>
                         <TextBlock Text="撤销" Margin="0,4,0,0"/>
@@ -1129,18 +1134,14 @@
                                     </Viewbox>
                                 </Border>
                             </Grid>
-                            <Viewbox Margin="0,2">
-                                <Grid>
-                                    <ui:SymbolIcon Symbol="Undo" Foreground="#666666"
-                                                Visibility="{Binding ElementName=BtnUndo, Path=Visibility}"
-                                                IsEnabled="{Binding ElementName=BtnUndo, Path=IsEnabled}"
-                                                MouseUp="SymbolIconUndo_MouseUp" MouseDown="Border_MouseDown"/>
-                                    <ui:SymbolIcon Symbol="Redo" Foreground="#666666"
-                                                Visibility="{Binding ElementName=BtnRedo, Path=Visibility}"
-                                                IsEnabled="{Binding ElementName=BtnRedo, Path=IsEnabled}"
-                                                MouseUp="SymbolIconRedo_MouseUp" MouseDown="Border_MouseDown"/>
-                                </Grid>
-                            </Viewbox>
+                            <ui:SymbolIcon Symbol="Undo" Foreground="#666666" Margin="0,0,-2,0"
+                                           Opacity="{Binding ElementName=BtnUndo, Path=IsEnabled, Converter={StaticResource IsEnabledToOpacityConverter}}"
+                                           IsEnabled="{Binding ElementName=BtnUndo, Path=IsEnabled}"
+                                           MouseUp="SymbolIconUndo_MouseUp" MouseDown="Border_MouseDown"/>
+                            <ui:SymbolIcon Symbol="Redo" Foreground="#666666" Margin="-2,0,0,0"
+                                           Opacity="{Binding ElementName=BtnRedo, Path=IsEnabled, Converter={StaticResource IsEnabledToOpacityConverter}}"
+                                           IsEnabled="{Binding ElementName=BtnRedo, Path=IsEnabled}"
+                                           MouseUp="SymbolIconRedo_MouseUp" MouseDown="Border_MouseDown"/>
                         </ui:SimpleStackPanel>
                         <ui:SimpleStackPanel Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
                             <Grid Width="20" Height="24" Margin="2,0,12,1">

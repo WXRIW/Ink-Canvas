@@ -19,6 +19,14 @@ namespace Ink_Canvas
         public App()
         {
             this.Startup += new StartupEventHandler(App_Startup);
+            this.DispatcherUnhandledException += App_DispatcherUnhandledException;
+        }
+
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Ink_Canvas.MainWindow.ShowNewMessage("抱歉，出现未预期的异常，可能导致 Ink Canvas 画板运行不稳定。\n建议保存墨迹后重启应用。", true);
+            LogHelper.NewLog(e.Exception.ToString());
+            e.Handled = true;
         }
 
         void App_Startup(object sender, StartupEventArgs e)
