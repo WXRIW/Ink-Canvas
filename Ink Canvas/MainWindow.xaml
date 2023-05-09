@@ -422,7 +422,7 @@
                                     <ComboBoxItem Content="较大"  FontFamily="Microsoft YaHei UI"/>
                                     <ComboBoxItem Content="大"  FontFamily="Microsoft YaHei UI"/>
                                 </ComboBox>
-                                <ui:ToggleSwitch Name="ToggleSwitchHideStrokeWhenSelecting" Header="切换到鼠标模式后隐藏墨迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchHideStrokeWhenSelecting_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchHideStrokeWhenSelecting" Header="退出画板模式后隐藏墨迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchHideStrokeWhenSelecting_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchUsingWhiteboard" Header="使用白板 (白色背景)" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchUsingWhiteboard_Toggled"/>
                                 <TextBlock Text="保留双曲线渐近线" FontFamily="Microsoft YaHei UI" FontSize="14"/>
                                 <ComboBox Name="ComboBoxHyperbolaAsymptoteOption" FontFamily="Microsoft YaHei UI" SelectedIndex="2" SelectionChanged="ComboBoxHyperbolaAsymptoteOption_SelectionChanged">
@@ -493,8 +493,8 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchNotifyPreviousPage" Header="记忆并提示上次播放位置" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNotifyPreviousPage_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchNotifyHiddenPage" Header="提示隐藏幻灯片" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNotifyHiddenPage_Toggled"/>
                                 
-                                <ui:ToggleSwitch Name="ToggleSwitchNoStrokeClearInPowerPoint" Header="进入鼠标模式时不清除笔迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNoStrokeClearInPowerPoint_Toggled"/>
-                                <ui:ToggleSwitch Name="ToggleSwitchShowStrokeOnSelectInPowerPoint" Header="进入鼠标模式时不隐藏笔迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowStrokeOnSelectInPowerPoint_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchNoStrokeClearInPowerPoint" Header="退出画板模式时不清除笔迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNoStrokeClearInPowerPoint_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchShowStrokeOnSelectInPowerPoint" Header="退出画板模式时不隐藏笔迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowStrokeOnSelectInPowerPoint_Toggled"/>
                             </ui:SimpleStackPanel>
                             
                         </GroupBox>
