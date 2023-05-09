@@ -7060,17 +7060,30 @@ namespace Ink_Canvas
                 LogHelper.WriteLogToFile(string.Format("Strokes Insert: Name: {0}", openFileDialog.FileName), LogHelper.LogType.Event);
                 try
                 {
-                    var fs = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read);
-                    inkCanvas.Strokes = new StrokeCollection(fs);
-                    LogHelper.NewLog(string.Format("Strokes Insert: Strokes Count: {0}", inkCanvas.Strokes.Count.ToString()));
-                    if (inkCanvas.Strokes.Count == 0)
+                    var fileStreamHasNoStroke = false;
+                    using (var fs = new FileStream(openFileDialog.FileName, FileMode.Open, FileAccess.Read))
                     {
-                        fs.Close();
-                        var memoryStream = new MemoryStream(File.ReadAllBytes(openFileDialog.FileName));
-                        memoryStream.Position = 0;
-                        ClearStrokes(true);
-                        inkCanvas.Strokes.Add(new StrokeCollection(memoryStream));
-                        LogHelper.NewLog(string.Format("Strokes Insert (2): Strokes Count: {0}", inkCanvas.Strokes.Count.ToString()));
+                        var strokes = new StrokeCollection(fs);
+                        fileStreamHasNoStroke = strokes.Count == 0;
+                        if (!fileStreamHasNoStroke)
+                        {
+                            ClearStrokes(true);
+                            timeMachine.ClearStrokeHistory();
+                            inkCanvas.Strokes.Add(strokes);
+                            LogHelper.NewLog(string.Format("Strokes Insert: Strokes Count: {0}", inkCanvas.Strokes.Count.ToString()));
+                        }
+                    }
+                    if (fileStreamHasNoStroke)
+                    {
+                        using (var ms = new MemoryStream(File.ReadAllBytes(openFileDialog.FileName)))
+                        {
+                            ms.Seek(0, SeekOrigin.Begin);
+                            var strokes = new StrokeCollection(ms);
+                            ClearStrokes(true);
+                            timeMachine.ClearStrokeHistory();
+                            inkCanvas.Strokes.Add(strokes);
+                            LogHelper.NewLog(string.Format("Strokes Insert (2): Strokes Count: {0}", strokes.Count.ToString()));
+                        }
                     }
 
                     if (inkCanvas.Visibility != Visibility.Visible)
