@@ -5875,8 +5875,13 @@ namespace Ink_Canvas
                                                 {
                                                     DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone()
                                                 };
-                                                inkCanvas.Strokes.Add(_stroke.Clone());
-                                                inkCanvas.Strokes.Add(GenerateDashedLineEllipseStrokeCollection(iniP, endP, true, false));
+                                                var _dashedLineStroke = GenerateDashedLineEllipseStrokeCollection(iniP, endP, true, false);
+                                                StrokeCollection strokes = new StrokeCollection()
+                                                {
+                                                    _stroke,
+                                                    _dashedLineStroke
+                                                };
+                                                inkCanvas.Strokes.Add(strokes);
                                                 _currentCommitType = CommitReason.UserInput;
                                                 return;
                                             }
