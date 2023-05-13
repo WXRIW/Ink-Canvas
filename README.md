@@ -36,6 +36,14 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 ### 在 Windows 10 以下版本系统中部分图标显示为 “□” 怎么办？
 [点击下载](https://aka.ms/SegoeFonts "SegoeFonts") SegoeFonts 文件，安装压缩包中 `SegMDL2.ttf` 字体后重启即可解决
 
+### 点击放映后一翻页就闪退？
+考虑是由于`Microsoft Office`未激活导致的，请自行激活
+
+### 放映后画板程序不会切换到PPT模式？
+如果你曾经安装过`WPS`且在卸载后发现此问题则是由于暂时未确定的问题所导致，可以尝试重新安装WPS
+> “您好，关于您反馈的情况我们已经反馈技术同学进一步分析哈，辛苦您可以留意后续WPS版本更新哈~” --回复自WPS客服
+
+另外，处在保护（只读）模式的PPT不会被识别
 ### **安装后**程序无法正常启动？
 请检查你的电脑上是否安装了 `.Net Framework 4.7.2` 或更高版本。若没有，请前往官网下载  
 如果仍无法运行，请检查你的电脑上是否安装了 `Microsoft Office`。若没有，请安装后再试
