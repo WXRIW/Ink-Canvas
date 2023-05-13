@@ -16,14 +16,14 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 
 </div>
 
-## 🔧特性
+## 🔧 特性
 对 Microsoft PowerPoint 有优化支持（强烈不推荐使用 WPS，会导致 WPS 自己把自己卡住，并且 WPS 对触摸屏的支持实在是差，PPT 翻页点击就行，而不是滑动，也不能放大缩小）  
 **笔细的一头写字，反过来粗的一头是橡皮擦。（希沃白板自己并不支持此功能）**  
 当然，用手直接擦也是可以的（跟希沃白板一样）  
 支持 Active Pen (支持压感)  
 对于其他红外线屏也可以提供相似功能，欢迎大家测试！  
 
-## ⚠️提示
+## ⚠️ 提示
 - 提问前请先读[FAQ](https://github.com/WXRIW/Ink-Canvas#FAQ "FAQ")
 - 遇到问题请先尝试自行解决，如果有没法自行解决的问题请先冷静下来提问，使用简洁的语言，描述你的期望与现实的差异性。如果有必要，请附上复现此问题的操作步骤或错误日志 [^1]（可适当配图），等待大佬们的回复。
 - 对新功能的有效意见和合理建议，开发者会适时回复并进行开发。Ink Canvas并非商业性质的软件，请勿催促开发者，耐心才能让功能更少BUG、更加稳定。
@@ -32,7 +32,7 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 
  [^1] ：对于长文本，可以使用在线剪贴板 （如 https://pastes.dev/ ），粘贴完毕点击 `SAVE` 后复制链接进行分享
  
-## 📗FAQ
+## 📗 FAQ
 ### 在 Windows 10 以下版本系统中部分图标显示为 “□” 怎么办？
 [点击下载](https://aka.ms/SegoeFonts "SegoeFonts") SegoeFonts 文件，安装压缩包中 `SegMDL2.ttf` 字体后重启即可解决
 
