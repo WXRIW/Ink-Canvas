@@ -44,6 +44,7 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 > “您好，关于您反馈的情况我们已经反馈技术同学进一步分析哈，辛苦您可以留意后续WPS版本更新哈~” --回复自WPS客服
 
 另外，处在保护（只读）模式的PPT不会被识别
+
 ### **安装后**程序无法正常启动？
 请检查你的电脑上是否安装了 `.Net Framework 4.7.2` 或更高版本。若没有，请前往官网下载  
 如果仍无法运行，请检查你的电脑上是否安装了 `Microsoft Office`。若没有，请安装后再试
