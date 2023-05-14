@@ -5322,7 +5322,16 @@ namespace Ink_Canvas
             if (_currentCommitType == CommitReason.ShapeDrawing && drawingShapeMode != 9)
             {
                 _currentCommitType = CommitReason.UserInput;
-                timeMachine.CommitStrokeUserInputHistory(lastTempStrokeCollection);
+                StrokeCollection collection;
+                if (lastTempStrokeCollection != null && lastTempStrokeCollection.Count > 0)
+                {
+                    collection = lastTempStrokeCollection;
+                }
+                else
+                {
+                    collection = new StrokeCollection () { lastTempStroke };
+                }
+                timeMachine.CommitStrokeUserInputHistory(collection);
             }
             lastTempStroke = null;
             lastTempStrokeCollection = null;
