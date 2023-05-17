@@ -467,7 +467,7 @@ namespace Ink_Canvas
                         {
                             try
                             {
-                                lastVersion = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini");
+                                lastVersion = File.ReadAllText(App.RootPath + "Versions.ini");
                             }
                             catch { }
                             if (response.Contains("Special Version") && !lastVersion.Contains("NewWelcomeConfigured"))
@@ -482,13 +482,13 @@ namespace Ink_Canvas
                             }
                             try
                             {
-                                lastVersion = File.ReadAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini");
+                                lastVersion = File.ReadAllText(App.RootPath + "Versions.ini");
                             }
                             catch { }
                             if (!lastVersion.Contains(version.ToString()))
                             {
-                                LogHelper.WriteLogToFile("Change Log Window Show Dialog", LogHelper.LogType.Event);
-                                new ChangeLogWindow().ShowDialog();
+                                //LogHelper.WriteLogToFile("Change Log Window Show Dialog", LogHelper.LogType.Event);
+                                //new ChangeLogWindow().ShowDialog();
                                 lastVersion += "\n" + version.ToString();
                                 File.WriteAllText(App.RootPath + "Versions.ini", lastVersion.Trim());
                             }
