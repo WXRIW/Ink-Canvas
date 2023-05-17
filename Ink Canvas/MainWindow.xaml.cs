@@ -548,7 +548,7 @@ namespace Ink_Canvas
             {
                 try
                 {
-                    string text = File.ReadAllText(settingsFileName);
+                    string text = File.ReadAllText(App.RootPath + settingsFileName);
                     Settings = JsonConvert.DeserializeObject<Settings>(text);
                 }
                 catch { }
@@ -3100,7 +3100,7 @@ namespace Ink_Canvas
             string text = JsonConvert.SerializeObject(Settings, Formatting.Indented);
             try
             {
-                File.WriteAllText(settingsFileName, text);
+                File.WriteAllText(App.RootPath + settingsFileName, text);
             }
             catch { }
         }

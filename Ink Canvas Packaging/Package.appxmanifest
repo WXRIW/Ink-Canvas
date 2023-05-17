@@ -7,13 +7,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="ff17074d-bc33-4b1c-a21b-8f9af2e1e8cb"
-    Publisher="CN=wxriw"
+    Name="63265WXRIW.9875F4656CA2"
+    Publisher="CN=FD2EEB64-9B3F-4B12-B833-80497D4F956C"
     Version="3.7.0.0" />
 
   <Properties>
     <DisplayName>Ink Canvas</DisplayName>
-    <PublisherDisplayName>wxriw</PublisherDisplayName>
+    <PublisherDisplayName>WXRIW</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 

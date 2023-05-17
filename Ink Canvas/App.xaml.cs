@@ -15,7 +15,7 @@ namespace Ink_Canvas
         System.Threading.Mutex mutex;
 
         public static string[] StartArgs = null;
-        public static string RootPath = Environment.GetEnvironmentVariable("APPDATA") + "\\Ink Canvas\\Lyricify for Spotify\\";
+        public static string RootPath = Environment.GetEnvironmentVariable("APPDATA") + "\\Ink Canvas\\";
 
         public App()
         {
