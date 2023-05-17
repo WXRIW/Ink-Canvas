@@ -5,7 +5,6 @@ namespace Ink_Canvas.Helpers
 {
     class LogHelper
     {
-        public static string LogFileName = "Log.txt";
         public static string LogFile = "Log.txt";
 
         public static void NewLog(string str)
@@ -33,9 +32,18 @@ namespace Ink_Canvas.Helpers
                     strLogType = "Error";
                     break;
             }
-            StreamWriter sw = new StreamWriter(LogFile, true);
-            sw.WriteLine(string.Format("{0} [{1}] {2}", DateTime.Now.ToString("O"), strLogType, str));
-            sw.Close();
+            try
+            {
+                var file = App.RootPath + LogFile;
+                if (!Directory.Exists(App.RootPath))
+                {
+                    Directory.CreateDirectory(App.RootPath);
+                }
+                StreamWriter sw = new StreamWriter(file, true);
+                sw.WriteLine(string.Format("{0} [{1}] {2}", DateTime.Now.ToString("O"), strLogType, str));
+                sw.Close();
+            }
+            catch { }
         }
 
         public enum LogType

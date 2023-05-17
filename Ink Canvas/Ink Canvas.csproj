@@ -166,6 +166,7 @@
     <Compile Include="Helpers\InkRecognizeHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\MultiTouchInput.cs" />
+    <Compile Include="Helpers\StoreHelper.cs" />
     <Compile Include="Helpers\TimeMachine.cs" />
     <Compile Include="Helpers\Converters.cs" />
     <Compile Include="NamesInputWindow.xaml.cs">

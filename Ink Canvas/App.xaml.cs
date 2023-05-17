@@ -15,6 +15,7 @@ namespace Ink_Canvas
         System.Threading.Mutex mutex;
 
         public static string[] StartArgs = null;
+        public static string RootPath = Environment.GetEnvironmentVariable("APPDATA") + "\\Ink Canvas\\Lyricify for Spotify\\";
 
         public App()
         {
@@ -31,7 +32,7 @@ namespace Ink_Canvas
 
         void App_Startup(object sender, StartupEventArgs e)
         {
-            LogHelper.LogFile = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + LogHelper.LogFileName;
+            if (!StoreHelper.IsStoreApp) RootPath = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
 
             LogHelper.NewLog(string.Format("Ink Canvas Starting (Version: {0})", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
 
@@ -47,11 +48,15 @@ namespace Ink_Canvas
             }
 
             StartArgs = e.Args;
-            AutoUpdater.Start($"http://ink.wxriw.cn:1957/update");
-            AutoUpdater.ApplicationExitEvent += () =>
+
+            if (!StoreHelper.IsStoreApp)
             {
-                Environment.Exit(0);
-            };
+                AutoUpdater.Start($"http://ink.wxriw.cn:1957/update");
+                AutoUpdater.ApplicationExitEvent += () =>
+                {
+                    Environment.Exit(0);
+                };
+            }
         }
     }
 }

@@ -187,14 +187,14 @@ namespace Ink_Canvas
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Names = new List<string>();
-            if (File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Names.txt"))
+            if (File.Exists(App.RootPath + "Names.txt"))
             {
-                string[] fileNames = File.ReadAllLines(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Names.txt");
+                string[] fileNames = File.ReadAllLines(App.RootPath + "Names.txt");
                 string[] replaces = new string[0];
 
-                if (File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Replace.txt"))
+                if (File.Exists(App.RootPath + "Replace.txt"))
                 {
-                    replaces = File.ReadAllLines(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Replace.txt");
+                    replaces = File.ReadAllLines(App.RootPath + "Replace.txt");
                 }
 
                 //Fix emtpy lines

@@ -453,7 +453,7 @@ namespace Ink_Canvas
                         TextBlockVersion.Text = version.ToString();
 
                         string lastVersion = "";
-                        if (response.Contains("Special Version") && !File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini"))
+                        if (response.Contains("Special Version") && !File.Exists(App.RootPath + "Versions.ini"))
                         {
                             LogHelper.WriteLogToFile("Welcome Window Show Dialog", LogHelper.LogType.Event);
 
@@ -490,50 +490,7 @@ namespace Ink_Canvas
                                 LogHelper.WriteLogToFile("Change Log Window Show Dialog", LogHelper.LogType.Event);
                                 new ChangeLogWindow().ShowDialog();
                                 lastVersion += "\n" + version.ToString();
-                                File.WriteAllText(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "Versions.ini", lastVersion.Trim());
-                            }
-
-                            //第二次启动时才可以进入检查版本更新模式
-                            if (response.Contains("Special Version") || response.Contains("AutoUpdateOnly"))
-                            {
-                                new Thread(new ThreadStart(() =>
-                                {
-                                    try
-                                    {
-                                        if (response.Contains("<update>"))
-                                        {
-                                            string str = Strings.Mid(response, response.IndexOf("<update>") + 9);
-                                            if (str.Contains("<update>"))
-                                            {
-                                                str = Strings.Left(str, str.IndexOf("<update>")).Trim();
-                                                if (str.Length > 0)
-                                                {
-                                                    //string updateIP;
-                                                    //int updatePort;
-
-                                                    //string[] vs = str.Split(':');
-                                                    //updateIP = vs[0];
-                                                    //updatePort = int.Parse(vs[1]);
-
-                                                    //if (OAUS.Core.VersionHelper.HasNewVersion(GetIp(updateIP), updatePort))
-                                                    //{
-                                                    //    string updateExePath = AppDomain.CurrentDomain.BaseDirectory + "AutoUpdater\\AutoUpdater.exe";
-                                                    //    System.Diagnostics.Process myProcess = System.Diagnostics.Process.Start(updateExePath);
-
-                                                    //    LogHelper.WriteLogToFile("Detected new version, closing Ink Canvas for update", LogHelper.LogType.Event);
-
-                                                    //    Application.Current.Dispatcher.Invoke(() =>
-                                                    //    {
-                                                    //        closeIsFromButton = true;
-                                                    //        Application.Current.Shutdown();
-                                                    //    });
-                                                    //}
-                                                }
-                                            }
-                                        }
-                                    }
-                                    catch { }
-                                })).Start();
+                                File.WriteAllText(App.RootPath + "Versions.ini", lastVersion.Trim());
                             }
                         }
                     });
@@ -587,7 +544,7 @@ namespace Ink_Canvas
 
         private void LoadSettings(bool isStartup = true)
         {
-            if (File.Exists(System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + settingsFileName))
+            if (File.Exists(App.RootPath + settingsFileName))
             {
                 try
                 {
@@ -2104,9 +2061,9 @@ namespace Ink_Canvas
                         string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
                                                    @"\Ink Canvas Strokes\Auto Saved\Presentations\";
                         string folderPath = defaultFolderPath + presentation.Name + "_" + presentation.Slides.Count;
-                        if (File.Exists(folderPath + "/position"))
+                        if (File.Exists(folderPath + "/Position"))
                         {
-                            if (int.TryParse(File.ReadAllText(folderPath + "/position"), out var page))
+                            if (int.TryParse(File.ReadAllText(folderPath + "/Position"), out var page))
                             {
                                 if (page <= 0) return;
                                 new YesOrNoNotificationWindow($"上次播放到了第 {page} 页, 是否立即跳转", () =>
@@ -2375,7 +2332,7 @@ namespace Ink_Canvas
                 {
                     Directory.CreateDirectory(folderPath);
                 }
-                File.WriteAllText(folderPath + "/position", previousSlideID.ToString());
+                File.WriteAllText(folderPath + "/Position", previousSlideID.ToString());
                 for (int i = 1; i <= Pres.Slides.Count; i++)
                 {
                     if (memoryStreams[i] != null)
