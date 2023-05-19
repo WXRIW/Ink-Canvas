@@ -799,6 +799,15 @@ namespace Ink_Canvas
                     ToggleSwitchAutoKillPptService.IsOn = false;
                 }
 
+                if (Settings.Automation.IsSaveScreenshotsInDateFolders)
+                {
+                    ToggleSwitchSaveScreenshotsInDateFolders.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchSaveScreenshotsInDateFolders.IsOn = false;
+                }
+
                 if (Settings.Automation.IsAutoSaveStrokesAtScreenshot)
                 {
                     ToggleSwitchAutoSaveStrokesAtScreenshot.IsOn = true;
@@ -2843,6 +2852,13 @@ namespace Ink_Canvas
             {
                 timerKillProcess.Stop();
             }
+        }
+
+        private void ToggleSwitchSaveScreenshotsInDateFolders_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Automation.IsSaveScreenshotsInDateFolders = ToggleSwitchSaveScreenshotsInDateFolders.IsOn;
+            SaveSettingsToFile();
         }
 
         private void ToggleSwitchAutoSaveStrokesAtScreenshot_Toggled(object sender, RoutedEventArgs e)
@@ -6416,22 +6432,42 @@ namespace Ink_Canvas
                 memoryGrahics.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, System.Drawing.CopyPixelOperation.SourceCopy);
             }
 
-            if (string.IsNullOrWhiteSpace(fileName))
-                fileName = DateTime.Now.ToString("HH-mm-ss");
-            var savePath =
-                $@"{Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)}\Ink Canvas Screenshots\{DateTime.Now.Date:yyyyMMdd}\{fileName}.png";
-
-
-            if (!Directory.Exists(Path.GetDirectoryName(savePath)))
+            if (Settings.Automation.IsSaveScreenshotsInDateFolders)
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+                if (string.IsNullOrWhiteSpace(fileName))
+                    fileName = DateTime.Now.ToString("HH-mm-ss");
+                var savePath =
+                    $@"{Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)}\Ink Canvas Screenshots\{DateTime.Now.Date:yyyyMMdd}\{fileName}.png";
+
+
+                if (!Directory.Exists(Path.GetDirectoryName(savePath)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(savePath));
+                }
+
+                bitmap.Save(savePath, ImageFormat.Png);
+
+                if (!isHideNotification)
+                {
+                    ShowNotification("截图成功保存至 " + savePath);
+                }
             }
-
-            bitmap.Save(savePath, ImageFormat.Png);
-
-            if (!isHideNotification)
+            else
             {
-                ShowNotification("截图成功保存至 " + savePath);
+                if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\Ink Canvas Screenshots"))
+                {
+                    Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                                              @"\Ink Canvas Screenshots");
+                }
+
+                bitmap.Save(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                            @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png", ImageFormat.Png);
+
+                if (!isHideNotification)
+                {
+                    ShowNotification("截图成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                                     @"\Ink Canvas Screenshots\" + DateTime.Now.ToString("u").Replace(':', '-') + ".png");
+                }
             }
         }
 
@@ -6998,12 +7034,12 @@ namespace Ink_Canvas
 
                 if (newNotice)
                 {
-                    ShowNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                    ShowNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
                         @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk");
                 }
                 else
                 {
-                    AppendNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) +
+                    AppendNotification("墨迹成功保存至 " + Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
                         @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk");
                 }
             }

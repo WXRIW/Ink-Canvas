@@ -116,10 +116,16 @@ namespace Ink_Canvas
     {
         [JsonProperty("isAutoKillPptService")]
         public bool IsAutoKillPptService { get; set; } = false;
+
         [JsonProperty("isAutoKillEasiNote")]
         public bool IsAutoKillEasiNote { get; set; } = false;
+
+        [JsonProperty("isSaveScreenshotsInDateFolders")]
+        public bool IsSaveScreenshotsInDateFolders { get; set; } = false;
+
         [JsonProperty("isAutoSaveStrokesAtScreenshot")]
         public bool IsAutoSaveStrokesAtScreenshot { get; set; } = false;
+
         [JsonProperty("isAutoSaveStrokesAtClear")]
         public bool IsAutoSaveStrokesAtClear { get; set; } = false;
 
