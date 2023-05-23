@@ -5575,7 +5575,10 @@ namespace Ink_Canvas
         private void BtnWhiteBoardSwitchNext_Click(object sender, EventArgs e)
         {
             if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
+            {
                 SaveScreenShot(true);
+                if (Settings.Automation.IsAutoSaveStrokesAtScreenshot) SaveInkCanvasStrokes(false);
+            }
             if (CurrentWhiteboardIndex >= WhiteboardTotalCount)
             {
                 BtnWhiteBoardAdd_Click(sender, e);
@@ -5596,7 +5599,10 @@ namespace Ink_Canvas
         {
             if (WhiteboardTotalCount >= 99) return;
             if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
+            {
                 SaveScreenShot(true);
+                if (Settings.Automation.IsAutoSaveStrokesAtScreenshot) SaveInkCanvasStrokes(false);
+            }
             SaveStrokes();
             ClearStrokes(true);
 
