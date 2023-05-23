@@ -356,16 +356,13 @@ namespace Ink_Canvas
                 timeMachine.CommitStrokeRotateHistory(e.Removed, e.Added);
                 return;
             }
-            if (e.Added.Count != 0 && e.Removed.Count != 0)
+            if ((e.Added.Count != 0 || e.Removed.Count != 0) && IsEraseByPoint)
             {
-                if (IsEraseByPoint)
-                {
-                    if (AddedStroke == null) AddedStroke = new StrokeCollection();
-                    if (ReplacedStroke == null) ReplacedStroke = new StrokeCollection();
-                    AddedStroke.Add(e.Added);
-                    ReplacedStroke.Add(e.Removed);
-                    return;
-                }
+                if (AddedStroke == null) AddedStroke = new StrokeCollection();
+                if (ReplacedStroke == null) ReplacedStroke = new StrokeCollection();
+                AddedStroke.Add(e.Added);
+                ReplacedStroke.Add(e.Removed);
+                return;
             }
             if (e.Added.Count != 0)
             {
@@ -5302,7 +5299,7 @@ namespace Ink_Canvas
                 }
                 else
                 {
-                    collection = new StrokeCollection () { lastTempStroke };
+                    collection = new StrokeCollection() { lastTempStroke };
                 }
                 timeMachine.CommitStrokeUserInputHistory(collection);
             }
