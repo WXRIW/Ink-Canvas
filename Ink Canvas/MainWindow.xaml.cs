@@ -6657,8 +6657,12 @@ namespace Ink_Canvas
             if (currentMode == 0)
             {
                 //进入黑板
-                if (!App.StartArgs.Contains("-b"))
+                try {
+                    if (!App.StartArgs.Contains("-b"))
+                        Topmost = false;
+                } catch {
                     Topmost = false;
+                }
                 if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
                 {
                     pointDesktop = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
@@ -6689,8 +6693,12 @@ namespace Ink_Canvas
             else
             {
                 //关闭黑板
-                if (!App.StartArgs.Contains("-b"))
+                try {
+                    if (!App.StartArgs.Contains("-b"))
+                        Topmost = true;
+                } catch {
                     Topmost = true;
+                }
 
                 if (isInMultiTouchMode) BorderMultiTouchMode_MouseUp(null, null);
 
