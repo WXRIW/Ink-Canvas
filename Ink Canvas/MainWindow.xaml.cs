@@ -6657,7 +6657,7 @@ namespace Ink_Canvas
             if (currentMode == 0)
             {
                 //进入黑板
-                if (App.StartArgs.Contains("-b"))
+                if (!App.StartArgs.Contains("-b"))
                     Topmost = false;
                 if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
                 {
@@ -6689,7 +6689,7 @@ namespace Ink_Canvas
             else
             {
                 //关闭黑板
-                if (App.StartArgs.Contains("-b"))
+                if (!App.StartArgs.Contains("-b"))
                     Topmost = true;
 
                 if (isInMultiTouchMode) BorderMultiTouchMode_MouseUp(null, null);
