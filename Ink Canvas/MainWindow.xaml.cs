@@ -83,6 +83,9 @@ namespace Ink_Canvas
             timeMachine.OnRedoStateChanged += TimeMachine_OnRedoStateChanged;
             timeMachine.OnUndoStateChanged += TimeMachine_OnUndoStateChanged;
             inkCanvas.Strokes.StrokesChanged += StrokesOnStrokesChanged;
+
+            Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
+            SystemEvents_UserPreferenceChanged(null, null);
         }
 
         #endregion
@@ -602,6 +605,8 @@ namespace Ink_Canvas
             PptNavigationBtn.Visibility =
                 Settings.PowerPointSettings.IsShowPPTNavigation ? Visibility.Visible : Visibility.Collapsed;
             ToggleSwitchShowButtonPPTNavigation.IsOn = Settings.PowerPointSettings.IsShowPPTNavigation;
+
+            ComboBoxTheme.SelectedIndex = Settings.Appearance.Theme;
             if (Settings.Appearance.IsShowHideControlButton)
             {
                 BtnHideControl.Visibility = Visibility.Visible;
@@ -2690,6 +2695,15 @@ namespace Ink_Canvas
             PptNavigationBtn.Visibility =
                 Settings.PowerPointSettings.IsShowPPTNavigation ? Visibility.Visible : Visibility.Collapsed;
         }
+
+        private void ComboBoxTheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Appearance.Theme = ComboBoxTheme.SelectedIndex;
+            SystemEvents_UserPreferenceChanged(null, null);
+            SaveSettingsToFile();
+        }
+
 
         private void ToggleSwitchShowButtonHideControl_Toggled(object sender, RoutedEventArgs e)
         {
@@ -6370,6 +6384,85 @@ namespace Ink_Canvas
             }
             catch (Exception) { }
             return false;
+        }
+        #endregion
+
+        #region AutoDarkLightTheme
+        Color toolBarForegroundColor = Color.FromRgb(102, 102, 102);
+        private void SetTheme(string theme)
+        {
+            if (theme == "Light")
+            {
+                ResourceDictionary rd1 = new ResourceDictionary() { Source = new Uri("Resources/Styles/Light.xaml", UriKind.Relative) };
+                Application.Current.Resources.MergedDictionaries.Add(rd1);
+
+                ResourceDictionary rd2 = new ResourceDictionary() { Source = new Uri("Resources/DrawShapeImageDictionary.xaml", UriKind.Relative) };
+                Application.Current.Resources.MergedDictionaries.Add(rd2);
+
+                ResourceDictionary rd3 = new ResourceDictionary() { Source = new Uri("Resources/SeewoImageDictionary.xaml", UriKind.Relative) };
+                Application.Current.Resources.MergedDictionaries.Add(rd3);
+
+                ResourceDictionary rd4 = new ResourceDictionary() { Source = new Uri("Resources/IconImageDictionary.xaml", UriKind.Relative) };
+                Application.Current.Resources.MergedDictionaries.Add(rd4);
+
+                ThemeManager.SetRequestedTheme(window, ElementTheme.Light);
+
+                toolBarForegroundColor = Color.FromRgb(102, 102, 102);
+            }
+            else if (theme == "Dark")
+            {
+                ResourceDictionary rd1 = new ResourceDictionary() { Source = new Uri("Resources/Styles/Dark.xaml", UriKind.Relative) };
+                Application.Current.Resources.MergedDictionaries.Add(rd1);
+
+                ResourceDictionary rd2 = new ResourceDictionary() { Source = new Uri("Resources/DrawShapeImageDictionary.xaml", UriKind.Relative) };
+                Application.Current.Resources.MergedDictionaries.Add(rd2);
+
+                ResourceDictionary rd3 = new ResourceDictionary() { Source = new Uri("Resources/SeewoImageDictionary.xaml", UriKind.Relative) };
+                Application.Current.Resources.MergedDictionaries.Add(rd3);
+
+                ResourceDictionary rd4 = new ResourceDictionary() { Source = new Uri("Resources/IconImageDictionary.xaml", UriKind.Relative) };
+                Application.Current.Resources.MergedDictionaries.Add(rd4);
+
+                ThemeManager.SetRequestedTheme(window, ElementTheme.Dark);
+
+                toolBarForegroundColor = Color.FromRgb(204, 204, 204);
+            }
+
+            SymbolIconSelect.Foreground = new SolidColorBrush(toolBarForegroundColor);
+            SymbolIconDelete.Foreground = new SolidColorBrush(toolBarForegroundColor);
+        }
+        private void SystemEvents_UserPreferenceChanged(object sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
+        {
+            switch (Settings.Appearance.Theme)
+            {
+                case 0:
+                    SetTheme("Light");
+                    break;
+                case 1:
+                    SetTheme("Dark");
+                    break;
+                case 2:
+                    if (IsSystemThemeLight()) SetTheme("Light");
+                    else SetTheme("Dark");
+                    break;
+            }
+        }
+        private bool IsSystemThemeLight()
+        {
+            bool light = false;
+            try
+            {
+                RegistryKey registryKey = Registry.CurrentUser;
+                RegistryKey themeKey = registryKey.OpenSubKey("software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize");
+                int keyValue = 0;
+                if (themeKey != null)
+                {
+                    keyValue = (int)themeKey.GetValue("SystemUsesLightTheme");
+                }
+                if (keyValue == 1) light = true;
+            }
+            catch { }
+            return light;
         }
         #endregion
 
