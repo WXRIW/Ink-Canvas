@@ -213,6 +213,15 @@ namespace Ink_Canvas
                 inkCanvas1.ForceCursor = false;
             }
             if (inkCanvas1.EditingMode == InkCanvasEditingMode.Ink) forcePointEraser = !forcePointEraser;
+
+            if (inkCanvas.EditingMode == InkCanvasEditingMode.Select)
+            {
+                SymbolIconSelect.Foreground = new SolidColorBrush(Color.FromRgb(0, 136, 255));
+            }
+            else
+            {
+                SymbolIconSelect.Foreground = new SolidColorBrush(toolBarForegroundColor);
+            }
         }
 
         #endregion Ink Canvas
