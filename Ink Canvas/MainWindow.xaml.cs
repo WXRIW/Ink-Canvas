@@ -6696,6 +6696,8 @@ namespace Ink_Canvas
             if (currentMode == 0)
             {
                 //进入黑板
+                Topmost = false;
+                
                 if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
                 {
                     pointDesktop = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
@@ -6726,6 +6728,7 @@ namespace Ink_Canvas
             else
             {
                 //关闭黑板
+                Topmost = true;
 
                 if (isInMultiTouchMode) BorderMultiTouchMode_MouseUp(null, null);
 
