@@ -1,4 +1,4 @@
-﻿using Ink_Canvas.Helpers;
+using Ink_Canvas.Helpers;
 using IWshRuntimeLibrary;
 using Microsoft.Office.Interop.PowerPoint;
 using Microsoft.VisualBasic;
@@ -85,7 +85,6 @@ namespace Ink_Canvas
             inkCanvas.Strokes.StrokesChanged += StrokesOnStrokesChanged;
 
             Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
-            SystemEvents_UserPreferenceChanged(null, null);
         }
 
         #endregion
@@ -517,6 +516,7 @@ namespace Ink_Canvas
             }
 
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+            SystemEvents_UserPreferenceChanged(null, null);
 
             TextBlockVersion.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             LogHelper.WriteLogToFile("Ink Canvas Loaded", LogHelper.LogType.Event);
@@ -6396,7 +6396,8 @@ namespace Ink_Canvas
         }
         #endregion
 
-        #region AutoDarkLightTheme
+        #region Auto Theme
+
         Color toolBarForegroundColor = Color.FromRgb(102, 102, 102);
         private void SetTheme(string theme)
         {
@@ -6416,7 +6417,7 @@ namespace Ink_Canvas
 
                 ThemeManager.SetRequestedTheme(window, ElementTheme.Light);
 
-                toolBarForegroundColor = Color.FromRgb(102, 102, 102);
+                toolBarForegroundColor = (Color)Application.Current.FindResource("ToolBarForegroundColor");
             }
             else if (theme == "Dark")
             {
@@ -6434,12 +6435,13 @@ namespace Ink_Canvas
 
                 ThemeManager.SetRequestedTheme(window, ElementTheme.Dark);
 
-                toolBarForegroundColor = Color.FromRgb(204, 204, 204);
+                toolBarForegroundColor = (Color)Application.Current.FindResource("ToolBarForegroundColor");
             }
 
             SymbolIconSelect.Foreground = new SolidColorBrush(toolBarForegroundColor);
             SymbolIconDelete.Foreground = new SolidColorBrush(toolBarForegroundColor);
         }
+
         private void SystemEvents_UserPreferenceChanged(object sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
         {
             switch (Settings.Appearance.Theme)
@@ -6456,6 +6458,7 @@ namespace Ink_Canvas
                     break;
             }
         }
+
         private bool IsSystemThemeLight()
         {
             bool light = false;
