@@ -7,11 +7,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ui:ThemeResources RequestedTheme="Light" />
+                <ui:ThemeResources RequestedTheme="Light"/>
                 <ui:XamlControlsResources />
                 <ResourceDictionary Source="Resources/SeewoImageDictionary.xaml"/>
                 <ResourceDictionary Source="Resources/DrawShapeImageDictionary.xaml"/>
                 <ResourceDictionary Source="Resources/IconImageDictionary.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Light.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

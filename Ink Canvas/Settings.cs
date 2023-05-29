@@ -83,7 +83,8 @@ namespace Ink_Canvas
         public bool IsShowLRSwitchButton { get; set; } = false;
         [JsonProperty("isShowModeFingerToggleSwitch")]
         public bool IsShowModeFingerToggleSwitch { get; set; } = true;
-
+        [JsonProperty("theme")]
+        public int Theme { get; set; } = 0;            
     }
 
     public class PowerPointSettings

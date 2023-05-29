@@ -1,0 +1,7 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="ToolBarBackground" Color="#88000000"/>
+    <SolidColorBrush x:Key="ToolBarBorderBrush" Color="#BFcccccc"/>
+    <SolidColorBrush x:Key="ToolBarForeground" Color="#cccccc"/>
+    <Color x:Key="ToolBarForegroundColor">#FFcccccc</Color>
+</ResourceDictionary>
