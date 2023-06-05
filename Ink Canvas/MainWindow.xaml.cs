@@ -873,6 +873,15 @@ namespace Ink_Canvas
                     ToggleSwitchShowStrokeOnSelectInPowerPoint.IsOn = false;
                 }
 
+                if (Settings.PowerPointSettings.IsSupportWPS)
+                {
+                    ToggleSwitchSupportWPS.IsOn = true;
+                }
+                else
+                {
+                    ToggleSwitchSupportWPS.IsOn = false;
+                }
+
                 SideControlMinimumAutomationSlider.Value = Settings.Automation.MinimumAutomationStrokeNumber;
 
                 if (Settings.Canvas.HideStrokeWhenSelecting)
@@ -2015,10 +2024,13 @@ namespace Ink_Canvas
         }
         private void ToggleSwitchSupportWPS_Toggled(object sender, RoutedEventArgs e)
         {
-            isWPSSupportOn = ToggleSwitchSupportWPS.IsOn;
+            if (!isLoaded) return;
+
+            Settings.PowerPointSettings.IsSupportWPS = ToggleSwitchSupportWPS.IsOn;
+            SaveSettingsToFile();
         }
 
-        public static bool isWPSSupportOn = false;
+        public static bool isWPSSupportOn => Settings.PowerPointSettings.IsSupportWPS;
 
         public static bool IsShowingRestoreHiddenSlidesWindow = false;
 

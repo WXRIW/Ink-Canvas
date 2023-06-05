@@ -111,6 +111,8 @@ namespace Ink_Canvas
         public bool IsEnableTwoFingerGestureInPresentationMode { get; set; } = false;
         [JsonProperty("isEnableFingerGestureSlideShowControl")]
         public bool IsEnableFingerGestureSlideShowControl { get; set; } = true;
+        [JsonProperty("isSupportWPS")]
+        public bool IsSupportWPS { get; set; } = true;
     }
 
     public class Automation
