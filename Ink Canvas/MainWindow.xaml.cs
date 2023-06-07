@@ -1794,10 +1794,12 @@ namespace Ink_Canvas
                     }
                     else
                     {
-                        inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5);
-                        //inkCanvas.EraserShape = new RectangleStylusShape(8, 8);
-                        //inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
-                        inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
+                        //inkCanvas.EraserShape = new RectangleStylusShape(8, 8); //old old
+                        //inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5); //last
+                        //inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5); //old old
+                        //inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke; //last
+                        inkCanvas.EraserShape = new EllipseStylusShape(5, 5);
+                        inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
                     }
                 }
             }
