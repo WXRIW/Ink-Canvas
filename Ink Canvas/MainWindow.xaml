@@ -902,7 +902,7 @@
                         </Border>
                         <Border x:Name="PptNavigationBtn" Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                             <Grid MouseUp="PPTNavigationBtn_Click">
-                                <TextBlock Name="PptNavigationTextBlock" FontSize="10" Foreground="#FF666666" HorizontalAlignment="Center" VerticalAlignment="Center" Text="0/0" />
+                                <TextBlock Name="PptNavigationTextBlock" FontSize="10" Foreground="{DynamicResource ToolBarForeground}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="0/0" />
                             </Grid>
                         </Border>
                         <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
