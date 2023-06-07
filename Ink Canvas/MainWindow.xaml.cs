@@ -949,6 +949,8 @@ namespace Ink_Canvas
                     ToggleSwitchIsSpecialScreen.IsOn = false;
                 }
                 TouchMultiplierSlider.Visibility = ToggleSwitchIsSpecialScreen.IsOn ? Visibility.Visible : Visibility.Collapsed;
+
+                ToggleSwitchIsQuadIR.IsOn = Settings.Advanced.IsQuadIR;
             }
             else
             {
@@ -1815,7 +1817,9 @@ namespace Ink_Canvas
         public double GetTouchBoundWidth(TouchEventArgs e)
         {
             var args = e.GetTouchPoint(null).Bounds;
-            double value = args.Width;
+            double value;
+            if (!Settings.Advanced.IsQuadIR) value = args.Width;
+            else value = Math.Sqrt(args.Width * args.Height); //四边红外
             if (Settings.Advanced.IsSpecialScreen) value *= Settings.Advanced.TouchMultiplier;
             return value;
         }
@@ -3129,10 +3133,27 @@ namespace Ink_Canvas
             SaveSettingsToFile();
         }
 
+        private void BorderCalculateMultiplier_TouchDown(object sender, TouchEventArgs e)
+        {
+            var args = e.GetTouchPoint(null).Bounds;
+            double value;
+            if (!Settings.Advanced.IsQuadIR) value = args.Width;
+            else value = Math.Sqrt(args.Width * args.Height); //四边红外
+
+            TextBlockShowCalculatedMultiplier.Text = (5 / (value * 1.1)).ToString();
+        }
+
         private void ToggleSwitchEraserBindTouchMultiplier_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
             Settings.Advanced.EraserBindTouchMultiplier = ToggleSwitchEraserBindTouchMultiplier.IsOn;
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchIsQuadIR_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Advanced.IsQuadIR = ToggleSwitchIsQuadIR.IsOn;
             SaveSettingsToFile();
         }
 
@@ -6875,7 +6896,7 @@ namespace Ink_Canvas
             {
                 //进入黑板
                 Topmost = false;
-                
+
                 if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
                 {
                     pointDesktop = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
