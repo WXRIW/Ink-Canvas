@@ -524,11 +524,11 @@
                                                Visibility="{Binding Path=Visibility, ElementName=TouchMultiplierSlider, Mode=OneWay}"/>
                                 </StackPanel>
 
-                                <ui:SimpleStackPanel Spacing="8" Margin="0,4,0,4">
-                                    <TextBlock FontSize="14" Text="在下方用笔尖点击以估计触摸大小倍数" Visibility="{Binding Visibility,ElementName=TouchMultiplierSlider}"/>
-                                    <TextBlock Text="数值仅供参考" Foreground="#666666" Visibility="{Binding Visibility,ElementName=TouchMultiplierSlider}"/>
-                                    <Border CornerRadius="4" Height="48" Background="#cccccc" Visibility="{Binding Visibility,ElementName=TouchMultiplierSlider}" TouchDown="BorderCalculateMultiplier_TouchDown"/>
-                                    <TextBlock Name="TextBlockShowCalculatedMultiplier" FontSize="14" Visibility="{Binding Visibility,ElementName=TouchMultiplierSlider}"/>
+                                <ui:SimpleStackPanel Spacing="8" Margin="0,4,0,4" Visibility="{Binding Visibility,ElementName=TouchMultiplierSlider}">
+                                    <TextBlock FontSize="14" Text="在下方用笔尖点击以估计触摸大小倍数"/>
+                                    <TextBlock Text="数值仅供参考" Foreground="#666666"/>
+                                    <Border CornerRadius="4" Height="48" Background="#cccccc" TouchDown="BorderCalculateMultiplier_TouchDown"/>
+                                    <TextBlock Name="TextBlockShowCalculatedMultiplier" FontSize="14"/>
                                 </ui:SimpleStackPanel>
 
                                 <ui:ToggleSwitch Name="ToggleSwitchEraserBindTouchMultiplier" Header="橡皮擦绑定触摸大小倍数" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" IsOn="False" Toggled="ToggleSwitchEraserBindTouchMultiplier_Toggled" Visibility="{Binding Path=Visibility, ElementName=TouchMultiplierSlider, Mode=OneWay}"/>
