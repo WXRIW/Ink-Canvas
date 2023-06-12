@@ -1458,38 +1458,38 @@ namespace Ink_Canvas
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 CancelSingleFingerDragMode();
                 forceEraser = false;
+
+                // 改变选中提示
+                ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorYellowContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorWhiteContent.Visibility = Visibility.Collapsed;
+                switch (inkColor)
+                {
+                    case 0:
+                        ViewboxBtnColorBlackContent.Visibility = Visibility.Visible;
+                        break;
+                    case 1:
+                        ViewboxBtnColorRedContent.Visibility = Visibility.Visible;
+                        break;
+                    case 2:
+                        ViewboxBtnColorGreenContent.Visibility = Visibility.Visible;
+                        break;
+                    case 3:
+                        ViewboxBtnColorBlueContent.Visibility = Visibility.Visible;
+                        break;
+                    case 4:
+                        ViewboxBtnColorYellowContent.Visibility = Visibility.Visible;
+                        break;
+                    case 5:
+                        ViewboxBtnColorWhiteContent.Visibility = Visibility.Visible;
+                        break;
+                }
             }
 
             isLongPressSelected = false;
-
-            // 改变选中提示
-            ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorYellowContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorWhiteContent.Visibility = Visibility.Collapsed;
-            switch (inkColor)
-            {
-                case 0:
-                    ViewboxBtnColorBlackContent.Visibility = Visibility.Visible;
-                    break;
-                case 1:
-                    ViewboxBtnColorRedContent.Visibility = Visibility.Visible;
-                    break;
-                case 2:
-                    ViewboxBtnColorGreenContent.Visibility = Visibility.Visible;
-                    break;
-                case 3:
-                    ViewboxBtnColorBlueContent.Visibility = Visibility.Visible;
-                    break;
-                case 4:
-                    ViewboxBtnColorYellowContent.Visibility = Visibility.Visible;
-                    break;
-                case 5:
-                    ViewboxBtnColorWhiteContent.Visibility = Visibility.Visible;
-                    break;
-            }
         }
 
         private void BtnColorBlack_Click(object sender, RoutedEventArgs e)
@@ -6849,6 +6849,7 @@ namespace Ink_Canvas
         {
             BtnSelect_Click(BtnSelect, null);
 
+            ImageEraser.Visibility = Visibility.Visible;
             ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
             ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
             ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
