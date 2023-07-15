@@ -906,6 +906,19 @@ namespace Ink_Canvas
                     BtnSwitchTheme.Content = "深色";
                     BtnSwitchTheme_Click(null, null);
                 }
+
+                switch (Settings.Canvas.EraserType)
+                {
+                    case 1:
+                        forcePointEraser = true;
+                        break;
+                    case 2:
+                        forcePointEraser = false;
+                        break;
+                }
+
+                ComboBoxEraserType.SelectedIndex = Settings.Canvas.EraserType;
+
                 if (Settings.PowerPointSettings.IsAutoSaveScreenShotInPowerPoint)
                 {
                     ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn = true;
@@ -1014,10 +1027,22 @@ namespace Ink_Canvas
         {
             forceEraser = true;
             forcePointEraser = !forcePointEraser;
-            inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
+            switch (Settings.Canvas.EraserType)
+            {
+                case 1:
+                    forcePointEraser = true;
+                    break;
+                case 2:
+                    forcePointEraser = false;
+                    break;
+            }
+            inkCanvas.EditingMode =
+                forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
             inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5);
             drawingShapeMode = 0;
-            GeometryDrawingEraser.Brush = forcePointEraser ? new SolidColorBrush(Color.FromRgb(0x23, 0xA9, 0xF2)) : new SolidColorBrush(Color.FromRgb(0x66, 0x66, 0x66));
+            GeometryDrawingEraser.Brush = forcePointEraser
+                ? new SolidColorBrush(Color.FromRgb(0x23, 0xA9, 0xF2))
+                : new SolidColorBrush(Color.FromRgb(0x66, 0x66, 0x66));
             ImageEraser.Visibility = Visibility.Collapsed;
             inkCanvas_EditingModeChanged(inkCanvas, null);
             CancelSingleFingerDragMode();
@@ -2828,6 +2853,14 @@ namespace Ink_Canvas
         {
             if (!isLoaded) return;
             Settings.Canvas.EraserSize = ComboBoxEraserSize.SelectedIndex;
+            SaveSettingsToFile();
+        }
+        
+        
+        private void ComboBoxEraserType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Canvas.EraserType = ComboBoxEraserType.SelectedIndex;
             SaveSettingsToFile();
         }
 
@@ -7296,6 +7329,7 @@ namespace Ink_Canvas
 
 
         #endregion
+
     }
 
     #region Test for pen

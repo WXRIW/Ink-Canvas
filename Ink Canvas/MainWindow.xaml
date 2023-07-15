@@ -414,6 +414,12 @@
                                 </ComboBox>
                                 <ui:ToggleSwitch Header="手指模式" IsOn="{Binding ElementName=ToggleSwitchModeFinger, Path=IsOn}" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关"/>
                                 <TextBlock Text="此选项仅适用于可获取触摸面积的屏幕" TextWrapping="Wrap" Foreground="#666666"/>
+                                <TextBlock Text="橡皮模式"  FontFamily="Microsoft YaHei UI" FontSize="14"/>
+                                <ComboBox Name="ComboBoxEraserType" FontFamily="Microsoft YaHei UI" SelectedIndex="0" SelectionChanged="ComboBoxEraserType_OnSelectionChanged">
+                                    <ComboBoxItem Content="交叉切换" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="面积擦" FontFamily="Microsoft YaHei UI"/>
+                                    <ComboBoxItem Content="笔画擦" FontFamily="Microsoft YaHei UI"/>
+                                </ComboBox>
                                 <TextBlock Text="橡皮大小"  FontFamily="Microsoft YaHei UI" FontSize="14"/>
                                 <ComboBox Name="ComboBoxEraserSize" FontFamily="Microsoft YaHei UI" SelectedIndex="2" SelectionChanged="ComboBoxEraserSize_SelectionChanged">
                                     <ComboBoxItem Content="小" FontFamily="Microsoft YaHei UI"/>
