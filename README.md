@@ -26,7 +26,7 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 
 ## ⚠️ 提示
 - 提问前请先读[FAQ](https://github.com/WXRIW/Ink-Canvas#FAQ "FAQ")
-- 遇到问题请先尝试自行解决，如果有没法自行解决的问题请先冷静下来提问，使用简洁的语言，描述你的期望与现实的差异性。如果有必要，请附上复现此问题的操作步骤或错误日志¹ （可适当配图），等待大佬们的回复。
+- 遇到问题请先尝试自行解决，若无法自行解决，请简单描述你的期望与现实的差异性。如果有必要，请附上复现此问题的操作步骤或错误日志¹ （可适当配图），等待回复。
 - 对新功能的有效意见和合理建议，开发者会适时回复并进行开发。Ink Canvas并非商业性质的软件，请勿催促开发者，耐心才能让功能更少BUG、更加稳定。
 
 > 等待是人类的一种智慧
@@ -48,17 +48,18 @@ A fantastic Ink Canvas in WPF/C#, with fantastic support for Seewo Boards.
 
 ### **安装后**程序无法正常启动？
 请检查你的电脑上是否安装了 `.Net Framework 4.7.2` 或更高版本。若没有，请前往官网下载  
-如果仍无法运行，请检查你的电脑上是否安装了 `Microsoft Office`。若没有，请安装后再试
+如果仍无法运行，请检查你的电脑上是否安装了 `Microsoft Office`。若没有，请安装后重试
 
-### 我该如何提出功能需求和错误报告？
+### 我该在何处提出功能需求和错误报告？
 
-1. 你可以选择在GitHub issues里提出
+1. GitHub Issues
 
     功能需求：https://github.com/WXRIW/Ink-Canvas/labels/enhancement/new 
 
     错误报告：https://github.com/WXRIW/Ink-Canvas/labels/bug/new
 
-2. 你也可以加入 [![交流群](https://img.shields.io/badge/-%E4%BA%A4%E6%B5%81%E7%BE%A4%20891915376-blue?style=flat&logo=TencentQQ)](https://jq.qq.com/?_wv=1027&k=NvlM1Rgg) 进行探讨
+2. Tencent QQ
+    [![交流群](https://img.shields.io/badge/-%E4%BA%A4%E6%B5%81%E7%BE%A4%20891915376-blue?style=flat&logo=TencentQQ)](https://jq.qq.com/?_wv=1027&k=NvlM1Rgg) 
 
 ### 大小屏设备交替使用/手指或笔头过大 导致被识别成橡皮怎么办？
 点击画板的“设置”按钮并开启`特殊屏幕`选项即可
