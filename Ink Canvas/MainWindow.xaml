@@ -504,11 +504,11 @@
                                 <ui:ToggleSwitch Name="ToggleSwitchAutoSaveStrokesInPowerPoint" Header="自动保存幻灯片墨迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchAutoSaveStrokesInPowerPoint_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchNotifyPreviousPage" Header="记忆并提示上次播放位置" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNotifyPreviousPage_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchNotifyHiddenPage" Header="提示隐藏幻灯片" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNotifyHiddenPage_Toggled"/>
-                                
+
                                 <ui:ToggleSwitch Name="ToggleSwitchNoStrokeClearInPowerPoint" Header="退出画板模式时不清除笔迹" IsOn="True" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchNoStrokeClearInPowerPoint_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowStrokeOnSelectInPowerPoint" Header="退出画板模式时不隐藏笔迹" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowStrokeOnSelectInPowerPoint_Toggled"/>
                             </ui:SimpleStackPanel>
-                            
+
                         </GroupBox>
                         <GroupBox Header="高级">
                             <ui:SimpleStackPanel Spacing="12">
@@ -529,7 +529,16 @@
                                                FontSize="14" Width="30" HorizontalAlignment="Center"
                                                Visibility="{Binding Path=Visibility, ElementName=TouchMultiplierSlider, Mode=OneWay}"/>
                                 </StackPanel>
+
+                                <ui:SimpleStackPanel Spacing="8" Margin="0,4,0,4" Visibility="{Binding Visibility,ElementName=TouchMultiplierSlider}">
+                                    <TextBlock FontSize="14" Text="在下方用笔尖点击以估计触摸大小倍数"/>
+                                    <TextBlock Text="数值仅供参考" Foreground="#666666"/>
+                                    <Border CornerRadius="4" Height="48" Background="#cccccc" TouchDown="BorderCalculateMultiplier_TouchDown"/>
+                                    <TextBlock Name="TextBlockShowCalculatedMultiplier" FontSize="14"/>
+                                </ui:SimpleStackPanel>
+
                                 <ui:ToggleSwitch Name="ToggleSwitchEraserBindTouchMultiplier" Header="橡皮擦绑定触摸大小倍数" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" IsOn="False" Toggled="ToggleSwitchEraserBindTouchMultiplier_Toggled" Visibility="{Binding Path=Visibility, ElementName=TouchMultiplierSlider, Mode=OneWay}"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchIsQuadIR" Header="四边红外模式" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchIsQuadIR_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchIsLogEnabled" Header="记录日志" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" IsOn="True" Toggled="ToggleSwitchIsLogEnabled_Toggled"/>
                             </ui:SimpleStackPanel>
                         </GroupBox>
@@ -580,7 +589,7 @@
                             <ui:SimpleStackPanel Spacing="12">
                                 <ui:SimpleStackPanel Orientation="Horizontal" Spacing="4">
                                     <TextBlock FontSize="14">
-                                        <Bold>当前版本:</Bold> 
+                                        <Bold>当前版本:</Bold>
                                     </TextBlock>
                                     <TextBlock FontSize="14" Text="" Name="TextBlockVersion"/>
                                 </ui:SimpleStackPanel>
@@ -940,7 +949,7 @@
                 </Viewbox>
             </Grid>
         </Grid>
-        
+
         <Viewbox Name="ViewboxFloatingBar" Margin="100,10,-2000,-200" 
                  HorizontalAlignment="Left" Height="50" VerticalAlignment="Top">
             <Viewbox.LayoutTransform>
@@ -950,7 +959,7 @@
                 <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}" MouseDown="SymbolIconEmoji_MouseDown" MouseUp="SymbolIconEmoji_MouseUp">
                     <ui:SimpleStackPanel Margin="0,5,0,5" Spacing="10" Orientation="Horizontal"
                                          HorizontalAlignment="Center">
-                            <ui:SymbolIcon Name="SymbolIconEmoji" Symbol="Emoji2" Foreground="{DynamicResource ToolBarForeground}"/>
+                        <ui:SymbolIcon Name="SymbolIconEmoji" Symbol="Emoji2" Foreground="{DynamicResource ToolBarForeground}"/>
                     </ui:SimpleStackPanel>
                 </Border>
                 <Border Margin="5,0,0,0" Visibility="Visible" Height="36" Name="BorderFloatingBarMainControls" Background="{DynamicResource ToolBarBackground}" CornerRadius="5" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
