@@ -115,6 +115,11 @@ namespace Ink_Canvas
                     {
                         arg += " /IM PPTService.exe";
                     }
+                    processes = Process.GetProcessesByName("SeewoIwbAssistant");
+                    if (processes.Length > 0)
+                    {
+                        arg += " /IM SeewoIwbAssistant.exe";
+                    }
                 }
                 if (Settings.Automation.IsAutoKillEasiNote)
                 {
