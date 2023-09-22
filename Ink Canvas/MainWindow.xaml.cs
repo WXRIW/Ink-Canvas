@@ -118,7 +118,8 @@ namespace Ink_Canvas
                     processes = Process.GetProcessesByName("SeewoIwbAssistant");
                     if (processes.Length > 0)
                     {
-                        arg += " /IM SeewoIwbAssistant.exe";
+                        arg += " /IM SeewoIwbAssistant.exe" +
+                            " /IM Sia.Guard";
                     }
                 }
                 if (Settings.Automation.IsAutoKillEasiNote)
