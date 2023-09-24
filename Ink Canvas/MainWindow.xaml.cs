@@ -107,6 +107,7 @@ namespace Ink_Canvas
         {
             try
             {
+                // 希沃相关： easinote swenserver RemoteProcess EasiNote.MediaHttpService smartnote.cloud EasiUpdate smartnote EasiUpdate3 EasiUpdate3Protect SeewoP2P CefSharp.BrowserSubprocess SeewoUploadService
                 string arg = "/F";
                 if (Settings.Automation.IsAutoKillPptService)
                 {
@@ -6698,7 +6699,7 @@ namespace Ink_Canvas
 
         public static void ShowNewMessage(string notice, bool isShowImmediately = true)
         {
-            (Application.Current?.Windows.Cast<Window>().FirstOrDefault(window => window is MainWindow) as MainWindow).ShowNotification(notice, isShowImmediately);
+            (Application.Current?.Windows.Cast<Window>().FirstOrDefault(window => window is MainWindow) as MainWindow)?.ShowNotification(notice, isShowImmediately);
         }
 
         public void ShowNotification(string notice, bool isShowImmediately = true)
