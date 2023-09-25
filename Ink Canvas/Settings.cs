@@ -150,7 +150,7 @@ namespace Ink_Canvas
         [JsonProperty("touchMultiplier")]
         public double TouchMultiplier { get; set; } = 0.25;
         [JsonProperty("eraserBindTouchMultiplier")]
-        public bool EraserBindTouchMultiplier { get; set; } = true;
+        public bool EraserBindTouchMultiplier { get; set; } = false;
         [JsonProperty("isLogEnabled")]
         public bool IsLogEnabled { get; set; } = true;
     }
