@@ -1,6 +1,4 @@
-﻿using Windows.ApplicationModel;
-
-namespace Ink_Canvas.Helpers
+﻿namespace Ink_Canvas.Helpers
 {
     public static class StoreHelper
     {
@@ -10,7 +8,12 @@ namespace Ink_Canvas.Helpers
             {
                 try
                 {
-                    if (Package.Current != null)
+                    object GetCurrentPackage()
+                    {
+                        return Windows.ApplicationModel.Package.Current;
+                    }
+
+                    if (GetCurrentPackage() != null)
                     {
                         return true;
                     }
