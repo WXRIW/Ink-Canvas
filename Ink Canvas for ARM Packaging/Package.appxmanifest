@@ -7,12 +7,12 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="63265WXRIW.9875F4656CA2"
+    Name="63265WXRIW.InkCanvasforARM"
     Publisher="CN=FD2EEB64-9B3F-4B12-B833-80497D4F956C"
     Version="3.7.2.0" />
 
   <Properties>
-    <DisplayName>Ink Canvas</DisplayName>
+    <DisplayName>Ink Canvas for ARM</DisplayName>
     <PublisherDisplayName>WXRIW</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
@@ -31,7 +31,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="Ink Canvas"
+        DisplayName="Ink Canvas for ARM"
         Description="Ink Canvas 画板，极致画板体验！"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
@@ -43,6 +43,7 @@
   </Applications>
 
   <Capabilities>
+    <Capability Name="internetClient" />
     <rescap:Capability Name="runFullTrust" />
   </Capabilities>
 </Package>
