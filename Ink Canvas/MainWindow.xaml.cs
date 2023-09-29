@@ -107,6 +107,7 @@ namespace Ink_Canvas
         {
             try
             {
+                // 希沃相关： easinote swenserver RemoteProcess EasiNote.MediaHttpService smartnote.cloud EasiUpdate smartnote EasiUpdate3 EasiUpdate3Protect SeewoP2P CefSharp.BrowserSubprocess SeewoUploadService
                 string arg = "/F";
                 if (Settings.Automation.IsAutoKillPptService)
                 {
@@ -114,6 +115,12 @@ namespace Ink_Canvas
                     if (processes.Length > 0)
                     {
                         arg += " /IM PPTService.exe";
+                    }
+                    processes = Process.GetProcessesByName("SeewoIwbAssistant");
+                    if (processes.Length > 0)
+                    {
+                        arg += " /IM SeewoIwbAssistant.exe" +
+                            " /IM Sia.Guard";
                     }
                 }
                 if (Settings.Automation.IsAutoKillEasiNote)
@@ -906,6 +913,19 @@ namespace Ink_Canvas
                     BtnSwitchTheme.Content = "深色";
                     BtnSwitchTheme_Click(null, null);
                 }
+
+                switch (Settings.Canvas.EraserType)
+                {
+                    case 1:
+                        forcePointEraser = true;
+                        break;
+                    case 2:
+                        forcePointEraser = false;
+                        break;
+                }
+
+                ComboBoxEraserType.SelectedIndex = Settings.Canvas.EraserType;
+
                 if (Settings.PowerPointSettings.IsAutoSaveScreenShotInPowerPoint)
                 {
                     ToggleSwitchAutoSaveScreenShotInPowerPoint.IsOn = true;
@@ -949,6 +969,8 @@ namespace Ink_Canvas
                     ToggleSwitchIsSpecialScreen.IsOn = false;
                 }
                 TouchMultiplierSlider.Visibility = ToggleSwitchIsSpecialScreen.IsOn ? Visibility.Visible : Visibility.Collapsed;
+
+                ToggleSwitchIsQuadIR.IsOn = Settings.Advanced.IsQuadIR;
             }
             else
             {
@@ -1014,10 +1036,22 @@ namespace Ink_Canvas
         {
             forceEraser = true;
             forcePointEraser = !forcePointEraser;
-            inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
+            switch (Settings.Canvas.EraserType)
+            {
+                case 1:
+                    forcePointEraser = true;
+                    break;
+                case 2:
+                    forcePointEraser = false;
+                    break;
+            }
+            inkCanvas.EditingMode =
+                forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
             inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5);
             drawingShapeMode = 0;
-            GeometryDrawingEraser.Brush = forcePointEraser ? new SolidColorBrush(Color.FromRgb(0x23, 0xA9, 0xF2)) : new SolidColorBrush(Color.FromRgb(0x66, 0x66, 0x66));
+            GeometryDrawingEraser.Brush = forcePointEraser
+                ? new SolidColorBrush(Color.FromRgb(0x23, 0xA9, 0xF2))
+                : new SolidColorBrush(Color.FromRgb(0x66, 0x66, 0x66));
             ImageEraser.Visibility = Visibility.Collapsed;
             inkCanvas_EditingModeChanged(inkCanvas, null);
             CancelSingleFingerDragMode();
@@ -1458,38 +1492,38 @@ namespace Ink_Canvas
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 CancelSingleFingerDragMode();
                 forceEraser = false;
+
+                // 改变选中提示
+                ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorYellowContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorWhiteContent.Visibility = Visibility.Collapsed;
+                switch (inkColor)
+                {
+                    case 0:
+                        ViewboxBtnColorBlackContent.Visibility = Visibility.Visible;
+                        break;
+                    case 1:
+                        ViewboxBtnColorRedContent.Visibility = Visibility.Visible;
+                        break;
+                    case 2:
+                        ViewboxBtnColorGreenContent.Visibility = Visibility.Visible;
+                        break;
+                    case 3:
+                        ViewboxBtnColorBlueContent.Visibility = Visibility.Visible;
+                        break;
+                    case 4:
+                        ViewboxBtnColorYellowContent.Visibility = Visibility.Visible;
+                        break;
+                    case 5:
+                        ViewboxBtnColorWhiteContent.Visibility = Visibility.Visible;
+                        break;
+                }
             }
 
             isLongPressSelected = false;
-
-            // 改变选中提示
-            ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorYellowContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorWhiteContent.Visibility = Visibility.Collapsed;
-            switch (inkColor)
-            {
-                case 0:
-                    ViewboxBtnColorBlackContent.Visibility = Visibility.Visible;
-                    break;
-                case 1:
-                    ViewboxBtnColorRedContent.Visibility = Visibility.Visible;
-                    break;
-                case 2:
-                    ViewboxBtnColorGreenContent.Visibility = Visibility.Visible;
-                    break;
-                case 3:
-                    ViewboxBtnColorBlueContent.Visibility = Visibility.Visible;
-                    break;
-                case 4:
-                    ViewboxBtnColorYellowContent.Visibility = Visibility.Visible;
-                    break;
-                case 5:
-                    ViewboxBtnColorWhiteContent.Visibility = Visibility.Visible;
-                    break;
-            }
         }
 
         private void BtnColorBlack_Click(object sender, RoutedEventArgs e)
@@ -1794,10 +1828,12 @@ namespace Ink_Canvas
                     }
                     else
                     {
-                        inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5);
-                        //inkCanvas.EraserShape = new RectangleStylusShape(8, 8);
-                        //inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5);
-                        inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
+                        //inkCanvas.EraserShape = new RectangleStylusShape(8, 8); //old old
+                        //inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5); //last
+                        //inkCanvas.EraserShape = new EllipseStylusShape(boundsWidth * 1.5, boundsWidth * 1.5); //old old
+                        //inkCanvas.EditingMode = forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke; //last
+                        inkCanvas.EraserShape = new EllipseStylusShape(5, 5);
+                        inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
                     }
                 }
             }
@@ -1813,7 +1849,9 @@ namespace Ink_Canvas
         public double GetTouchBoundWidth(TouchEventArgs e)
         {
             var args = e.GetTouchPoint(null).Bounds;
-            double value = args.Width;
+            double value;
+            if (!Settings.Advanced.IsQuadIR) value = args.Width;
+            else value = Math.Sqrt(args.Width * args.Height); //四边红外
             if (Settings.Advanced.IsSpecialScreen) value *= Settings.Advanced.TouchMultiplier;
             return value;
         }
@@ -2830,6 +2868,14 @@ namespace Ink_Canvas
             Settings.Canvas.EraserSize = ComboBoxEraserSize.SelectedIndex;
             SaveSettingsToFile();
         }
+        
+        
+        private void ComboBoxEraserType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Canvas.EraserType = ComboBoxEraserType.SelectedIndex;
+            SaveSettingsToFile();
+        }
 
         private void InkWidthSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -3127,10 +3173,27 @@ namespace Ink_Canvas
             SaveSettingsToFile();
         }
 
+        private void BorderCalculateMultiplier_TouchDown(object sender, TouchEventArgs e)
+        {
+            var args = e.GetTouchPoint(null).Bounds;
+            double value;
+            if (!Settings.Advanced.IsQuadIR) value = args.Width;
+            else value = Math.Sqrt(args.Width * args.Height); //四边红外
+
+            TextBlockShowCalculatedMultiplier.Text = (5 / (value * 1.1)).ToString();
+        }
+
         private void ToggleSwitchEraserBindTouchMultiplier_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
             Settings.Advanced.EraserBindTouchMultiplier = ToggleSwitchEraserBindTouchMultiplier.IsOn;
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchIsQuadIR_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+            Settings.Advanced.IsQuadIR = ToggleSwitchIsQuadIR.IsOn;
             SaveSettingsToFile();
         }
 
@@ -5449,6 +5512,36 @@ namespace Ink_Canvas
                                 }
                             }
                         }
+                        else if (item.CommitType == TimeMachineHistoryType.Rotate)
+                        {
+                            if (item.StrokeHasBeenCleared)
+                            {
+
+                                foreach (var strokes in item.CurrentStroke)
+                                {
+                                    if (inkCanvas.Strokes.Contains(strokes))
+                                        inkCanvas.Strokes.Remove(strokes);
+                                }
+                                foreach (var strokes in item.ReplacedStroke)
+                                {
+                                    if (!inkCanvas.Strokes.Contains(strokes))
+                                        inkCanvas.Strokes.Add(strokes);
+                                }
+                            }
+                            else
+                            {
+                                foreach (var strokes in item.CurrentStroke)
+                                {
+                                    if (!inkCanvas.Strokes.Contains(strokes))
+                                        inkCanvas.Strokes.Add(strokes);
+                                }
+                                foreach (var strokes in item.ReplacedStroke)
+                                {
+                                    if (inkCanvas.Strokes.Contains(strokes))
+                                        inkCanvas.Strokes.Remove(strokes);
+                                }
+                            }
+                        }
                         else if (item.CommitType == TimeMachineHistoryType.Clear)
                         {
                             if (!item.StrokeHasBeenCleared)
@@ -5472,13 +5565,6 @@ namespace Ink_Canvas
                             }
                             else
                             {
-                                if (item.CurrentStroke != null)
-                                {
-                                    foreach (var currentStroke in item.CurrentStroke)
-                                    {
-                                        if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
-                                    }
-                                }
                                 if (item.ReplacedStroke != null)
                                 {
                                     foreach (var replacedStroke in item.ReplacedStroke)
@@ -5486,10 +5572,17 @@ namespace Ink_Canvas
                                         if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
                                     }
                                 }
+                                if (item.CurrentStroke != null)
+                                {
+                                    foreach (var currentStroke in item.CurrentStroke)
+                                    {
+                                        if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
+                                    }
+                                }
                             }
                         }
+                        _currentCommitType = CommitReason.UserInput;
                     }
-                    _currentCommitType = CommitReason.UserInput;
                 }
                 else
                 {
@@ -5546,6 +5639,36 @@ namespace Ink_Canvas
                                 }
                             }
                         }
+                        else if (item.CommitType == TimeMachineHistoryType.Rotate)
+                        {
+                            if (item.StrokeHasBeenCleared)
+                            {
+
+                                foreach (var strokes in item.CurrentStroke)
+                                {
+                                    if (inkCanvas.Strokes.Contains(strokes))
+                                        inkCanvas.Strokes.Remove(strokes);
+                                }
+                                foreach (var strokes in item.ReplacedStroke)
+                                {
+                                    if (!inkCanvas.Strokes.Contains(strokes))
+                                        inkCanvas.Strokes.Add(strokes);
+                                }
+                            }
+                            else
+                            {
+                                foreach (var strokes in item.CurrentStroke)
+                                {
+                                    if (!inkCanvas.Strokes.Contains(strokes))
+                                        inkCanvas.Strokes.Add(strokes);
+                                }
+                                foreach (var strokes in item.ReplacedStroke)
+                                {
+                                    if (inkCanvas.Strokes.Contains(strokes))
+                                        inkCanvas.Strokes.Remove(strokes);
+                                }
+                            }
+                        }
                         else if (item.CommitType == TimeMachineHistoryType.Clear)
                         {
                             if (!item.StrokeHasBeenCleared)
@@ -5569,13 +5692,6 @@ namespace Ink_Canvas
                             }
                             else
                             {
-                                if (item.CurrentStroke != null)
-                                {
-                                    foreach (var currentStroke in item.CurrentStroke)
-                                    {
-                                        if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
-                                    }
-                                }
                                 if (item.ReplacedStroke != null)
                                 {
                                     foreach (var replacedStroke in item.ReplacedStroke)
@@ -5583,9 +5699,15 @@ namespace Ink_Canvas
                                         if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
                                     }
                                 }
+                                if (item.CurrentStroke != null)
+                                {
+                                    foreach (var currentStroke in item.CurrentStroke)
+                                    {
+                                        if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
+                                    }
+                                }
                             }
                         }
-
                     }
                     _currentCommitType = CommitReason.UserInput;
                 }
@@ -6600,7 +6722,7 @@ namespace Ink_Canvas
 
         public static void ShowNewMessage(string notice, bool isShowImmediately = true)
         {
-            (Application.Current?.Windows.Cast<Window>().FirstOrDefault(window => window is MainWindow) as MainWindow).ShowNotification(notice, isShowImmediately);
+            (Application.Current?.Windows.Cast<Window>().FirstOrDefault(window => window is MainWindow) as MainWindow)?.ShowNotification(notice, isShowImmediately);
         }
 
         public void ShowNotification(string notice, bool isShowImmediately = true)
@@ -6790,6 +6912,7 @@ namespace Ink_Canvas
         {
             BtnSelect_Click(BtnSelect, null);
 
+            ImageEraser.Visibility = Visibility.Visible;
             ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
             ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
             ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
@@ -6814,7 +6937,7 @@ namespace Ink_Canvas
             {
                 //进入黑板
                 Topmost = false;
-                
+
                 if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
                 {
                     pointDesktop = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
@@ -7236,6 +7359,7 @@ namespace Ink_Canvas
 
 
         #endregion
+
     }
 
     #region Test for pen
