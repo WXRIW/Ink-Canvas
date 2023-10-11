@@ -2315,7 +2315,7 @@ namespace Ink_Canvas
                 {
                     if (currentMode != 0)
                     {
-                        ImageBlackboard_MouseUp();
+                        ImageBlackboard_MouseUp(null, null);
                     }
                     BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
                 }
