@@ -20,7 +20,7 @@
         Closing="Window_Closing"
         Closed="Window_Closed"
         PreviewKeyDown="Main_Grid_PreviewKeyDown"
-        Height="1000" Width="1000"
+        Height="10000" Width="1000"
         FontFamily="Microsoft YaHei UI"
         MouseWheel="Window_MouseWheel"
         Foreground="Black"
@@ -596,8 +596,8 @@
                                 <TextBlock FontSize="14">
                                      <Bold>开发者:</Bold> XY Wang (WXRIW)
                                 </TextBlock>
-                                <TextBlock FontSize="13.5">
-                                     <Bold>贡献者:</Bold> Kengwang, jiajiaxd, CN-Ironegg, Raspberry Kan
+                                <TextBlock FontSize="14" TextWrapping="Wrap">
+                                     <Bold>贡献者:</Bold> Kengwang, Raspberry Kan, jiajiaxd, CN-Ironegg, Clover Yan, STBBRD
                                 </TextBlock>
                                 <TextBlock FontSize="14">
                                     <Bold>开源地址:</Bold>
