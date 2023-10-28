@@ -2854,7 +2854,7 @@ namespace Ink_Canvas
         #endregion
 
         #region Canvas
-
+        
         private void ComboBoxPenStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!isLoaded) return;
