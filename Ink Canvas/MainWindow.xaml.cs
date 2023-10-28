@@ -1349,7 +1349,7 @@ namespace Ink_Canvas
 
 
                 // Auto-clear Strokes
-                // 很烦, 要重新来, 要等待截图完成再清理笔记
+                // 很烦, 要重新来, 要等待截图完成再清理笔迹
                 if (BtnPPTSlideShowEnd.Visibility != Visibility.Visible)
                 {
                     if (isLoaded && Settings.Automation.IsAutoClearWhenExitingWritingMode)
