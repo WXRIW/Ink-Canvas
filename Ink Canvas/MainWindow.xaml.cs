@@ -1236,19 +1236,19 @@ namespace Ink_Canvas
                 }
                 else if (inkColor == 1)
                 {
-                    BtnColorRed_Click(null,null);
+                    BtnColorRed_Click(null, null);
                 }
                 else if (inkColor == 2)
                 {
-                    BtnColorGreen_Click(null,null);
+                    BtnColorGreen_Click(null, null);
                 }
                 else if (inkColor == 3)
                 {
-                    BtnColorBlue_Click(null,null);
+                    BtnColorBlue_Click(null, null);
                 }
                 else if (inkColor == 4)
                 {
-                    BtnColorYellow_Click(null,null);
+                    BtnColorYellow_Click(null, null);
                 }
             }
             else
@@ -6905,6 +6905,8 @@ namespace Ink_Canvas
 
         private async void SymbolIconCursor_Click(object sender, RoutedEventArgs e)
         {
+            SetDarkColors();
+
             if (currentMode != 0)
             {
                 ImageBlackboard_MouseUp(null, null);
@@ -6986,6 +6988,9 @@ namespace Ink_Canvas
             if (currentMode == 0)
             {
                 //进入黑板
+                if (Settings.Canvas.UsingWhiteboard) SetDarkColors();   //在白板上用深色墨迹
+                else SetLightColors();  //在黑板上用浅色墨迹
+
                 Topmost = false;
 
                 if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
@@ -7018,6 +7023,8 @@ namespace Ink_Canvas
             else
             {
                 //关闭黑板
+                SetDarkColors();
+
                 Topmost = true;
 
                 if (isInMultiTouchMode) BorderMultiTouchMode_MouseUp(null, null);
