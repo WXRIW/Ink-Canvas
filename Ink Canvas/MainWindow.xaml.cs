@@ -1229,17 +1229,26 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.White;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                SetDarkColors();    //在浅色背景上使用深色墨迹
                 if (inkColor == 0)
                 {
                     inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
                 }
+                else if (inkColor == 1)
+                {
+                    BtnColorRed_Click(null,null);
+                }
                 else if (inkColor == 2)
                 {
-                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF1ED760");
+                    BtnColorGreen_Click(null,null);
+                }
+                else if (inkColor == 3)
+                {
+                    BtnColorBlue_Click(null,null);
                 }
                 else if (inkColor == 4)
                 {
-                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFFC000");
+                    BtnColorYellow_Click(null,null);
                 }
             }
             else
@@ -1252,17 +1261,26 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.Black;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                SetLightColors();   //在深色背景上使用浅色墨迹
                 if (inkColor == 0)
                 {
-                    inkCanvas.DefaultDrawingAttributes.Color = Colors.Black;
+                    inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
+                }
+                else if (inkColor == 1)
+                {
+                    BtnColorRed_Click(null, null);
                 }
                 else if (inkColor == 2)
                 {
-                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF169141");
+                    BtnColorGreen_Click(null, null);
+                }
+                else if (inkColor == 3)
+                {
+                    BtnColorBlue_Click(null, null);
                 }
                 else if (inkColor == 4)
                 {
-                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFF38B00");
+                    BtnColorYellow_Click(null, null);
                 }
             }
             if (!Settings.Appearance.IsTransparentButtonBackground)
@@ -1539,17 +1557,15 @@ namespace Ink_Canvas
         {
             inkColor = 1;
             forceEraser = false;
-            inkCanvas.DefaultDrawingAttributes.Color = Colors.Red;
             if (BtnSwitchTheme.Content.ToString() == "浅色")
             {
-                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFF3333");
-                BtnColorRed.Background = new SolidColorBrush(StringToColor("#FFFF3333"));
+                SetDarkColors();    //在浅色背景上使用深色墨迹
             }
             else
             {
-                inkCanvas.DefaultDrawingAttributes.Color = Colors.Red;
-                BtnColorRed.Background = Brushes.Red;
+                SetLightColors();    //在深色背景上使用浅色墨迹
             }
+            inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorRed.Background).Color;
 
             ColorSwitchCheck();
         }
@@ -1560,14 +1576,13 @@ namespace Ink_Canvas
             forceEraser = false;
             if (BtnSwitchTheme.Content.ToString() == "浅色")
             {
-                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF1ED760");
-                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
+                SetDarkColors();    //在浅色背景上使用深色墨迹
             }
             else
             {
-                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF169141");
-                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
+                SetLightColors();    //在深色背景上使用浅色墨迹
             }
+            inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorGreen.Background).Color;
 
             ColorSwitchCheck();
         }
@@ -1576,7 +1591,7 @@ namespace Ink_Canvas
         {
             inkColor = 3;
             forceEraser = false;
-            inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF239AD6");
+            inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorBlue.Background).Color;
 
             ColorSwitchCheck();
         }
@@ -1587,14 +1602,13 @@ namespace Ink_Canvas
             forceEraser = false;
             if (BtnSwitchTheme.Content.ToString() == "浅色")
             {
-                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFFC000");
-                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
+                SetDarkColors();    //在浅色背景上使用深色墨迹
             }
             else
             {
-                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFF38B00");
-                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
+                SetLightColors();    //在深色背景上使用浅色墨迹
             }
+            inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorYellow.Background).Color;
 
             ColorSwitchCheck();
         }
@@ -2868,8 +2882,8 @@ namespace Ink_Canvas
             Settings.Canvas.EraserSize = ComboBoxEraserSize.SelectedIndex;
             SaveSettingsToFile();
         }
-        
-        
+
+
         private void ComboBoxEraserType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!isLoaded) return;
@@ -5833,6 +5847,42 @@ namespace Ink_Canvas
             else
             {
                 BtnWhiteBoardDelete.IsEnabled = true;
+            }
+        }
+
+        private void SetLightColors()
+        {
+            if (File.Exists(App.RootPath + "Colors\\Light.ini"))
+            {
+                string[] lightColors = File.ReadAllLines(App.RootPath + "Colors\\Light.ini");
+                BtnColorRed.Background = new SolidColorBrush(StringToColor(lightColors[0]));
+                BtnColorGreen.Background = new SolidColorBrush(StringToColor(lightColors[1]));
+                BtnColorBlue.Background = new SolidColorBrush(StringToColor(lightColors[2]));
+                BtnColorYellow.Background = new SolidColorBrush(StringToColor(lightColors[3]));
+            }
+            else
+            {
+                BtnColorRed.Background = new SolidColorBrush(StringToColor("#FFFF3333"));
+                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
+                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
+            }
+        }
+
+        private void SetDarkColors()
+        {
+            if (File.Exists(App.RootPath + "Colors\\Dark.ini"))
+            {
+                string[] darkColors = File.ReadAllLines(App.RootPath + "Colors\\Dark.ini");
+                BtnColorRed.Background = new SolidColorBrush(StringToColor(darkColors[0]));
+                BtnColorGreen.Background = new SolidColorBrush(StringToColor(darkColors[1]));
+                BtnColorBlue.Background = new SolidColorBrush(StringToColor(darkColors[2]));
+                BtnColorYellow.Background = new SolidColorBrush(StringToColor(darkColors[3]));
+            }
+            else
+            {
+                BtnColorRed.Background = new SolidColorBrush(Colors.Red);
+                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
+                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
             }
         }
 
