@@ -6988,9 +6988,6 @@ namespace Ink_Canvas
             if (currentMode == 0)
             {
                 //进入黑板
-                if (Settings.Canvas.UsingWhiteboard) SetDarkColors();   //在白板上用深色墨迹
-                else SetLightColors();  //在黑板上用浅色墨迹
-
                 Topmost = false;
 
                 if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
@@ -7019,12 +7016,13 @@ namespace Ink_Canvas
                 {
                     BorderPenColorWhite_MouseUp(BorderPenColorWhite, null);
                 }
+
+                if (Settings.Canvas.UsingWhiteboard) SetDarkColors();   //在白板上用深色墨迹
+                else SetLightColors();  //在黑板上用浅色墨迹
             }
             else
             {
                 //关闭黑板
-                SetDarkColors();
-
                 Topmost = true;
 
                 if (isInMultiTouchMode) BorderMultiTouchMode_MouseUp(null, null);
@@ -7049,6 +7047,8 @@ namespace Ink_Canvas
                     })).Start();
                 }
                 BorderPenColorRed_MouseUp(BorderPenColorRed, null);
+
+                SetDarkColors();
             }
 
             BtnSwitch_Click(BtnSwitch, null);
