@@ -4748,16 +4748,31 @@ namespace Ink_Canvas
                     {
                         //第二笔：画双曲线
                         double k = drawMultiStepShapeSpecialParameter3;
-                        a = Math.Sqrt(Math.Abs((endP.X - iniP.X) * (endP.X - iniP.X) - (endP.Y - iniP.Y) * (endP.Y - iniP.Y) / (k * k)));
-                        b = a * k;
-                        pointList = new List<Point>();
-                        for (double i = a; i <= Math.Abs(endP.X - iniP.X); i += 0.5)
-                        {
-                            double rY = Math.Sqrt(Math.Abs(k * k * i * i - b * b));
-                            pointList.Add(new Point(iniP.X + i, iniP.Y - rY));
-                            pointList2.Add(new Point(iniP.X + i, iniP.Y + rY));
-                            pointList3.Add(new Point(iniP.X - i, iniP.Y - rY));
-                            pointList4.Add(new Point(iniP.X - i, iniP.Y + rY));
+                        bool isHyperbolaFocalPointOnXAxis = Math.Abs((endP.Y - iniP.Y) / (endP.X - iniP.X)) < k;
+                        if (isHyperbolaFocalPointOnXAxis) { // 焦点在 x 轴上
+                            a = Math.Sqrt(Math.Abs((endP.X - iniP.X) * (endP.X - iniP.X) - (endP.Y - iniP.Y) * (endP.Y - iniP.Y) / (k * k)));
+                            b = a * k;
+                            pointList = new List<Point>();
+                            for (double i = a; i <= Math.Abs(endP.X - iniP.X); i += 0.5)
+                            {
+                                double rY = Math.Sqrt(Math.Abs(k * k * i * i - b * b));
+                                pointList.Add(new Point(iniP.X + i, iniP.Y - rY));
+                                pointList2.Add(new Point(iniP.X + i, iniP.Y + rY));
+                                pointList3.Add(new Point(iniP.X - i, iniP.Y - rY));
+                                pointList4.Add(new Point(iniP.X - i, iniP.Y + rY));
+                            }
+                        } else { // 焦点在 y 轴上
+                            a = Math.Sqrt(Math.Abs((endP.Y - iniP.Y) * (endP.Y - iniP.Y) - (endP.X - iniP.X) * (endP.X - iniP.X) * (k * k)));
+                            b = a / k;
+                            pointList = new List<Point>();
+                            for (double i = a; i <= Math.Abs(endP.Y - iniP.Y); i += 0.5)
+                            {
+                                double rX = Math.Sqrt(Math.Abs(i * i / k / k - b * b));
+                                pointList.Add(new Point(iniP.X - rX, iniP.Y + i));
+                                pointList2.Add(new Point(iniP.X + rX, iniP.Y + i));
+                                pointList3.Add(new Point(iniP.X - rX, iniP.Y - i));
+                                pointList4.Add(new Point(iniP.X + rX, iniP.Y - i));
+                            }
                         }
                         try
                         {
@@ -4777,12 +4792,12 @@ namespace Ink_Canvas
                             {
                                 //画焦点
                                 c = Math.Sqrt(a * a + b * b);
-                                stylusPoint = new StylusPoint(iniP.X + c, iniP.Y, (float)1.0);
+                                stylusPoint = isHyperbolaFocalPointOnXAxis ? new StylusPoint(iniP.X + c, iniP.Y, (float)1.0) : new StylusPoint(iniP.X, iniP.Y + c, (float)1.0);
                                 point = new StylusPointCollection();
                                 point.Add(stylusPoint);
                                 stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
                                 strokes.Add(stroke.Clone());
-                                stylusPoint = new StylusPoint(iniP.X - c, iniP.Y, (float)1.0);
+                                stylusPoint = isHyperbolaFocalPointOnXAxis ? new StylusPoint(iniP.X - c, iniP.Y, (float)1.0) : new StylusPoint(iniP.X, iniP.Y - c, (float)1.0);
                                 point = new StylusPointCollection();
                                 point.Add(stylusPoint);
                                 stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
