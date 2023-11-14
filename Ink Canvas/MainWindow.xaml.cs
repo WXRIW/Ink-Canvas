@@ -1878,9 +1878,9 @@ namespace Ink_Canvas
                 lastTouchDownStrokeCollection = inkCanvas.Strokes.Clone();
             }
             //设备两个及两个以上，将画笔功能关闭
-            if (dec.Count > 1 || isSingleFingerDragMode || !Settings.Gesture.IsEnableTwoFingerZoom)
+            if (dec.Count > 1 || isSingleFingerDragMode || !Settings.Gesture.IsEnableTwoFingerGesture)
             {
-                if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerZoom) return;
+                if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerGesture) return;
                 if (inkCanvas.EditingMode != InkCanvasEditingMode.None && inkCanvas.EditingMode != InkCanvasEditingMode.Select)
                 {
                     lastInkCanvasEditingMode = inkCanvas.EditingMode;
@@ -1936,7 +1936,7 @@ namespace Ink_Canvas
 
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
-            if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerZoom) return;
+            if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerGesture) return;
             if ((dec.Count >= 2 && (Settings.PowerPointSettings.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible || StackPanelPPTButtons.Visibility == Visibility.Collapsed)) || isSingleFingerDragMode)
             {
                 ManipulationDelta md = e.DeltaManipulation;
@@ -1952,12 +1952,12 @@ namespace Ink_Canvas
                 center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
 
                 // Update matrix to reflect translation/rotation
-                m.Translate(trans.X, trans.Y);  // 移动
+                if (Settings.Gesture.IsEnableTwoFingerTranslate)
+                    m.Translate(trans.X, trans.Y);  // 移动
                 if (Settings.Gesture.IsEnableTwoFingerRotation)
-                {
                     m.RotateAt(rotate, center.X, center.Y);  // 旋转
-                }
-                m.ScaleAt(scale.X, scale.Y, center.X, center.Y);  // 缩放
+                if (Settings.Gesture.IsEnableTwoFingerZoom)
+                    m.ScaleAt(scale.X, scale.Y, center.X, center.Y);  // 缩放
 
                 StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
                 if (strokes.Count != 0)
@@ -1977,12 +1977,15 @@ namespace Ink_Canvas
                             }
                         }
 
-                        try
+                        if (Settings.Gesture.IsEnableTwoFingerZoom)
                         {
-                            stroke.DrawingAttributes.Width *= md.Scale.X;
-                            stroke.DrawingAttributes.Height *= md.Scale.Y;
+                            try
+                            {
+                                stroke.DrawingAttributes.Width *= md.Scale.X;
+                                stroke.DrawingAttributes.Height *= md.Scale.Y;
+                            }
+                            catch { }
                         }
-                        catch { }
                     }
                 }
                 else
@@ -1991,12 +1994,15 @@ namespace Ink_Canvas
                     {
                         stroke.Transform(m, false);
 
-                        try
+                        if (Settings.Gesture.IsEnableTwoFingerZoom)
                         {
-                            stroke.DrawingAttributes.Width *= md.Scale.X;
-                            stroke.DrawingAttributes.Height *= md.Scale.Y;
+                            try
+                            {
+                                stroke.DrawingAttributes.Width *= md.Scale.X;
+                                stroke.DrawingAttributes.Height *= md.Scale.Y;
+                            }
+                            catch { }
                         }
-                        catch { }
                     }
                     foreach (Circle circle in circles)
                     {
@@ -3055,6 +3061,15 @@ namespace Ink_Canvas
             if (!isLoaded) return;
 
             Settings.Gesture.IsEnableTwoFingerZoom = ToggleSwitchEnableTwoFingerZoom.IsOn;
+
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchEnableTwoFingerTranslate_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsEnableTwoFingerTranslate = ToggleSwitchEnableTwoFingerTranslate.IsOn;
 
             SaveSettingsToFile();
         }
