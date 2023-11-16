@@ -6701,7 +6701,7 @@ namespace Ink_Canvas
 
         private void SaveScreenShot(bool isHideNotification, string fileName = null)
         {
-            System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
+            System.Drawing.Rectangle rc = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
             var bitmap = new System.Drawing.Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
             using (System.Drawing.Graphics memoryGrahics = System.Drawing.Graphics.FromImage(bitmap))
