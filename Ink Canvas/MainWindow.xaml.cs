@@ -120,7 +120,7 @@ namespace Ink_Canvas
                     if (processes.Length > 0)
                     {
                         arg += " /IM SeewoIwbAssistant.exe" +
-                            " /IM Sia.Guard";
+                            " /IM Sia.Guard.exe";
                     }
                 }
                 if (Settings.Automation.IsAutoKillEasiNote)
