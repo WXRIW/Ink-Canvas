@@ -2243,16 +2243,11 @@ namespace Ink_Canvas
             LogHelper.WriteLogToFile("PowerPoint Application Slide Show Begin", LogHelper.LogType.Event);
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // 退出画板模式
-                pointDesktop = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
-                pointPPT = new Point(-1, -1);
+                if (currentMode == 1) {
+                    // 退出画板模式
+                    BtnSwitch_Click(null, null);
+                }
 
-                StackPanelPPTControls.Visibility = Visibility.Visible;
-                BtnPPTSlideShow.Visibility = Visibility.Collapsed;
-                BtnPPTSlideShowEnd.Visibility = Visibility.Visible;
-                ViewBoxStackPanelMain.Margin = new Thickness(10, 10, 10, 10);
-                BtnSwitch_Click(null, null);
-                
                 //调整颜色
                 double screenRatio = SystemParameters.PrimaryScreenWidth / SystemParameters.PrimaryScreenHeight;
                 if (Math.Abs(screenRatio - 16.0 / 9) <= -0.01)
@@ -2321,6 +2316,14 @@ namespace Ink_Canvas
                         LogHelper.WriteLogToFile(string.Format("Loaded {0} saved strokes", count.ToString()));
                     }
                 }
+
+                pointDesktop = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
+                pointPPT = new Point(-1, -1);
+
+                StackPanelPPTControls.Visibility = Visibility.Visible;
+                BtnPPTSlideShow.Visibility = Visibility.Collapsed;
+                BtnPPTSlideShowEnd.Visibility = Visibility.Visible;
+                ViewBoxStackPanelMain.Margin = new Thickness(10, 10, 10, 10);
 
                 if (Settings.PowerPointSettings.IsShowCanvasAtNewSlideShow && Main_Grid.Background == Brushes.Transparent)
                 {
