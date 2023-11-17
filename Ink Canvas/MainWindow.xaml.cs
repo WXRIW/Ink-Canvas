@@ -4077,7 +4077,10 @@ namespace Ink_Canvas
             lastMouseDownSender = null;
             if (isLongPressSelected)
             {
-                BorderDrawShape.Visibility = Visibility.Collapsed;
+                if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+                {
+                    BorderDrawShape.Visibility = Visibility.Collapsed;
+                }
                 var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
                 ImageDrawLine.BeginAnimation(OpacityProperty, dA);
             }
@@ -4096,7 +4099,10 @@ namespace Ink_Canvas
             lastMouseDownSender = null;
             if (isLongPressSelected)
             {
-                BorderDrawShape.Visibility = Visibility.Collapsed;
+                if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+                {
+                    BorderDrawShape.Visibility = Visibility.Collapsed;
+                }
                 var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
                 ImageDrawDashedLine.BeginAnimation(OpacityProperty, dA);
             }
@@ -4115,7 +4121,10 @@ namespace Ink_Canvas
             lastMouseDownSender = null;
             if (isLongPressSelected)
             {
-                BorderDrawShape.Visibility = Visibility.Collapsed;
+                if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+                {
+                    BorderDrawShape.Visibility = Visibility.Collapsed;
+                }
                 var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
                 ImageDrawDotLine.BeginAnimation(OpacityProperty, dA);
             }
@@ -4134,7 +4143,10 @@ namespace Ink_Canvas
             lastMouseDownSender = null;
             if (isLongPressSelected)
             {
-                BorderDrawShape.Visibility = Visibility.Collapsed;
+                if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+                {
+                    BorderDrawShape.Visibility = Visibility.Collapsed;
+                }
                 var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
                 ImageDrawArrow.BeginAnimation(OpacityProperty, dA);
             }
@@ -4153,7 +4165,10 @@ namespace Ink_Canvas
             lastMouseDownSender = null;
             if (isLongPressSelected)
             {
-                BorderDrawShape.Visibility = Visibility.Collapsed;
+                if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+                {
+                    BorderDrawShape.Visibility = Visibility.Collapsed;
+                }
                 var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
                 ImageDrawParallelLine.BeginAnimation(OpacityProperty, dA);
             }
