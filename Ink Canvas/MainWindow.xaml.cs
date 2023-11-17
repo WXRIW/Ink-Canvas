@@ -1062,6 +1062,15 @@ namespace Ink_Canvas
             forceEraser = false;
             BorderClearInDelete.Visibility = Visibility.Collapsed;
 
+            if (currentMode == 0) {
+                BorderPenColorRed_MouseUp(BorderPenColorRed, null);
+            } else {
+                if (Settings.Canvas.UsingWhiteboard) {
+                    BorderPenColorBlack_MouseUp(BorderPenColorBlack, null);
+                } else {
+                    BorderPenColorWhite_MouseUp(BorderPenColorWhite, null);
+                }
+            }
             if (inkCanvas.Strokes.Count != 0)
             {
                 int whiteboardIndex = CurrentWhiteboardIndex;
