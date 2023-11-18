@@ -1204,6 +1204,21 @@ namespace Ink_Canvas
                         currentMode = 1;
                         GridBackgroundCover.Visibility = Visibility.Visible;
 
+                        if (BtnPPTSlideShowEnd.Visibility == Visibility.Visible) {
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                try
+                                {
+                                    MemoryStream ms = new MemoryStream();
+                                    inkCanvas.Strokes.Save(ms);
+                                    ms.Position = 0;
+                                    memoryStreams[pptApplication.SlideShowWindows[1].View.CurrentShowPosition] = ms;
+                                    timeMachine.ClearStrokeHistory();
+                                }
+                                catch { }
+                            });
+                        }
+
                         SaveStrokes(true);
                         ClearStrokes(true);
                         RestoreStrokes();
