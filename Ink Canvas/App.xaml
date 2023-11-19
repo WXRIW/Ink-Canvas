@@ -6,10 +6,9 @@
              xmlns:ui="http://schemas.modernwpf.com/2019">
     <Application.Resources>
         <ResourceDictionary>
+            <FontFamily x:Key="SymbolThemeFontFamily">Segoe Fluent Icons, pack://application:,,,/Resources/#Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
             <Style TargetType="ScrollViewer">
-
                 <EventSetter Event="PreviewMouseWheel" Handler="ScrollViewer_PreviewMouseWheel"/>
-
             </Style>
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemeResources RequestedTheme="Light"/>

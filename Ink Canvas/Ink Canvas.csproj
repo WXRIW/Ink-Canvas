@@ -384,6 +384,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Segoe Fluent Icons.ttf" />
     <None Include="Resources\TimerDownNotice.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
