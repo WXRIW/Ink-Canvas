@@ -441,6 +441,7 @@
                         <GroupBox Header="手势">
                             <ui:SimpleStackPanel Spacing="12">
                                 <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerZoom" Header="允许双指缩放" FontFamily="Microsoft YaHei UI" IsOn="True" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerZoom_Toggled"/>
+                                <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerTranslate" Header="允许双指移动" FontFamily="Microsoft YaHei UI" IsOn="True" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerTranslate_Toggled"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerRotation" Header="允许双指旋转" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerRotation_Toggled"/>
                                 <TextBlock Text="允许选中墨迹后对墨迹进行双指或多指缩放操作（此设置不受“允许双指旋转”设置的影响）" TextWrapping="Wrap" Foreground="#666666"/>
                                 <ui:ToggleSwitch Name="ToggleSwitchEnableTwoFingerRotationOnSelection" Header="允许双指旋转选中的墨迹" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableTwoFingerRotation_Toggled"/>

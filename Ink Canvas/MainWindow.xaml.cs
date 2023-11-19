@@ -1926,9 +1926,9 @@ namespace Ink_Canvas
                 lastTouchDownStrokeCollection = inkCanvas.Strokes.Clone();
             }
             //设备两个及两个以上，将画笔功能关闭
-            if (dec.Count > 1 || isSingleFingerDragMode || !Settings.Gesture.IsEnableTwoFingerZoom)
+            if (dec.Count > 1 || isSingleFingerDragMode || !Settings.Gesture.IsEnableTwoFingerGesture)
             {
-                if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerZoom) return;
+                if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerGesture) return;
                 if (inkCanvas.EditingMode != InkCanvasEditingMode.None && inkCanvas.EditingMode != InkCanvasEditingMode.Select)
                 {
                     lastInkCanvasEditingMode = inkCanvas.EditingMode;
@@ -1984,7 +1984,7 @@ namespace Ink_Canvas
 
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
-            if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerZoom) return;
+            if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerGesture) return;
             if ((dec.Count >= 2 && (Settings.PowerPointSettings.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible || StackPanelPPTButtons.Visibility == Visibility.Collapsed)) || isSingleFingerDragMode)
             {
                 ManipulationDelta md = e.DeltaManipulation;
@@ -2000,12 +2000,12 @@ namespace Ink_Canvas
                 center = m.Transform(center);  // 转换为矩阵缩放和旋转的中心点
 
                 // Update matrix to reflect translation/rotation
-                m.Translate(trans.X, trans.Y);  // 移动
+                if (Settings.Gesture.IsEnableTwoFingerTranslate)
+                    m.Translate(trans.X, trans.Y);  // 移动
                 if (Settings.Gesture.IsEnableTwoFingerRotation)
-                {
                     m.RotateAt(rotate, center.X, center.Y);  // 旋转
-                }
-                m.ScaleAt(scale.X, scale.Y, center.X, center.Y);  // 缩放
+                if (Settings.Gesture.IsEnableTwoFingerZoom)
+                    m.ScaleAt(scale.X, scale.Y, center.X, center.Y);  // 缩放
 
                 StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
                 if (strokes.Count != 0)
@@ -2025,12 +2025,15 @@ namespace Ink_Canvas
                             }
                         }
 
-                        try
+                        if (Settings.Gesture.IsEnableTwoFingerZoom)
                         {
-                            stroke.DrawingAttributes.Width *= md.Scale.X;
-                            stroke.DrawingAttributes.Height *= md.Scale.Y;
+                            try
+                            {
+                                stroke.DrawingAttributes.Width *= md.Scale.X;
+                                stroke.DrawingAttributes.Height *= md.Scale.Y;
+                            }
+                            catch { }
                         }
-                        catch { }
                     }
                 }
                 else
@@ -2039,12 +2042,15 @@ namespace Ink_Canvas
                     {
                         stroke.Transform(m, false);
 
-                        try
+                        if (Settings.Gesture.IsEnableTwoFingerZoom)
                         {
-                            stroke.DrawingAttributes.Width *= md.Scale.X;
-                            stroke.DrawingAttributes.Height *= md.Scale.Y;
+                            try
+                            {
+                                stroke.DrawingAttributes.Width *= md.Scale.X;
+                                stroke.DrawingAttributes.Height *= md.Scale.Y;
+                            }
+                            catch { }
                         }
-                        catch { }
                     }
                     foreach (Circle circle in circles)
                     {
@@ -2282,6 +2288,8 @@ namespace Ink_Canvas
             LogHelper.WriteLogToFile("PowerPoint Application Slide Show Begin", LogHelper.LogType.Event);
             Application.Current.Dispatcher.Invoke(() =>
             {
+                // 退出画板模式
+                BtnSwitch_Click(null, null);
                 //调整颜色
                 double screenRatio = SystemParameters.PrimaryScreenWidth / SystemParameters.PrimaryScreenHeight;
                 if (Math.Abs(screenRatio - 16.0 / 9) <= -0.01)
@@ -2902,7 +2910,7 @@ namespace Ink_Canvas
         #endregion
 
         #region Canvas
-
+        
         private void ComboBoxPenStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!isLoaded) return;
@@ -3103,6 +3111,15 @@ namespace Ink_Canvas
             if (!isLoaded) return;
 
             Settings.Gesture.IsEnableTwoFingerZoom = ToggleSwitchEnableTwoFingerZoom.IsOn;
+
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchEnableTwoFingerTranslate_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsEnableTwoFingerTranslate = ToggleSwitchEnableTwoFingerTranslate.IsOn;
 
             SaveSettingsToFile();
         }
@@ -4796,16 +4813,31 @@ namespace Ink_Canvas
                     {
                         //第二笔：画双曲线
                         double k = drawMultiStepShapeSpecialParameter3;
-                        a = Math.Sqrt(Math.Abs((endP.X - iniP.X) * (endP.X - iniP.X) - (endP.Y - iniP.Y) * (endP.Y - iniP.Y) / (k * k)));
-                        b = a * k;
-                        pointList = new List<Point>();
-                        for (double i = a; i <= Math.Abs(endP.X - iniP.X); i += 0.5)
-                        {
-                            double rY = Math.Sqrt(Math.Abs(k * k * i * i - b * b));
-                            pointList.Add(new Point(iniP.X + i, iniP.Y - rY));
-                            pointList2.Add(new Point(iniP.X + i, iniP.Y + rY));
-                            pointList3.Add(new Point(iniP.X - i, iniP.Y - rY));
-                            pointList4.Add(new Point(iniP.X - i, iniP.Y + rY));
+                        bool isHyperbolaFocalPointOnXAxis = Math.Abs((endP.Y - iniP.Y) / (endP.X - iniP.X)) < k;
+                        if (isHyperbolaFocalPointOnXAxis) { // 焦点在 x 轴上
+                            a = Math.Sqrt(Math.Abs((endP.X - iniP.X) * (endP.X - iniP.X) - (endP.Y - iniP.Y) * (endP.Y - iniP.Y) / (k * k)));
+                            b = a * k;
+                            pointList = new List<Point>();
+                            for (double i = a; i <= Math.Abs(endP.X - iniP.X); i += 0.5)
+                            {
+                                double rY = Math.Sqrt(Math.Abs(k * k * i * i - b * b));
+                                pointList.Add(new Point(iniP.X + i, iniP.Y - rY));
+                                pointList2.Add(new Point(iniP.X + i, iniP.Y + rY));
+                                pointList3.Add(new Point(iniP.X - i, iniP.Y - rY));
+                                pointList4.Add(new Point(iniP.X - i, iniP.Y + rY));
+                            }
+                        } else { // 焦点在 y 轴上
+                            a = Math.Sqrt(Math.Abs((endP.Y - iniP.Y) * (endP.Y - iniP.Y) - (endP.X - iniP.X) * (endP.X - iniP.X) * (k * k)));
+                            b = a / k;
+                            pointList = new List<Point>();
+                            for (double i = a; i <= Math.Abs(endP.Y - iniP.Y); i += 0.5)
+                            {
+                                double rX = Math.Sqrt(Math.Abs(i * i / k / k - b * b));
+                                pointList.Add(new Point(iniP.X - rX, iniP.Y + i));
+                                pointList2.Add(new Point(iniP.X + rX, iniP.Y + i));
+                                pointList3.Add(new Point(iniP.X - rX, iniP.Y - i));
+                                pointList4.Add(new Point(iniP.X + rX, iniP.Y - i));
+                            }
                         }
                         try
                         {
@@ -4825,12 +4857,12 @@ namespace Ink_Canvas
                             {
                                 //画焦点
                                 c = Math.Sqrt(a * a + b * b);
-                                stylusPoint = new StylusPoint(iniP.X + c, iniP.Y, (float)1.0);
+                                stylusPoint = isHyperbolaFocalPointOnXAxis ? new StylusPoint(iniP.X + c, iniP.Y, (float)1.0) : new StylusPoint(iniP.X, iniP.Y + c, (float)1.0);
                                 point = new StylusPointCollection();
                                 point.Add(stylusPoint);
                                 stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
                                 strokes.Add(stroke.Clone());
-                                stylusPoint = new StylusPoint(iniP.X - c, iniP.Y, (float)1.0);
+                                stylusPoint = isHyperbolaFocalPointOnXAxis ? new StylusPoint(iniP.X - c, iniP.Y, (float)1.0) : new StylusPoint(iniP.X, iniP.Y - c, (float)1.0);
                                 point = new StylusPointCollection();
                                 point.Add(stylusPoint);
                                 stroke = new Stroke(point) { DrawingAttributes = inkCanvas.DefaultDrawingAttributes.Clone() };
