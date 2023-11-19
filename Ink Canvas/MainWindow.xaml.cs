@@ -306,7 +306,7 @@ namespace Ink_Canvas
         {
             if (ImageEraserMask.Visibility == Visibility.Visible)
             {
-                BtnColorRed_Click(sender, null);
+                BorderPenColorRed_MouseUp(null, null);
             }
             else
             {
