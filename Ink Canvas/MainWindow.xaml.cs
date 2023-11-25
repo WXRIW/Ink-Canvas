@@ -32,7 +32,6 @@ using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using Point = System.Windows.Point;
 using Timer = System.Timers.Timer;
-
 namespace Ink_Canvas
 {
     /// <summary>
@@ -2862,7 +2861,7 @@ namespace Ink_Canvas
         #endregion
 
         #region Canvas
-        
+
         private void ComboBoxPenStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!isLoaded) return;
@@ -2876,8 +2875,8 @@ namespace Ink_Canvas
             Settings.Canvas.EraserSize = ComboBoxEraserSize.SelectedIndex;
             SaveSettingsToFile();
         }
-        
-        
+
+
         private void ComboBoxEraserType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!isLoaded) return;
@@ -6696,14 +6695,37 @@ namespace Ink_Canvas
             })).Start();
         }
 
-        private void SaveScreenShot(bool isHideNotification, string fileName = null)
+        public const int HORZRES = 8;
+        public const int DESKTOPHORZRES = 118;
+        [DllImport("user32.dll")]
+        static extern IntPtr GetDC(IntPtr ptr);
+        [DllImport("gdi32.dll")]
+        static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+        public int OverNum(float Num)//用于将小数转化为较大相邻的整数
         {
-            System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
-            var bitmap = new System.Drawing.Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            using (System.Drawing.Graphics memoryGrahics = System.Drawing.Graphics.FromImage(bitmap))
+            if (Num % 1 == 0)
             {
-                memoryGrahics.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, System.Drawing.CopyPixelOperation.SourceCopy);
+                return (int)Num;
+            }
+            else
+            {
+                return (int)Num + 1;
+            }
+        }
+        private void SaveScreenShot(bool isHideNotification, string fileName = null)
+        { IntPtr hdc = GetDC(IntPtr.Zero);
+            int PhyW = GetDeviceCaps(hdc, DESKTOPHORZRES);
+            //https://learn.microsoft.com/zh-cn/windows/win32/api/wingdi/nf-wingdi-getdevicecaps
+            //得到缩放后分辨率
+            int LogicW = GetDeviceCaps(hdc, HORZRES);
+            float ScrScale = (float)PhyW / (float)LogicW;//算一下倍率
+            System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
+            int Scale = OverNum(ScrScale);
+        var bitmap = new System.Drawing.Bitmap(rc.Width * Scale,rc.Height * Scale, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+        using (System.Drawing.Graphics memoryGrahics = System.Drawing.Graphics.FromImage(bitmap))
+            {
+                memoryGrahics.CopyFromScreen(rc.X * Scale, rc.Y * Scale, 0, 0, new System.Drawing.Size((int)(rc.Width * Scale), (int)(rc.Height * Scale)), System.Drawing.CopyPixelOperation.SourceCopy);
             }
 
             if (Settings.Automation.IsSaveScreenshotsInDateFolders)
