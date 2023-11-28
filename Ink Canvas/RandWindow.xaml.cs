@@ -10,7 +10,7 @@ using System.Windows.Input;
 namespace Ink_Canvas { 
     /// <summary> 
     /// Interaction logic for RandWindow.xaml 
-    /// </summary> 
+    /// </summary> 1
     public partial class RandWindow : Window { 
         public RandWindow() { 
             InitializeComponent(); 
