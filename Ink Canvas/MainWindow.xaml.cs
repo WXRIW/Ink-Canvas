@@ -534,7 +534,7 @@ namespace Ink_Canvas
             if (!CloseIsFromButton)
             {
                 e.Cancel = true;
-                if (MessageBox.Show("是否继续关闭 Ink Canvas 画板，这将丢失当前未保存的工作。", "Ink Canvas 画板", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                if (MessageBox.Show("是否继续关闭 Ink Canvas 画板，这将丢失当前未保存的工作。", "Ink Canvas 画板", MessageBoxButton.OKCancel,MessageBoxImage.Warning) == MessageBoxResult.OK)
                 {
                     if (MessageBox.Show("真的狠心关闭 Ink Canvas 画板吗？", "Ink Canvas 画板", MessageBoxButton.OKCancel, MessageBoxImage.Error) == MessageBoxResult.OK)
                     {
@@ -6987,8 +6987,6 @@ namespace Ink_Canvas
 
         private async void SymbolIconCursor_Click(object sender, RoutedEventArgs e)
         {
-            SetDarkColors();
-
             if (currentMode != 0)
             {
                 ImageBlackboard_MouseUp(null, null);
@@ -7006,6 +7004,8 @@ namespace Ink_Canvas
                     }
                 }
             }
+
+            SetDarkColors();
         }
 
         private void SymbolIconDelete_MouseUp(object sender, MouseButtonEventArgs e)
