@@ -251,7 +251,7 @@ namespace Ink_Canvas
         {
             if (StackPanelPPTControls.Visibility != Visibility.Visible || currentMode != 0) return;
 
-            if (e.Key == Key.Down || e.Key == Key.PageDown || e.Key == Key.Right || e.Key == Key.N)
+            if (e.Key == Key.Down || e.Key == Key.PageDown || e.Key == Key.Right || e.Key == Key.N || e.Key == Key.Space)
             {
                 BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
             }
