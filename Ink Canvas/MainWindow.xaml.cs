@@ -3,7 +3,8 @@ using IWshRuntimeLibrary;
 using Microsoft.Office.Interop.PowerPoint;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
-using ModernWpf;
+using iNKORE.UI.WPF.Modern;
+using iNKORE.UI.WPF.Modern.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -1648,7 +1649,7 @@ namespace Ink_Canvas
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 inkCanvas.Children.Clear();
                 isInMultiTouchMode = false;
-                SymbolIconMultiTouchMode.Symbol = ModernWpf.Controls.Symbol.People;
+                SymbolIconMultiTouchMode.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.People;
             }
             else
             {
@@ -1660,7 +1661,7 @@ namespace Ink_Canvas
                 inkCanvas.EditingMode = InkCanvasEditingMode.None;
                 inkCanvas.Children.Clear();
                 isInMultiTouchMode = true;
-                SymbolIconMultiTouchMode.Symbol = ModernWpf.Controls.Symbol.Contact;
+                SymbolIconMultiTouchMode.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Contact;
             }
         }
 
@@ -4006,11 +4007,11 @@ namespace Ink_Canvas
 
             if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
             {
-                ((ModernWpf.Controls.SymbolIcon)sender).Symbol = ModernWpf.Controls.Symbol.Pin;
+                ((iNKORE.UI.WPF.Modern.Controls.SymbolIcon)sender).Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Pin;
             }
             else
             {
-                ((ModernWpf.Controls.SymbolIcon)sender).Symbol = ModernWpf.Controls.Symbol.UnPin;
+                ((iNKORE.UI.WPF.Modern.Controls.SymbolIcon)sender).Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.UnPin;
             }
         }
 
@@ -7251,7 +7252,7 @@ namespace Ink_Canvas
             downPos = e.GetPosition(null);
             GridForFloatingBarDraging.Visibility = Visibility.Visible;
 
-            SymbolIconEmoji.Symbol = ModernWpf.Controls.Symbol.Emoji;
+            SymbolIconEmoji.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Emoji;
         }
 
         void SymbolIconEmoji_MouseUp(object sender, MouseButtonEventArgs e)
@@ -7271,7 +7272,7 @@ namespace Ink_Canvas
             }
 
             GridForFloatingBarDraging.Visibility = Visibility.Collapsed;
-            SymbolIconEmoji.Symbol = ModernWpf.Controls.Symbol.Emoji2;
+            SymbolIconEmoji.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Emoji2;
         }
 
         #endregion

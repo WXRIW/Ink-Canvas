@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Ink_Canvas"
-        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
         xmlns:c="clr-namespace:Ink_Canvas.Converter"
         mc:Ignorable="d"
         AllowsTransparency="True"
@@ -133,7 +133,7 @@
             <Border Name="BorderStrokeSelectionControl"
                     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,900,0,0"
                     CornerRadius="5" Height="80"
-                    Background="{DynamicResource ToolBarBackground}" Visibility="{Binding ElementName=GridInkCanvasSelectionCover, Path=Visibility}"
+                    Background="{DynamicResource MyToolBarBackground}" Visibility="{Binding ElementName=GridInkCanvasSelectionCover, Path=Visibility}"
                     BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                 <Viewbox Margin="0,-2.5">
                     <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10" Height="60">
@@ -223,17 +223,17 @@
             <Grid Visibility="{Binding ElementName=GridBackgroundCoverHolder, Path=Visibility}">
                 <Viewbox Margin="10" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                     <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
-                        <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                        <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                             <Grid Margin="6" MouseUp="GridPPTControlPrevious_MouseUp">
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
-                        <Border Visibility="{Binding ElementName=PptNavigationBtn, Path=Visibility}" Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                        <Border Visibility="{Binding ElementName=PptNavigationBtn, Path=Visibility}" Width="36" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                             <Grid MouseUp="PPTNavigationBtn_Click">
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=PptNavigationTextBlock, Path=Foreground}" FontSize="{Binding ElementName=PptNavigationTextBlock, Path=FontSize}" Text="{Binding ElementName=PptNavigationTextBlock, Path=Text}" />
                             </Grid>
                         </Border>
-                        <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                        <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                             <Grid Margin="6" MouseUp="GridPPTControlNext_MouseUp">
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
                             </Grid>
@@ -245,12 +245,12 @@
         <Grid Visibility="{Binding ElementName=GridBackgroundCoverHolder, Path=Visibility}">
             <Viewbox Visibility="{Binding ElementName=GridBackgroundCover, Path=Visibility}" Opacity="0.7" Margin="10" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
-                    <Border Width="36" Height="36" MouseUp="BtnWhiteBoardAdd_Click" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                    <Border Width="36" Height="36" MouseUp="BtnWhiteBoardAdd_Click" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                         <Viewbox Margin="8">
                             <ui:SymbolIcon Symbol="Add" Foreground="{DynamicResource ToolBarForeground}" />
                         </Viewbox>
                     </Border>
-                    <Border Width="36" MouseUp="BtnWhiteBoardSwitchPrevious_Click" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                    <Border Width="36" MouseUp="BtnWhiteBoardSwitchPrevious_Click" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                         <Grid Margin="6">
                             <Image Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideSelected}"/>
                             <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
@@ -262,7 +262,7 @@
                                    VerticalAlignment="Center" HorizontalAlignment="Center"
                                    FontFamily="Microsoft YaHei UI" FontSize="12"/>
                     </Border>
-                    <Border Width="36" MouseUp="BtnWhiteBoardSwitchNext_Click" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                    <Border Width="36" MouseUp="BtnWhiteBoardSwitchNext_Click" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                         <Grid Margin="6">
                             <Image Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideSelected}"/>
                             <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
@@ -272,7 +272,7 @@
             </Viewbox>
             <Viewbox Visibility="{Binding ElementName=GridBackgroundCover, Path=Visibility}" Opacity="0.7" Margin="10" Height="50" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                 <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
-                    <Border Width="36" Height="36" MouseUp="BorderMultiTouchMode_MouseUp" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                    <Border Width="36" Height="36" MouseUp="BorderMultiTouchMode_MouseUp" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                         <Viewbox Margin="8">
                             <ui:SymbolIcon Name="SymbolIconMultiTouchMode" Symbol="People" Foreground="{DynamicResource ToolBarForeground}" />
                         </Viewbox>
@@ -910,18 +910,18 @@
             <Grid Visibility="{Binding ElementName=StackPanelPPTControls, Path=Visibility}">
                 <Viewbox Name="ViewboxPPTSidesControl" Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}" Opacity="0.7" Margin="10" Height="50" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                     <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
-                        <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                        <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                             <Grid Margin="6">
                                 <Image Name="ImagePPTControlPreviousPressed" Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideSelected}"/>
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
-                        <Border x:Name="PptNavigationBtn" Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                        <Border x:Name="PptNavigationBtn" Width="36" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                             <Grid MouseUp="PPTNavigationBtn_Click">
                                 <TextBlock Name="PptNavigationTextBlock" FontSize="10" Foreground="{DynamicResource ToolBarForeground}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="0/0" />
                             </Grid>
                         </Border>
-                        <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                        <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                             <Grid Margin="6">
                                 <Image Name="ImagePPTControlNextPressed" Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideSelected}"/>
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
@@ -931,17 +931,17 @@
                 </Viewbox>
                 <Viewbox Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}" Opacity="{Binding ElementName=ViewboxPPTSidesControl, Path=Opacity}" Margin="10" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                     <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
-                        <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                        <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                             <Grid Margin="6">
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
-                        <Border Width="36" Visibility="{Binding ElementName=PptNavigationBtn, Path=Visibility}" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                        <Border Width="36" Visibility="{Binding ElementName=PptNavigationBtn, Path=Visibility}" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                             <Grid MouseUp="PPTNavigationBtn_Click">
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=PptNavigationTextBlock, Path=Foreground}" FontSize="{Binding ElementName=PptNavigationTextBlock, Path=FontSize}" Text="{Binding ElementName=PptNavigationTextBlock, Path=Text}" />
                             </Grid>
                         </Border>
-                        <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                        <Border Width="36" MouseUp="GridPPTControlNext_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                             <Grid Margin="6">
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalNextSlideNormal}"/>
                             </Grid>
@@ -957,13 +957,13 @@
                 <ScaleTransform x:Name="ViewboxFloatingBarScaleTransform" ScaleX="1" ScaleY="1"/>
             </Viewbox.LayoutTransform>
             <ui:SimpleStackPanel Orientation="Horizontal">
-                <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}" MouseDown="SymbolIconEmoji_MouseDown" MouseUp="SymbolIconEmoji_MouseUp">
+                <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}" MouseDown="SymbolIconEmoji_MouseDown" MouseUp="SymbolIconEmoji_MouseUp">
                     <ui:SimpleStackPanel Margin="0,5,0,5" Spacing="10" Orientation="Horizontal"
                                          HorizontalAlignment="Center">
                         <ui:SymbolIcon Name="SymbolIconEmoji" Symbol="Emoji2" Foreground="{DynamicResource ToolBarForeground}"/>
                     </ui:SimpleStackPanel>
                 </Border>
-                <Border Margin="5,0,0,0" Visibility="Visible" Height="36" Name="BorderFloatingBarMainControls" Background="{DynamicResource ToolBarBackground}" CornerRadius="5" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                <Border Margin="5,0,0,0" Visibility="Visible" Height="36" Name="BorderFloatingBarMainControls" Background="{DynamicResource MyToolBarBackground}" CornerRadius="5" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                     <ui:SimpleStackPanel Name="StackPanelFloatingBar" Spacing="10" Orientation="Horizontal">
                         <ui:SimpleStackPanel Name="StackPanelCanvacMain" Margin="10,5,0,5" Spacing="10" Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
                             <Grid Height="24" Width="0">
@@ -1082,7 +1082,7 @@
                             <ui:SymbolIcon Name="SymbolIconSelect" Symbol="SelectAll" Foreground="{DynamicResource ToolBarForeground}" MouseUp="SymbolIconSelect_MouseUp"/>
                             <Grid Margin="3,5,0,5">
                                 <Image MouseUp="ImageDrawShape_MouseUp" MouseDown="Border_MouseDown" Margin="-2.5" Source="{DynamicResource DrawShapeImageSource.DrawShapeIcon}"/>
-                                <Border x:Name="BorderDrawShape" Visibility="Visible" Background="{DynamicResource ToolBarBackground}" BorderBrush="{DynamicResource ToolBarBorderBrush}" BorderThickness="1"
+                                <Border x:Name="BorderDrawShape" Visibility="Visible" Background="{DynamicResource MyToolBarBackground}" BorderBrush="{DynamicResource ToolBarBorderBrush}" BorderThickness="1"
                                     CornerRadius="8" Margin="-100,-265,-100,30" Height="240">
                                     <Viewbox Margin="0,0,0,2">
                                         <ui:SimpleStackPanel Spacing="-8" Orientation="Vertical">
@@ -1196,7 +1196,7 @@
                                 <ui:SymbolIcon Margin="0,0,0,0" Symbol="Camera" Foreground="{DynamicResource ToolBarForeground}" MouseDown="Border_MouseDown" MouseUp="SymbolIconScreenshot_MouseUp"/>
                                 <Grid Height="24" Width="20">
                                     <ui:SymbolIcon Symbol="Repair" Foreground="{DynamicResource ToolBarForeground}" MouseDown="Border_MouseDown" MouseUp="SymbolIconTools_MouseUp"/>
-                                    <Border Name="BorderTools" Margin="37,-157,-140,-6" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                                    <Border Name="BorderTools" Margin="37,-157,-140,-6" CornerRadius="5" Background="{DynamicResource MyToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                                         <ui:SimpleStackPanel>
                                             <Label Content="快捷设置" FontSize="14" Foreground="{DynamicResource ToolBarForeground}"
                                                    HorizontalAlignment="Left" Margin="8,8"/>

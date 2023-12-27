@@ -290,6 +290,9 @@
     <PackageReference Include="Autoupdater.NET.Official">
       <Version>1.8.1</Version>
     </PackageReference>
+    <PackageReference Include="iNKORE.UI.WPF.Modern">
+      <Version>0.9.25.1</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Office.Interop.PowerPoint">
       <Version>15.0.4420.1018</Version>
     </PackageReference>
@@ -319,9 +322,6 @@
     </COMReference>
   </ItemGroup>-->
   <ItemGroup>
-    <PackageReference Include="ModernWpfUI">
-      <Version>0.9.6</Version>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
     </PackageReference>

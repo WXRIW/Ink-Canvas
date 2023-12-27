@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Ink_Canvas"
              StartupUri="MainWindow.xaml"
-             xmlns:ui="http://schemas.modernwpf.com/2019">
+             xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern">
     <Application.Resources>
         <ResourceDictionary>
             <Style TargetType="ScrollViewer">
@@ -11,13 +11,27 @@
                 <EventSetter Event="PreviewMouseWheel" Handler="ScrollViewer_PreviewMouseWheel"/>
 
             </Style>
+
+            <Style TargetType="ui:FontIcon">
+                <Setter Property="FontSize" Value="20"/>
+            </Style>
+            <Style TargetType="ui:SymbolIcon">
+                <Setter Property="FontSize" Value="20"/>
+            </Style>
+
+
             <ResourceDictionary.MergedDictionaries>
+                
                 <ui:ThemeResources RequestedTheme="Light"/>
-                <ui:XamlControlsResources />
+                
+                
+                <ui:XamlControlsResources/>
+                
                 <ResourceDictionary Source="Resources/SeewoImageDictionary.xaml"/>
                 <ResourceDictionary Source="Resources/DrawShapeImageDictionary.xaml"/>
                 <ResourceDictionary Source="Resources/IconImageDictionary.xaml"/>
                 <ResourceDictionary Source="Resources/Styles/Light.xaml"/>
+                
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
