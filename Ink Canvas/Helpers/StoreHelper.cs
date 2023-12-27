@@ -8,15 +8,15 @@
             {
                 try
                 {
-                    //object GetCurrentPackage()
-                    //{
-                    //    return Windows.ApplicationModel.Package.Current;
-                    //}
+                    object GetCurrentPackage()
+                    {
+                        return Windows.ApplicationModel.Package.Current;
+                    }
 
-                    //if (GetCurrentPackage() != null)
-                    //{
-                    //    return true;
-                    //}
+                    if (GetCurrentPackage() != null)
+                    {
+                        return true;
+                    }
                     return false;
                 }
                 catch
