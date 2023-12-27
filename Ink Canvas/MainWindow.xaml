@@ -1204,7 +1204,7 @@
                                                 <ui:SimpleStackPanel>
                                                     <Label Margin="0,0,0,-2" Content="墨迹识别" Foreground="{DynamicResource FloatBarForeground}" FontSize="13" VerticalAlignment="Center"/>
                                                     <Viewbox Height="25">
-                                                        <ui:ToggleSwitch Foreground="{DynamicResource FloatBarForeground}" FontFamily="Microsoft YaHei UI" Width="70" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableInkToShape_Toggled" IsOn="{Binding ElementName=ToggleSwitchEnableInkToShape, Path=IsOn}"/>
+                                                        <ui:ToggleSwitch Foreground="{DynamicResource FloatBarForeground}" FontFamily="Microsoft YaHei UI" Width="70" MinWidth="0" OnContent="开" OffContent="关" Toggled="ToggleSwitchEnableInkToShape_Toggled" IsOn="{Binding ElementName=ToggleSwitchEnableInkToShape, Path=IsOn}"/>
                                                     </Viewbox>
                                                 </ui:SimpleStackPanel>
                                             </Viewbox>
@@ -1212,7 +1212,7 @@
                                                 <ui:SimpleStackPanel>
                                                     <Label Margin="0,0,0,-2" Content="手指模式" Foreground="{DynamicResource FloatBarForeground}" FontSize="13" VerticalAlignment="Center"/>
                                                     <Viewbox Height="25">
-                                                        <ui:ToggleSwitch Foreground="{DynamicResource FloatBarForeground}" IsOn="{Binding ElementName=ToggleSwitchModeFinger, Path=IsOn}" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Width="70"/>
+                                                        <ui:ToggleSwitch Foreground="{DynamicResource FloatBarForeground}" IsOn="{Binding ElementName=ToggleSwitchModeFinger, Path=IsOn}" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" MinWidth="0" Width="70"/>
                                                     </Viewbox>
                                                 </ui:SimpleStackPanel>
                                             </Viewbox>
