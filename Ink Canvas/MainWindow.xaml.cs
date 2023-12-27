@@ -29,7 +29,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Application = System.Windows.Application;
 using File = System.IO.File;
-using MessageBox = System.Windows.MessageBox;
+using MessageBox = iNKORE.UI.WPF.Modern.Controls.MessageBox;
 using Path = System.IO.Path;
 using Point = System.Windows.Point;
 using Timer = System.Timers.Timer;
@@ -227,7 +227,7 @@ namespace Ink_Canvas
             }
             else
             {
-                SymbolIconSelect.Foreground = new SolidColorBrush(toolBarForegroundColor);
+                SymbolIconSelect.Foreground = new SolidColorBrush(FloatBarForegroundColor);
             }
         }
 
@@ -6575,7 +6575,7 @@ namespace Ink_Canvas
 
         #region Auto Theme
 
-        Color toolBarForegroundColor = Color.FromRgb(102, 102, 102);
+        Color FloatBarForegroundColor = Color.FromRgb(102, 102, 102);
         private void SetTheme(string theme)
         {
             if (theme == "Light")
@@ -6594,7 +6594,7 @@ namespace Ink_Canvas
 
                 ThemeManager.SetRequestedTheme(window, ElementTheme.Light);
 
-                toolBarForegroundColor = (Color)Application.Current.FindResource("ToolBarForegroundColor");
+                FloatBarForegroundColor = (Color)Application.Current.FindResource("FloatBarForegroundColor");
             }
             else if (theme == "Dark")
             {
@@ -6612,11 +6612,11 @@ namespace Ink_Canvas
 
                 ThemeManager.SetRequestedTheme(window, ElementTheme.Dark);
 
-                toolBarForegroundColor = (Color)Application.Current.FindResource("ToolBarForegroundColor");
+                FloatBarForegroundColor = (Color)Application.Current.FindResource("FloatBarForegroundColor");
             }
 
-            SymbolIconSelect.Foreground = new SolidColorBrush(toolBarForegroundColor);
-            SymbolIconDelete.Foreground = new SolidColorBrush(toolBarForegroundColor);
+            SymbolIconSelect.Foreground = new SolidColorBrush(FloatBarForegroundColor);
+            SymbolIconDelete.Foreground = new SolidColorBrush(FloatBarForegroundColor);
         }
 
         private void SystemEvents_UserPreferenceChanged(object sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
