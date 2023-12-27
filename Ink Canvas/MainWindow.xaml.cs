@@ -3627,21 +3627,32 @@ namespace Ink_Canvas
         {
             if (lastBorderMouseDownObject != sender) return;
 
-            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
-            {
-                stroke.DrawingAttributes.Width *= 0.8;
-                stroke.DrawingAttributes.Height *= 0.8;
-            }
+            ChangeStrokeThickness(0.8);
         }
 
         private void GridPenWidthIncrease_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (lastBorderMouseDownObject != sender) return;
 
+            ChangeStrokeThickness(1.25);
+        }
+
+        private void ChangeStrokeThickness(double multipler)
+        {
             foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
             {
-                stroke.DrawingAttributes.Width *= 1.25;
-                stroke.DrawingAttributes.Height *= 1.25;
+                //stroke.DrawingAttributes.Width *= 1.25;
+                //stroke.DrawingAttributes.Height *= 1.25;
+
+                var newWidth = stroke.DrawingAttributes.Width * multipler;
+                var newHeight = stroke.DrawingAttributes.Height * multipler;
+
+                if(newWidth >= DrawingAttributes.MinWidth && newWidth <= DrawingAttributes.MaxWidth
+                    && newHeight >= DrawingAttributes.MinHeight && newHeight <= DrawingAttributes.MaxHeight)
+                {
+                    stroke.DrawingAttributes.Width = newWidth;
+                    stroke.DrawingAttributes.Height = newHeight;
+                }
             }
         }
 
