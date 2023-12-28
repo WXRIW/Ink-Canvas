@@ -49,6 +49,14 @@
       <HintPath>.\IAWinFX.dll</HintPath>
     </Reference>
     <Reference Include="netstandard" />
+    <Reference Include="Windows">
+      <HintPath>Windows.WinMD</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="Windows.Foundation.UniversalApiContract">
+      <HintPath>Windows.Foundation.UniversalApiContract.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official">
