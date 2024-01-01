@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using MessageBox = iNKORE.UI.WPF.Modern.Controls.MessageBox;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Ink_Canvas
 {

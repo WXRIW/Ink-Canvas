@@ -29,7 +29,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Application = System.Windows.Application;
 using File = System.IO.File;
-using MessageBox = iNKORE.UI.WPF.Modern.Controls.MessageBox;
+using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 using Point = System.Windows.Point;
 using Timer = System.Timers.Timer;
