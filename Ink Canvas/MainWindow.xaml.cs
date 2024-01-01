@@ -250,7 +250,7 @@ namespace Ink_Canvas
         {
             if (StackPanelPPTControls.Visibility != Visibility.Visible || currentMode != 0) return;
 
-            if (e.Key == Key.Down || e.Key == Key.PageDown || e.Key == Key.Right || e.Key == Key.N)
+            if (e.Key == Key.Down || e.Key == Key.PageDown || e.Key == Key.Right || e.Key == Key.N || e.Key == Key.Space)
             {
                 BtnPPTSlidesDown_Click(BtnPPTSlidesDown, null);
             }
@@ -701,6 +701,14 @@ namespace Ink_Canvas
             {
                 ToggleSwitchEnableTwoFingerZoom.IsOn = false;
             }
+            if (Settings.Gesture.IsEnableTwoFingerTranslate)
+            {
+                ToggleSwitchEnableTwoFingerTranslate.IsOn = true;
+            }
+            else
+            {
+                ToggleSwitchEnableTwoFingerTranslate.IsOn = false;
+            }
             if (Settings.Gesture.IsEnableTwoFingerRotation)
             {
                 ToggleSwitchEnableTwoFingerRotation.IsOn = true;
@@ -760,6 +768,8 @@ namespace Ink_Canvas
                 ComboBoxPenStyle.SelectedIndex = Settings.Canvas.InkStyle;
 
                 ComboBoxEraserSize.SelectedIndex = Settings.Canvas.EraserSize;
+
+                ComboBoxHyperbolaAsymptoteOption.SelectedIndex = (int)Settings.Canvas.HyperbolaAsymptoteOption;
             }
             else
             {
@@ -1044,9 +1054,9 @@ namespace Ink_Canvas
                     forcePointEraser = false;
                     break;
             }
+            inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5);
             inkCanvas.EditingMode =
                 forcePointEraser ? InkCanvasEditingMode.EraseByPoint : InkCanvasEditingMode.EraseByStroke;
-            inkCanvas.EraserShape = forcePointEraser ? new EllipseStylusShape(50, 50) : new EllipseStylusShape(5, 5);
             drawingShapeMode = 0;
             GeometryDrawingEraser.Brush = forcePointEraser
                 ? new SolidColorBrush(Color.FromRgb(0x23, 0xA9, 0xF2))
