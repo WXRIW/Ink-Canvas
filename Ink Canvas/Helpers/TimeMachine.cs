@@ -42,14 +42,14 @@ namespace Ink_Canvas.Helpers
             NotifyUndoRedoState();
         }
 
-        public void CommitStrokeRotateHistory(StrokeCollection strokeToBeReplaced, StrokeCollection generatedStroke)
+        public void CommitStrokeManipulationHistory(StrokeCollection strokeToBeReplaced, StrokeCollection generatedStroke)
         {
             if (_currentIndex + 1 < _currentStrokeHistory.Count)
             {
                 _currentStrokeHistory.RemoveRange(_currentIndex + 1, (_currentStrokeHistory.Count - 1) - _currentIndex);
             }
             _currentStrokeHistory.Add(new TimeMachineHistory(generatedStroke,
-                TimeMachineHistoryType.Rotate,
+                TimeMachineHistoryType.Manipulation,
                 false,
                 strokeToBeReplaced));
             _currentIndex = _currentStrokeHistory.Count - 1;
@@ -143,6 +143,6 @@ namespace Ink_Canvas.Helpers
         UserInput,
         ShapeRecognition,
         Clear,
-        Rotate
+        Manipulation
     }
 }

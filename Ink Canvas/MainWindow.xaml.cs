@@ -343,7 +343,7 @@ namespace Ink_Canvas
             ShapeDrawing,
             ShapeRecognition,
             ClearingCanvas,
-            Rotate
+            Manipulation
         }
 
         private CommitReason _currentCommitType = CommitReason.UserInput;
@@ -370,9 +370,9 @@ namespace Ink_Canvas
         private void StrokesOnStrokesChanged(object sender, StrokeCollectionChangedEventArgs e)
         {
             if (_currentCommitType == CommitReason.CodeInput || _currentCommitType == CommitReason.ShapeDrawing) return;
-            if (_currentCommitType == CommitReason.Rotate)
+            if (_currentCommitType == CommitReason.Manipulation)
             {
-                timeMachine.CommitStrokeRotateHistory(e.Removed, e.Added);
+                timeMachine.CommitStrokeManipulationHistory(e.Removed, e.Added);
                 return;
             }
             if ((e.Added.Count != 0 || e.Removed.Count != 0) && IsEraseByPoint)
@@ -1947,6 +1947,23 @@ namespace Ink_Canvas
         {
 
         }
+        private void inkCanvas_ManipulationStarted(object sender, ManipulationStartedEventArgs e)
+        {
+            if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerGesture || inkCanvas.Strokes.Count == 0 || e.Manipulators.Count() < 2) return;
+            _currentCommitType = CommitReason.Manipulation;
+            StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
+            if (strokes.Count != 0)
+            {
+                inkCanvas.Strokes.Replace(strokes, strokes.Clone());
+            }
+            else
+            {
+                var originalStrokes = inkCanvas.Strokes;
+                var targetStrokes = originalStrokes.Clone();
+                originalStrokes.Replace(originalStrokes, targetStrokes);
+            }
+            _currentCommitType = CommitReason.UserInput;
+        }
 
         private void Main_Grid_ManipulationCompleted(object sender, ManipulationCompletedEventArgs e)
         {
@@ -3366,7 +3383,7 @@ namespace Ink_Canvas
                     }
                 }
             }
-            else if (item.CommitType == TimeMachineHistoryType.Rotate)
+            else if (item.CommitType == TimeMachineHistoryType.Manipulation)
             {
                 if (item.StrokeHasBeenCleared)
                 {
@@ -3497,7 +3514,7 @@ namespace Ink_Canvas
                     }
                 }
             }
-            else if (item.CommitType == TimeMachineHistoryType.Rotate)
+            else if (item.CommitType == TimeMachineHistoryType.Manipulation)
             {
                 if (item.StrokeHasBeenCleared)
                 {
@@ -3704,7 +3721,7 @@ namespace Ink_Canvas
             {
                 stroke.Transform(m, false);
             }
-            _currentCommitType = CommitReason.Rotate;
+            _currentCommitType = CommitReason.Manipulation;
             inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
             _currentCommitType = CommitReason.UserInput;
             isProgramChangeStrokeSelection = true;
@@ -3736,7 +3753,7 @@ namespace Ink_Canvas
             {
                 stroke.Transform(m, false);
             }
-            _currentCommitType = CommitReason.Rotate;
+            _currentCommitType = CommitReason.Manipulation;
             inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
             _currentCommitType = CommitReason.UserInput;
             isProgramChangeStrokeSelection = true;
@@ -3766,7 +3783,7 @@ namespace Ink_Canvas
             {
                 stroke.Transform(m, false);
             }
-            _currentCommitType = CommitReason.Rotate;
+            _currentCommitType = CommitReason.Manipulation;
             inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
             _currentCommitType = CommitReason.UserInput;
             isProgramChangeStrokeSelection = true;
@@ -3796,7 +3813,7 @@ namespace Ink_Canvas
             {
                 stroke.Transform(m, false);
             }
-            _currentCommitType = CommitReason.Rotate;
+            _currentCommitType = CommitReason.Manipulation;
             inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
             _currentCommitType = CommitReason.UserInput;
             isProgramChangeStrokeSelection = true;
@@ -5474,16 +5491,19 @@ namespace Ink_Canvas
             if (_currentCommitType == CommitReason.ShapeDrawing && drawingShapeMode != 9)
             {
                 _currentCommitType = CommitReason.UserInput;
-                StrokeCollection collection;
+                StrokeCollection collection = null;
                 if (lastTempStrokeCollection != null && lastTempStrokeCollection.Count > 0)
                 {
                     collection = lastTempStrokeCollection;
                 }
-                else
+                else if(lastTempStroke != null)
                 {
                     collection = new StrokeCollection() { lastTempStroke };
                 }
-                timeMachine.CommitStrokeUserInputHistory(collection);
+                if (collection != null)
+                {
+                    timeMachine.CommitStrokeUserInputHistory(collection);
+                }
             }
             lastTempStroke = null;
             lastTempStrokeCollection = null;
@@ -5596,7 +5616,7 @@ namespace Ink_Canvas
                                 }
                             }
                         }
-                        else if (item.CommitType == TimeMachineHistoryType.Rotate)
+                        else if (item.CommitType == TimeMachineHistoryType.Manipulation)
                         {
                             if (item.StrokeHasBeenCleared)
                             {
@@ -5723,7 +5743,7 @@ namespace Ink_Canvas
                                 }
                             }
                         }
-                        else if (item.CommitType == TimeMachineHistoryType.Rotate)
+                        else if (item.CommitType == TimeMachineHistoryType.Manipulation)
                         {
                             if (item.StrokeHasBeenCleared)
                             {
@@ -6556,7 +6576,7 @@ namespace Ink_Canvas
                 myrp = (HttpWebResponse)ex.Response;
             }
 
-            if (myrp.StatusCode != HttpStatusCode.OK)
+            if (myrp?.StatusCode != HttpStatusCode.OK)
             {
                 return "null";
             }
@@ -6750,9 +6770,9 @@ namespace Ink_Canvas
 
         private void SaveScreenShot(bool isHideNotification, string fileName = null)
         {
-            System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
+            var size = System.Windows.Forms.SystemInformation.PrimaryMonitorSize;
+            var rc = new System.Drawing.Rectangle(new System.Drawing.Point(0, 0), new System.Drawing.Size(size.Width, size.Height));
             var bitmap = new System.Drawing.Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
             using (System.Drawing.Graphics memoryGrahics = System.Drawing.Graphics.FromImage(bitmap))
             {
                 memoryGrahics.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, System.Drawing.CopyPixelOperation.SourceCopy);
