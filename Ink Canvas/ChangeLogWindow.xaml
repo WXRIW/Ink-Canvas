@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Ink_Canvas" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False"
-        xmlns:ui="http://schemas.modernwpf.com/2019" FontFamily="Microsoft YaHei UI" Topmost="True"
+        xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern" FontFamily="Microsoft YaHei UI" Topmost="True"
         mc:Ignorable="d" ui:WindowHelper.UseModernWindowStyle="True" Loaded="Window_Loaded" Closed="Window_Closed"
         Title="" Height="390" Width="600">
     <Grid>

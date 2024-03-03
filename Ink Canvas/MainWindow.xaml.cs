@@ -3,7 +3,8 @@ using IWshRuntimeLibrary;
 using Microsoft.Office.Interop.PowerPoint;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
-using ModernWpf;
+using iNKORE.UI.WPF.Modern;
+using iNKORE.UI.WPF.Modern.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -226,7 +227,7 @@ namespace Ink_Canvas
             }
             else
             {
-                SymbolIconSelect.Foreground = new SolidColorBrush(toolBarForegroundColor);
+                SymbolIconSelect.Foreground = new SolidColorBrush(FloatBarForegroundColor);
             }
         }
 
@@ -1660,7 +1661,7 @@ namespace Ink_Canvas
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 inkCanvas.Children.Clear();
                 isInMultiTouchMode = false;
-                SymbolIconMultiTouchMode.Symbol = ModernWpf.Controls.Symbol.People;
+                SymbolIconMultiTouchMode.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.People;
             }
             else
             {
@@ -1672,7 +1673,7 @@ namespace Ink_Canvas
                 inkCanvas.EditingMode = InkCanvasEditingMode.None;
                 inkCanvas.Children.Clear();
                 isInMultiTouchMode = true;
-                SymbolIconMultiTouchMode.Symbol = ModernWpf.Controls.Symbol.Contact;
+                SymbolIconMultiTouchMode.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Contact;
             }
         }
 
@@ -3641,21 +3642,32 @@ namespace Ink_Canvas
         {
             if (lastBorderMouseDownObject != sender) return;
 
-            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
-            {
-                stroke.DrawingAttributes.Width *= 0.8;
-                stroke.DrawingAttributes.Height *= 0.8;
-            }
+            ChangeStrokeThickness(0.8);
         }
 
         private void GridPenWidthIncrease_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (lastBorderMouseDownObject != sender) return;
 
+            ChangeStrokeThickness(1.25);
+        }
+
+        private void ChangeStrokeThickness(double multipler)
+        {
             foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
             {
-                stroke.DrawingAttributes.Width *= 1.25;
-                stroke.DrawingAttributes.Height *= 1.25;
+                //stroke.DrawingAttributes.Width *= 1.25;
+                //stroke.DrawingAttributes.Height *= 1.25;
+
+                var newWidth = stroke.DrawingAttributes.Width * multipler;
+                var newHeight = stroke.DrawingAttributes.Height * multipler;
+
+                if(newWidth >= DrawingAttributes.MinWidth && newWidth <= DrawingAttributes.MaxWidth
+                    && newHeight >= DrawingAttributes.MinHeight && newHeight <= DrawingAttributes.MaxHeight)
+                {
+                    stroke.DrawingAttributes.Width = newWidth;
+                    stroke.DrawingAttributes.Height = newHeight;
+                }
             }
         }
 
@@ -4021,11 +4033,11 @@ namespace Ink_Canvas
 
             if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
             {
-                ((ModernWpf.Controls.SymbolIcon)sender).Symbol = ModernWpf.Controls.Symbol.Pin;
+                ((iNKORE.UI.WPF.Modern.Controls.SymbolIcon)sender).Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Pin;
             }
             else
             {
-                ((ModernWpf.Controls.SymbolIcon)sender).Symbol = ModernWpf.Controls.Symbol.UnPin;
+                ((iNKORE.UI.WPF.Modern.Controls.SymbolIcon)sender).Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.UnPin;
             }
         }
 
@@ -6604,7 +6616,7 @@ namespace Ink_Canvas
 
         #region Auto Theme
 
-        Color toolBarForegroundColor = Color.FromRgb(102, 102, 102);
+        Color FloatBarForegroundColor = Color.FromRgb(102, 102, 102);
         private void SetTheme(string theme)
         {
             if (theme == "Light")
@@ -6623,7 +6635,7 @@ namespace Ink_Canvas
 
                 ThemeManager.SetRequestedTheme(window, ElementTheme.Light);
 
-                toolBarForegroundColor = (Color)Application.Current.FindResource("ToolBarForegroundColor");
+                FloatBarForegroundColor = (Color)Application.Current.FindResource("FloatBarForegroundColor");
             }
             else if (theme == "Dark")
             {
@@ -6641,11 +6653,11 @@ namespace Ink_Canvas
 
                 ThemeManager.SetRequestedTheme(window, ElementTheme.Dark);
 
-                toolBarForegroundColor = (Color)Application.Current.FindResource("ToolBarForegroundColor");
+                FloatBarForegroundColor = (Color)Application.Current.FindResource("FloatBarForegroundColor");
             }
 
-            SymbolIconSelect.Foreground = new SolidColorBrush(toolBarForegroundColor);
-            SymbolIconDelete.Foreground = new SolidColorBrush(toolBarForegroundColor);
+            SymbolIconSelect.Foreground = new SolidColorBrush(FloatBarForegroundColor);
+            SymbolIconDelete.Foreground = new SolidColorBrush(FloatBarForegroundColor);
         }
 
         private void SystemEvents_UserPreferenceChanged(object sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
@@ -7277,7 +7289,7 @@ namespace Ink_Canvas
             downPos = e.GetPosition(null);
             GridForFloatingBarDraging.Visibility = Visibility.Visible;
 
-            SymbolIconEmoji.Symbol = ModernWpf.Controls.Symbol.Emoji;
+            SymbolIconEmoji.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Emoji;
         }
 
         void SymbolIconEmoji_MouseUp(object sender, MouseButtonEventArgs e)
@@ -7297,7 +7309,7 @@ namespace Ink_Canvas
             }
 
             GridForFloatingBarDraging.Visibility = Visibility.Collapsed;
-            SymbolIconEmoji.Symbol = ModernWpf.Controls.Symbol.Emoji2;
+            SymbolIconEmoji.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Emoji2;
         }
 
         #endregion
