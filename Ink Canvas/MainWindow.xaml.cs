@@ -120,7 +120,7 @@ namespace Ink_Canvas
                     if (processes.Length > 0)
                     {
                         arg += " /IM SeewoIwbAssistant.exe" +
-                            " /IM Sia.Guard";
+                            " /IM Sia.Guard.exe";
                     }
                 }
                 if (Settings.Automation.IsAutoKillEasiNote)
@@ -1072,6 +1072,15 @@ namespace Ink_Canvas
             forceEraser = false;
             BorderClearInDelete.Visibility = Visibility.Collapsed;
 
+            if (currentMode == 0) {
+                BorderPenColorRed_MouseUp(BorderPenColorRed, null);
+            } else {
+                if (Settings.Canvas.UsingWhiteboard) {
+                    BorderPenColorBlack_MouseUp(BorderPenColorBlack, null);
+                } else {
+                    BorderPenColorWhite_MouseUp(BorderPenColorWhite, null);
+                }
+            }
             if (inkCanvas.Strokes.Count != 0)
             {
                 int whiteboardIndex = CurrentWhiteboardIndex;
@@ -1159,6 +1168,7 @@ namespace Ink_Canvas
                     }
                     StackPanelPPTButtons.Visibility = Visibility.Visible;
                 }
+                Topmost = true;
                 BtnHideInkCanvas_Click(BtnHideInkCanvas, e);
             }
             else
@@ -1198,6 +1208,7 @@ namespace Ink_Canvas
                         }
 
                         StackPanelPPTButtons.Visibility = Visibility.Visible;
+                        Topmost = true;
                         break;
                     case 1: //黑板或白板模式
                         currentMode = 1;
@@ -1222,6 +1233,7 @@ namespace Ink_Canvas
                         }
 
                         StackPanelPPTButtons.Visibility = Visibility.Collapsed;
+                        Topmost = false;
                         break;
                 }
             }
@@ -2250,8 +2262,11 @@ namespace Ink_Canvas
             LogHelper.WriteLogToFile("PowerPoint Application Slide Show Begin", LogHelper.LogType.Event);
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // 退出画板模式
-                BtnSwitch_Click(null, null);
+                if (currentMode == 1) {
+                    // 退出画板模式
+                    BtnSwitch_Click(null, null);
+                }
+
                 //调整颜色
                 double screenRatio = SystemParameters.PrimaryScreenWidth / SystemParameters.PrimaryScreenHeight;
                 if (Math.Abs(screenRatio - 16.0 / 9) <= -0.01)
@@ -4084,7 +4099,10 @@ namespace Ink_Canvas
             lastMouseDownSender = null;
             if (isLongPressSelected)
             {
-                BorderDrawShape.Visibility = Visibility.Collapsed;
+                if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+                {
+                    BorderDrawShape.Visibility = Visibility.Collapsed;
+                }
                 var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
                 ImageDrawLine.BeginAnimation(OpacityProperty, dA);
             }
@@ -4103,7 +4121,10 @@ namespace Ink_Canvas
             lastMouseDownSender = null;
             if (isLongPressSelected)
             {
-                BorderDrawShape.Visibility = Visibility.Collapsed;
+                if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+                {
+                    BorderDrawShape.Visibility = Visibility.Collapsed;
+                }
                 var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
                 ImageDrawDashedLine.BeginAnimation(OpacityProperty, dA);
             }
@@ -4122,7 +4143,10 @@ namespace Ink_Canvas
             lastMouseDownSender = null;
             if (isLongPressSelected)
             {
-                BorderDrawShape.Visibility = Visibility.Collapsed;
+                if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+                {
+                    BorderDrawShape.Visibility = Visibility.Collapsed;
+                }
                 var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
                 ImageDrawDotLine.BeginAnimation(OpacityProperty, dA);
             }
@@ -4141,7 +4165,10 @@ namespace Ink_Canvas
             lastMouseDownSender = null;
             if (isLongPressSelected)
             {
-                BorderDrawShape.Visibility = Visibility.Collapsed;
+                if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+                {
+                    BorderDrawShape.Visibility = Visibility.Collapsed;
+                }
                 var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
                 ImageDrawArrow.BeginAnimation(OpacityProperty, dA);
             }
@@ -4160,7 +4187,10 @@ namespace Ink_Canvas
             lastMouseDownSender = null;
             if (isLongPressSelected)
             {
-                BorderDrawShape.Visibility = Visibility.Collapsed;
+                if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
+                {
+                    BorderDrawShape.Visibility = Visibility.Collapsed;
+                }
                 var dA = new DoubleAnimation(1, 1, new Duration(TimeSpan.FromMilliseconds(0)));
                 ImageDrawParallelLine.BeginAnimation(OpacityProperty, dA);
             }
@@ -6978,8 +7008,6 @@ namespace Ink_Canvas
             if (currentMode == 0)
             {
                 //进入黑板
-                Topmost = false;
-
                 if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
                 {
                     pointDesktop = new Point(ViewboxFloatingBar.Margin.Left, ViewboxFloatingBar.Margin.Top);
@@ -7010,8 +7038,6 @@ namespace Ink_Canvas
             else
             {
                 //关闭黑板
-                Topmost = true;
-
                 if (isInMultiTouchMode) BorderMultiTouchMode_MouseUp(null, null);
 
                 if (BtnPPTSlideShowEnd.Visibility == Visibility.Collapsed)
