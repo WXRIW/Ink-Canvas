@@ -1949,7 +1949,7 @@ namespace Ink_Canvas
         }
         private void inkCanvas_ManipulationStarted(object sender, ManipulationStartedEventArgs e)
         {
-            if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerGesture || inkCanvas.Strokes.Count == 0 || e.Manipulators.Count() < 2) return;
+            if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerGesture || inkCanvas.Strokes.Count == 0 || dec.Count() < 2) return;
             _currentCommitType = CommitReason.Manipulation;
             StrokeCollection strokes = inkCanvas.GetSelectedStrokes();
             if (strokes.Count != 0)
