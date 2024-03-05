@@ -3855,7 +3855,15 @@ namespace Ink_Canvas
                 }
                 else
                 {
-                    inkCanvas.Select(inkCanvas.Strokes);
+                    //inkCanvas.Select(inkCanvas.Strokes);
+                    // Fixed bug: 当通过如鼠标点击等某些方式创建没有高度或长度的笔画时，全选功能不能使用克隆、旋转、翻转、调整笔画粗细、删除功能
+                    StrokeCollection selectedStrokes = new StrokeCollection();
+                    foreach (Stroke stroke in inkCanvas.Strokes) {
+                        if (stroke.GetBounds().Width > 0 && stroke.GetBounds().Height > 0) {
+                            selectedStrokes.Add(stroke);
+                        }
+                    }
+                    inkCanvas.Select(selectedStrokes);
                 }
             }
             else
