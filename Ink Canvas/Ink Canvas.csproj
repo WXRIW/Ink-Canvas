@@ -28,7 +28,14 @@
 		<ApplicationVersion>2.0.2.%2a</ApplicationVersion>
 		<UseApplicationTrust>false</UseApplicationTrust>
 		<BootstrapperEnabled>false</BootstrapperEnabled>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <Prefer32Bit>True</Prefer32Bit>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <Prefer32Bit>True</Prefer32Bit>
 	</PropertyGroup>
 	
 	
