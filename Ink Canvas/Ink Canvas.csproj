@@ -28,7 +28,7 @@
 		<ApplicationVersion>2.0.2.%2a</ApplicationVersion>
 		<UseApplicationTrust>false</UseApplicationTrust>
 		<BootstrapperEnabled>false</BootstrapperEnabled>
-		<PlatformTarget>AnyCPU</PlatformTarget>
+		<Platforms>AnyCPU;x86;x64;ARM64</Platforms>
 
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
