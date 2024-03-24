@@ -3,7 +3,8 @@ using IWshRuntimeLibrary;
 using Microsoft.Office.Interop.PowerPoint;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
-using ModernWpf;
+using iNKORE.UI.WPF.Modern;
+using iNKORE.UI.WPF.Modern.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,6 @@ namespace Ink_Canvas
         public MainWindow()
         {
             InitializeComponent();
-
 
             BorderSettings.Visibility = Visibility.Collapsed;
             StackPanelToolButtons.Visibility = Visibility.Collapsed;
@@ -154,16 +154,15 @@ namespace Ink_Canvas
 
         #region Ink Canvas Functions
 
-        Color Ink_DefaultColor = Colors.Red;
-
         DrawingAttributes drawingAttributes;
         private void loadPenCanvas()
         {
+            SetDarkColors();
             try
             {
                 //drawingAttributes = new DrawingAttributes();
                 drawingAttributes = inkCanvas.DefaultDrawingAttributes;
-                drawingAttributes.Color = Ink_DefaultColor;
+                drawingAttributes.Color = ((SolidColorBrush)BtnColorRed.Background).Color;
 
                 drawingAttributes.Height = 2.5;
                 drawingAttributes.Width = 2.5;
@@ -226,7 +225,7 @@ namespace Ink_Canvas
             }
             else
             {
-                SymbolIconSelect.Foreground = new SolidColorBrush(toolBarForegroundColor);
+                SymbolIconSelect.Foreground = new SolidColorBrush(FloatBarForegroundColor);
             }
         }
 
@@ -308,7 +307,7 @@ namespace Ink_Canvas
         {
             if (ImageEraserMask.Visibility == Visibility.Visible)
             {
-                BtnColorRed_Click(sender, null);
+                BorderPenColorRed_MouseUp(null, null);
             }
             else
             {
@@ -342,7 +341,7 @@ namespace Ink_Canvas
             ShapeDrawing,
             ShapeRecognition,
             ClearingCanvas,
-            Rotate
+            Manipulation
         }
 
         private CommitReason _currentCommitType = CommitReason.UserInput;
@@ -351,6 +350,109 @@ namespace Ink_Canvas
         private StrokeCollection AddedStroke;
         private StrokeCollection CuboidStrokeCollection;
         private TimeMachine timeMachine = new TimeMachine();
+
+        private void ApplyHistoryToCanvas(TimeMachineHistory item)
+        {
+            _currentCommitType = CommitReason.CodeInput;
+            if (item.CommitType == TimeMachineHistoryType.UserInput)
+            {
+                if (!item.StrokeHasBeenCleared)
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
+                    }
+                }
+            }
+            else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
+            {
+                if (item.StrokeHasBeenCleared)
+                {
+
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
+                    }
+                    foreach (var strokes in item.ReplacedStroke)
+                    {
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
+                    }
+                }
+                else
+                {
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        if (!inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Add(strokes);
+                    }
+                    foreach (var strokes in item.ReplacedStroke)
+                    {
+                        if (inkCanvas.Strokes.Contains(strokes))
+                            inkCanvas.Strokes.Remove(strokes);
+                    }
+                }
+            }
+            else if (item.CommitType == TimeMachineHistoryType.Manipulation)
+            {
+                    item.ManipulationHistory.Invert();
+                    foreach (var strokes in item.CurrentStroke)
+                    {
+                        strokes.Transform(item.ManipulationHistory, false);
+                    }
+
+            }
+            else if (item.CommitType == TimeMachineHistoryType.Clear)
+            {
+                if (!item.StrokeHasBeenCleared)
+                {
+                    if (item.CurrentStroke != null)
+                    {
+                        foreach (var currentStroke in item.CurrentStroke)
+                        {
+                            if (!inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Add(currentStroke);
+                        }
+
+                    }
+                    if (item.ReplacedStroke != null)
+                    {
+                        foreach (var replacedStroke in item.ReplacedStroke)
+                        {
+                            if (inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Remove(replacedStroke);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if (item.ReplacedStroke != null)
+                    {
+                        foreach (var replacedStroke in item.ReplacedStroke)
+                        {
+                            if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
+                        }
+                    }
+                    if (item.CurrentStroke != null)
+                    {
+                        foreach (var currentStroke in item.CurrentStroke)
+                        {
+                            if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
+                        }
+                    }
+                }
+            }
+            _currentCommitType = CommitReason.UserInput;
+        }
 
         private void TimeMachine_OnUndoStateChanged(bool status)
         {
@@ -369,11 +471,6 @@ namespace Ink_Canvas
         private void StrokesOnStrokesChanged(object sender, StrokeCollectionChangedEventArgs e)
         {
             if (_currentCommitType == CommitReason.CodeInput || _currentCommitType == CommitReason.ShapeDrawing) return;
-            if (_currentCommitType == CommitReason.Rotate)
-            {
-                timeMachine.CommitStrokeRotateHistory(e.Removed, e.Added);
-                return;
-            }
             if ((e.Added.Count != 0 || e.Removed.Count != 0) && IsEraseByPoint)
             {
                 if (AddedStroke == null) AddedStroke = new StrokeCollection();
@@ -1251,17 +1348,26 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.White;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+                SetDarkColors();    //在浅色背景上使用深色墨迹
                 if (inkColor == 0)
                 {
                     inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
                 }
+                else if (inkColor == 1)
+                {
+                    BtnColorRed_Click(null, null);
+                }
                 else if (inkColor == 2)
                 {
-                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF1ED760");
+                    BtnColorGreen_Click(null, null);
+                }
+                else if (inkColor == 3)
+                {
+                    BtnColorBlue_Click(null, null);
                 }
                 else if (inkColor == 4)
                 {
-                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFFC000");
+                    BtnColorYellow_Click(null, null);
                 }
             }
             else
@@ -1274,17 +1380,26 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.Black;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
+                SetLightColors();   //在深色背景上使用浅色墨迹
                 if (inkColor == 0)
                 {
-                    inkCanvas.DefaultDrawingAttributes.Color = Colors.Black;
+                    inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
+                }
+                else if (inkColor == 1)
+                {
+                    BtnColorRed_Click(null, null);
                 }
                 else if (inkColor == 2)
                 {
-                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF169141");
+                    BtnColorGreen_Click(null, null);
+                }
+                else if (inkColor == 3)
+                {
+                    BtnColorBlue_Click(null, null);
                 }
                 else if (inkColor == 4)
                 {
-                    inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFF38B00");
+                    BtnColorYellow_Click(null, null);
                 }
             }
             if (!Settings.Appearance.IsTransparentButtonBackground)
@@ -1353,7 +1468,7 @@ namespace Ink_Canvas
 
 
                 // Auto-clear Strokes
-                // 很烦, 要重新来, 要等待截图完成再清理笔记
+                // 很烦, 要重新来, 要等待截图完成再清理笔迹
                 if (BtnPPTSlideShowEnd.Visibility != Visibility.Visible)
                 {
                     if (isLoaded && Settings.Automation.IsAutoClearWhenExitingWritingMode)
@@ -1561,17 +1676,22 @@ namespace Ink_Canvas
         {
             inkColor = 1;
             forceEraser = false;
-            inkCanvas.DefaultDrawingAttributes.Color = Colors.Red;
-            if (BtnSwitchTheme.Content.ToString() == "浅色")
+            if (!isLastSwitchColorByFloatBar)
             {
-                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFF3333");
-                BtnColorRed.Background = new SolidColorBrush(StringToColor("#FFFF3333"));
+                if (BtnSwitchTheme.Content.ToString() == "浅色")
+                {
+                    SetDarkColors();    //在浅色背景上使用深色墨迹
+                }
+                else
+                {
+                    SetLightColors();    //在深色背景上使用浅色墨迹
+                }
             }
             else
             {
-                inkCanvas.DefaultDrawingAttributes.Color = Colors.Red;
-                BtnColorRed.Background = Brushes.Red;
+                isLastSwitchColorByFloatBar = false;
             }
+            inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorRed.Background).Color;
 
             ColorSwitchCheck();
         }
@@ -1580,16 +1700,22 @@ namespace Ink_Canvas
         {
             inkColor = 2;
             forceEraser = false;
-            if (BtnSwitchTheme.Content.ToString() == "浅色")
+            if (!isLastSwitchColorByFloatBar)
             {
-                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF1ED760");
-                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
+                if (BtnSwitchTheme.Content.ToString() == "浅色")
+                {
+                    SetDarkColors();    //在浅色背景上使用深色墨迹
+                }
+                else
+                {
+                    SetLightColors();    //在深色背景上使用浅色墨迹
+                }
             }
             else
             {
-                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF169141");
-                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
+                isLastSwitchColorByFloatBar = false;
             }
+            inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorGreen.Background).Color;
 
             ColorSwitchCheck();
         }
@@ -1598,7 +1724,22 @@ namespace Ink_Canvas
         {
             inkColor = 3;
             forceEraser = false;
-            inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FF239AD6");
+            if (!isLastSwitchColorByFloatBar)
+            {
+                if (BtnSwitchTheme.Content.ToString() == "浅色")
+                {
+                    SetDarkColors();    //在浅色背景上使用深色墨迹
+                }
+                else
+                {
+                    SetLightColors();    //在深色背景上使用浅色墨迹
+                }
+            }
+            else
+            {
+                isLastSwitchColorByFloatBar = false;
+            }
+            inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorBlue.Background).Color;
 
             ColorSwitchCheck();
         }
@@ -1607,16 +1748,22 @@ namespace Ink_Canvas
         {
             inkColor = 4;
             forceEraser = false;
-            if (BtnSwitchTheme.Content.ToString() == "浅色")
+            if (!isLastSwitchColorByFloatBar)
             {
-                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFFFC000");
-                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
+                if (BtnSwitchTheme.Content.ToString() == "浅色")
+                {
+                    SetDarkColors();    //在浅色背景上使用深色墨迹
+                }
+                else
+                {
+                    SetLightColors();    //在深色背景上使用浅色墨迹
+                }
             }
             else
             {
-                inkCanvas.DefaultDrawingAttributes.Color = StringToColor("#FFF38B00");
-                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
+                isLastSwitchColorByFloatBar = false;
             }
+            inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorYellow.Background).Color;
 
             ColorSwitchCheck();
         }
@@ -1660,7 +1807,7 @@ namespace Ink_Canvas
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 inkCanvas.Children.Clear();
                 isInMultiTouchMode = false;
-                SymbolIconMultiTouchMode.Symbol = ModernWpf.Controls.Symbol.People;
+                SymbolIconMultiTouchMode.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.People;
             }
             else
             {
@@ -1672,7 +1819,7 @@ namespace Ink_Canvas
                 inkCanvas.EditingMode = InkCanvasEditingMode.None;
                 inkCanvas.Children.Clear();
                 isInMultiTouchMode = true;
-                SymbolIconMultiTouchMode.Symbol = ModernWpf.Controls.Symbol.Contact;
+                SymbolIconMultiTouchMode.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Contact;
             }
         }
 
@@ -2009,6 +2156,15 @@ namespace Ink_Canvas
                             catch { }
                         }
                     }
+                    if(lastTempManiputlaionMatrix == null)
+                    {
+                        lastTempManiputlaionMatrix = m;
+                        lastTempStrokeCollection = strokes;
+                    }
+                    else
+                    {
+                        lastTempManiputlaionMatrix?.Append(m);
+                    }
                 }
                 else
                 {
@@ -2031,6 +2187,15 @@ namespace Ink_Canvas
                         circle.R = GetDistance(circle.Stroke.StylusPoints[0].ToPoint(), circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].ToPoint()) / 2;
                         circle.Centroid = new Point((circle.Stroke.StylusPoints[0].X + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].X) / 2,
                                                     (circle.Stroke.StylusPoints[0].Y + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].Y) / 2);
+                    }
+                    if (lastTempManiputlaionMatrix == null)
+                    {
+                        lastTempManiputlaionMatrix = m;
+                        lastTempStrokeCollection = inkCanvas.Strokes;
+                    }
+                    else
+                    {
+                        lastTempManiputlaionMatrix?.Append(m);
                     }
                 }
             }
@@ -2901,8 +3066,8 @@ namespace Ink_Canvas
             Settings.Canvas.EraserSize = ComboBoxEraserSize.SelectedIndex;
             SaveSettingsToFile();
         }
-        
-        
+
+
         private void ComboBoxEraserType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!isLoaded) return;
@@ -3314,129 +3479,9 @@ namespace Ink_Canvas
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
                 inkCanvas.Select(new StrokeCollection());
             }
-            _currentCommitType = CommitReason.CodeInput;
             var item = timeMachine.Undo();
-            if (item.CommitType == TimeMachineHistoryType.UserInput)
-            {
-                if (!item.StrokeHasBeenCleared)
-                {
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                }
-                else
-                {
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                }
-            }
-            else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
-            {
-                if (item.StrokeHasBeenCleared)
-                {
-
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                    foreach (var strokes in item.ReplacedStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                }
-                else
-                {
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                    foreach (var strokes in item.ReplacedStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                }
-            }
-            else if (item.CommitType == TimeMachineHistoryType.Rotate)
-            {
-                if (item.StrokeHasBeenCleared)
-                {
-
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                    foreach (var strokes in item.ReplacedStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                }
-                else
-                {
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                    foreach (var strokes in item.ReplacedStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                }
-            }
-            else if (item.CommitType == TimeMachineHistoryType.Clear)
-            {
-                if (!item.StrokeHasBeenCleared)
-                {
-                    if (item.CurrentStroke != null)
-                    {
-                        foreach (var currentStroke in item.CurrentStroke)
-                        {
-                            if (!inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Add(currentStroke);
-                        }
-
-                    }
-                    if (item.ReplacedStroke != null)
-                    {
-                        foreach (var replacedStroke in item.ReplacedStroke)
-                        {
-                            if (inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Remove(replacedStroke);
-                        }
-                    }
-
-                }
-                else
-                {
-                    if (item.ReplacedStroke != null)
-                    {
-                        foreach (var replacedStroke in item.ReplacedStroke)
-                        {
-                            if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
-                        }
-                    }
-                    if (item.CurrentStroke != null)
-                    {
-                        foreach (var currentStroke in item.CurrentStroke)
-                        {
-                            if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
-                        }
-                    }
-                }
-            }
-            _currentCommitType = CommitReason.UserInput;
+            ApplyHistoryToCanvas(item);
         }
-
         private void BtnRedo_Click(object sender, RoutedEventArgs e)
         {
             if (inkCanvas.GetSelectedStrokes().Count != 0)
@@ -3444,130 +3489,9 @@ namespace Ink_Canvas
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
                 inkCanvas.Select(new StrokeCollection());
             }
-
-            _currentCommitType = CommitReason.CodeInput;
             var item = timeMachine.Redo();
-            if (item.CommitType == TimeMachineHistoryType.UserInput)
-            {
-                if (!item.StrokeHasBeenCleared)
-                {
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                }
-                else
-                {
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                }
-            }
-            else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
-            {
-                if (item.StrokeHasBeenCleared)
-                {
-
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                    foreach (var strokes in item.ReplacedStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                }
-                else
-                {
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                    foreach (var strokes in item.ReplacedStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                }
-            }
-            else if (item.CommitType == TimeMachineHistoryType.Rotate)
-            {
-                if (item.StrokeHasBeenCleared)
-                {
-
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                    foreach (var strokes in item.ReplacedStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                }
-                else
-                {
-                    foreach (var strokes in item.CurrentStroke)
-                    {
-                        if (!inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Add(strokes);
-                    }
-                    foreach (var strokes in item.ReplacedStroke)
-                    {
-                        if (inkCanvas.Strokes.Contains(strokes))
-                            inkCanvas.Strokes.Remove(strokes);
-                    }
-                }
-            }
-            else if (item.CommitType == TimeMachineHistoryType.Clear)
-            {
-                if (!item.StrokeHasBeenCleared)
-                {
-                    if (item.CurrentStroke != null)
-                    {
-                        foreach (var currentStroke in item.CurrentStroke)
-                        {
-                            if (!inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Add(currentStroke);
-                        }
-
-                    }
-                    if (item.ReplacedStroke != null)
-                    {
-                        foreach (var replacedStroke in item.ReplacedStroke)
-                        {
-                            if (inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Remove(replacedStroke);
-                        }
-                    }
-
-                }
-                else
-                {
-                    if (item.ReplacedStroke != null)
-                    {
-                        foreach (var replacedStroke in item.ReplacedStroke)
-                        {
-                            if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
-                        }
-                    }
-                    if (item.CurrentStroke != null)
-                    {
-                        foreach (var currentStroke in item.CurrentStroke)
-                        {
-                            if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
-                        }
-                    }
-                }
-            }
-            _currentCommitType = CommitReason.UserInput;
+            ApplyHistoryToCanvas(item);
         }
-
         private void Btn_IsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (!isLoaded) return;
@@ -3641,21 +3565,32 @@ namespace Ink_Canvas
         {
             if (lastBorderMouseDownObject != sender) return;
 
-            foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
-            {
-                stroke.DrawingAttributes.Width *= 0.8;
-                stroke.DrawingAttributes.Height *= 0.8;
-            }
+            ChangeStrokeThickness(0.8);
         }
 
         private void GridPenWidthIncrease_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (lastBorderMouseDownObject != sender) return;
 
+            ChangeStrokeThickness(1.25);
+        }
+
+        private void ChangeStrokeThickness(double multipler)
+        {
             foreach (Stroke stroke in inkCanvas.GetSelectedStrokes())
             {
-                stroke.DrawingAttributes.Width *= 1.25;
-                stroke.DrawingAttributes.Height *= 1.25;
+                //stroke.DrawingAttributes.Width *= 1.25;
+                //stroke.DrawingAttributes.Height *= 1.25;
+
+                var newWidth = stroke.DrawingAttributes.Width * multipler;
+                var newHeight = stroke.DrawingAttributes.Height * multipler;
+
+                if(newWidth >= DrawingAttributes.MinWidth && newWidth <= DrawingAttributes.MaxWidth
+                    && newHeight >= DrawingAttributes.MinHeight && newHeight <= DrawingAttributes.MaxHeight)
+                {
+                    stroke.DrawingAttributes.Width = newWidth;
+                    stroke.DrawingAttributes.Height = newHeight;
+                }
             }
         }
 
@@ -3687,17 +3622,11 @@ namespace Ink_Canvas
             m.ScaleAt(-1, 1, center.X, center.Y);  // 缩放
 
             StrokeCollection targetStrokes = inkCanvas.GetSelectedStrokes();
-            StrokeCollection resultStrokes = targetStrokes.Clone();
-            foreach (Stroke stroke in resultStrokes)
+            foreach (Stroke stroke in targetStrokes)
             {
                 stroke.Transform(m, false);
             }
-            _currentCommitType = CommitReason.Rotate;
-            inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
-            _currentCommitType = CommitReason.UserInput;
-            isProgramChangeStrokeSelection = true;
-            inkCanvas.Select(resultStrokes);
-            isProgramChangeStrokeSelection = false;
+            timeMachine.CommitStrokeManipulationHistory(targetStrokes, m);
 
             //updateBorderStrokeSelectionControlLocation();
         }
@@ -3719,17 +3648,11 @@ namespace Ink_Canvas
             m.ScaleAt(1, -1, center.X, center.Y);  // 缩放
 
             StrokeCollection targetStrokes = inkCanvas.GetSelectedStrokes();
-            StrokeCollection resultStrokes = targetStrokes.Clone();
-            foreach (Stroke stroke in resultStrokes)
+            foreach (Stroke stroke in targetStrokes)
             {
                 stroke.Transform(m, false);
             }
-            _currentCommitType = CommitReason.Rotate;
-            inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
-            _currentCommitType = CommitReason.UserInput;
-            isProgramChangeStrokeSelection = true;
-            inkCanvas.Select(resultStrokes);
-            isProgramChangeStrokeSelection = false;
+            timeMachine.CommitStrokeManipulationHistory(targetStrokes, m);
         }
 
         private void ImageRotate45_MouseUp(object sender, MouseButtonEventArgs e)
@@ -3749,17 +3672,11 @@ namespace Ink_Canvas
             m.RotateAt(45, center.X, center.Y);  // 旋转
 
             StrokeCollection targetStrokes = inkCanvas.GetSelectedStrokes();
-            StrokeCollection resultStrokes = targetStrokes.Clone();
-            foreach (Stroke stroke in resultStrokes)
+            foreach (Stroke stroke in targetStrokes)
             {
                 stroke.Transform(m, false);
             }
-            _currentCommitType = CommitReason.Rotate;
-            inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
-            _currentCommitType = CommitReason.UserInput;
-            isProgramChangeStrokeSelection = true;
-            inkCanvas.Select(resultStrokes);
-            isProgramChangeStrokeSelection = false;
+            timeMachine.CommitStrokeManipulationHistory(targetStrokes, m);
         }
 
         private void ImageRotate90_MouseUp(object sender, MouseButtonEventArgs e)
@@ -3779,17 +3696,11 @@ namespace Ink_Canvas
             m.RotateAt(90, center.X, center.Y);  // 旋转
 
             StrokeCollection targetStrokes = inkCanvas.GetSelectedStrokes();
-            StrokeCollection resultStrokes = targetStrokes.Clone();
-            foreach (Stroke stroke in resultStrokes)
+            foreach (Stroke stroke in targetStrokes)
             {
                 stroke.Transform(m, false);
             }
-            _currentCommitType = CommitReason.Rotate;
-            inkCanvas.Strokes.Replace(targetStrokes, resultStrokes);
-            _currentCommitType = CommitReason.UserInput;
-            isProgramChangeStrokeSelection = true;
-            inkCanvas.Select(resultStrokes);
-            isProgramChangeStrokeSelection = false;
+            timeMachine.CommitStrokeManipulationHistory(targetStrokes, m);
         }
 
         #endregion
@@ -3826,7 +3737,15 @@ namespace Ink_Canvas
                 }
                 else
                 {
-                    inkCanvas.Select(inkCanvas.Strokes);
+                    //inkCanvas.Select(inkCanvas.Strokes);
+                    // Fixed bug: 当通过如鼠标点击等某些方式创建没有高度或长度的笔画时，全选功能不能使用克隆、旋转、翻转、调整笔画粗细、删除功能
+                    StrokeCollection selectedStrokes = new StrokeCollection();
+                    foreach (Stroke stroke in inkCanvas.Strokes) {
+                        if (stroke.GetBounds().Width > 0 && stroke.GetBounds().Height > 0) {
+                            selectedStrokes.Add(stroke);
+                        }
+                    }
+                    inkCanvas.Select(selectedStrokes);
                 }
             }
             else
@@ -3921,7 +3840,15 @@ namespace Ink_Canvas
                         }
                         catch { }
                     }
-
+                    if (lastTempManiputlaionMatrix == null)
+                    {
+                        lastTempManiputlaionMatrix = m;
+                        lastTempStrokeCollection = strokes;
+                    }
+                    else
+                    {
+                        lastTempManiputlaionMatrix?.Append(m);
+                    }
                     updateBorderStrokeSelectionControlLocation();
                 }
             }
@@ -4021,11 +3948,11 @@ namespace Ink_Canvas
 
             if (ToggleSwitchDrawShapeBorderAutoHide.IsOn)
             {
-                ((ModernWpf.Controls.SymbolIcon)sender).Symbol = ModernWpf.Controls.Symbol.Pin;
+                ((iNKORE.UI.WPF.Modern.Controls.SymbolIcon)sender).Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Pin;
             }
             else
             {
-                ((ModernWpf.Controls.SymbolIcon)sender).Symbol = ModernWpf.Controls.Symbol.UnPin;
+                ((iNKORE.UI.WPF.Modern.Controls.SymbolIcon)sender).Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.UnPin;
             }
         }
 
@@ -5182,6 +5109,7 @@ namespace Ink_Canvas
                 isWaitUntilNextTouchDown = false;
             }
         }
+        Matrix? lastTempManiputlaionMatrix = null;
         Stroke lastTempStroke = null;
         StrokeCollection lastTempStrokeCollection = new StrokeCollection();
         bool isWaitUntilNextTouchDown = false;
@@ -5462,19 +5390,29 @@ namespace Ink_Canvas
             if (_currentCommitType == CommitReason.ShapeDrawing && drawingShapeMode != 9)
             {
                 _currentCommitType = CommitReason.UserInput;
-                StrokeCollection collection;
+                StrokeCollection collection = null;
                 if (lastTempStrokeCollection != null && lastTempStrokeCollection.Count > 0)
                 {
                     collection = lastTempStrokeCollection;
                 }
-                else
+                else if(lastTempStroke != null)
                 {
                     collection = new StrokeCollection() { lastTempStroke };
                 }
-                timeMachine.CommitStrokeUserInputHistory(collection);
+                if (collection != null)
+                {
+                    timeMachine.CommitStrokeUserInputHistory(collection);
+                }
+            }
+            if(lastTempManiputlaionMatrix != null)
+            {
+                timeMachine.CommitStrokeManipulationHistory(lastTempStrokeCollection, lastTempManiputlaionMatrix.Value);
+                lastTempStrokeCollection = null;
+                lastTempManiputlaionMatrix = null;
             }
             lastTempStroke = null;
             lastTempStrokeCollection = null;
+            lastTempManiputlaionMatrix = null;
         }
 
         private bool NeedUpdateIniP()
@@ -5535,125 +5473,7 @@ namespace Ink_Canvas
                     timeMachine.ImportTimeMachineHistory(TimeMachineHistories[0]);
                     foreach (var item in TimeMachineHistories[0])
                     {
-                        if (item.CommitType == TimeMachineHistoryType.UserInput)
-                        {
-                            if (!item.StrokeHasBeenCleared)
-                            {
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (!inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Add(strokes);
-                                }
-                            }
-                            else
-                            {
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Remove(strokes);
-                                }
-                            }
-                        }
-                        else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
-                        {
-                            if (item.StrokeHasBeenCleared)
-                            {
-
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Remove(strokes);
-                                }
-                                foreach (var strokes in item.ReplacedStroke)
-                                {
-                                    if (!inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Add(strokes);
-                                }
-                            }
-                            else
-                            {
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (!inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Add(strokes);
-                                }
-                                foreach (var strokes in item.ReplacedStroke)
-                                {
-                                    if (inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Remove(strokes);
-                                }
-                            }
-                        }
-                        else if (item.CommitType == TimeMachineHistoryType.Rotate)
-                        {
-                            if (item.StrokeHasBeenCleared)
-                            {
-
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Remove(strokes);
-                                }
-                                foreach (var strokes in item.ReplacedStroke)
-                                {
-                                    if (!inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Add(strokes);
-                                }
-                            }
-                            else
-                            {
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (!inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Add(strokes);
-                                }
-                                foreach (var strokes in item.ReplacedStroke)
-                                {
-                                    if (inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Remove(strokes);
-                                }
-                            }
-                        }
-                        else if (item.CommitType == TimeMachineHistoryType.Clear)
-                        {
-                            if (!item.StrokeHasBeenCleared)
-                            {
-                                if (item.CurrentStroke != null)
-                                {
-                                    foreach (var currentStroke in item.CurrentStroke)
-                                    {
-                                        if (!inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Add(currentStroke);
-                                    }
-
-                                }
-                                if (item.ReplacedStroke != null)
-                                {
-                                    foreach (var replacedStroke in item.ReplacedStroke)
-                                    {
-                                        if (inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Remove(replacedStroke);
-                                    }
-                                }
-
-                            }
-                            else
-                            {
-                                if (item.ReplacedStroke != null)
-                                {
-                                    foreach (var replacedStroke in item.ReplacedStroke)
-                                    {
-                                        if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
-                                    }
-                                }
-                                if (item.CurrentStroke != null)
-                                {
-                                    foreach (var currentStroke in item.CurrentStroke)
-                                    {
-                                        if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
-                                    }
-                                }
-                            }
-                        }
-                        _currentCommitType = CommitReason.UserInput;
+                        ApplyHistoryToCanvas(item);
                     }
                 }
                 else
@@ -5662,126 +5482,8 @@ namespace Ink_Canvas
                     timeMachine.ImportTimeMachineHistory(TimeMachineHistories[CurrentWhiteboardIndex]);
                     foreach (var item in TimeMachineHistories[CurrentWhiteboardIndex])
                     {
-                        if (item.CommitType == TimeMachineHistoryType.UserInput)
-                        {
-                            if (!item.StrokeHasBeenCleared)
-                            {
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (!inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Add(strokes);
-                                }
-                            }
-                            else
-                            {
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Remove(strokes);
-                                }
-                            }
-                        }
-                        else if (item.CommitType == TimeMachineHistoryType.ShapeRecognition)
-                        {
-                            if (item.StrokeHasBeenCleared)
-                            {
-
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Remove(strokes);
-                                }
-                                foreach (var strokes in item.ReplacedStroke)
-                                {
-                                    if (!inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Add(strokes);
-                                }
-                            }
-                            else
-                            {
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (!inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Add(strokes);
-                                }
-                                foreach (var strokes in item.ReplacedStroke)
-                                {
-                                    if (inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Remove(strokes);
-                                }
-                            }
-                        }
-                        else if (item.CommitType == TimeMachineHistoryType.Rotate)
-                        {
-                            if (item.StrokeHasBeenCleared)
-                            {
-
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Remove(strokes);
-                                }
-                                foreach (var strokes in item.ReplacedStroke)
-                                {
-                                    if (!inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Add(strokes);
-                                }
-                            }
-                            else
-                            {
-                                foreach (var strokes in item.CurrentStroke)
-                                {
-                                    if (!inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Add(strokes);
-                                }
-                                foreach (var strokes in item.ReplacedStroke)
-                                {
-                                    if (inkCanvas.Strokes.Contains(strokes))
-                                        inkCanvas.Strokes.Remove(strokes);
-                                }
-                            }
-                        }
-                        else if (item.CommitType == TimeMachineHistoryType.Clear)
-                        {
-                            if (!item.StrokeHasBeenCleared)
-                            {
-                                if (item.CurrentStroke != null)
-                                {
-                                    foreach (var currentStroke in item.CurrentStroke)
-                                    {
-                                        if (!inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Add(currentStroke);
-                                    }
-
-                                }
-                                if (item.ReplacedStroke != null)
-                                {
-                                    foreach (var replacedStroke in item.ReplacedStroke)
-                                    {
-                                        if (inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Remove(replacedStroke);
-                                    }
-                                }
-
-                            }
-                            else
-                            {
-                                if (item.ReplacedStroke != null)
-                                {
-                                    foreach (var replacedStroke in item.ReplacedStroke)
-                                    {
-                                        if (!inkCanvas.Strokes.Contains(replacedStroke)) inkCanvas.Strokes.Add(replacedStroke);
-                                    }
-                                }
-                                if (item.CurrentStroke != null)
-                                {
-                                    foreach (var currentStroke in item.CurrentStroke)
-                                    {
-                                        if (inkCanvas.Strokes.Contains(currentStroke)) inkCanvas.Strokes.Remove(currentStroke);
-                                    }
-                                }
-                            }
-                        }
+                        ApplyHistoryToCanvas(item);
                     }
-                    _currentCommitType = CommitReason.UserInput;
                 }
             }
             catch { }
@@ -5905,6 +5607,52 @@ namespace Ink_Canvas
             else
             {
                 BtnWhiteBoardDelete.IsEnabled = true;
+            }
+        }
+
+        private void SetLightColors()
+        {
+            if (File.Exists(App.RootPath + "Colors\\Light.ini"))
+            {
+                try
+                {
+                    string[] lightColors = File.ReadAllLines(App.RootPath + "Colors\\Light.ini");
+                    BtnColorRed.Background = new SolidColorBrush(StringToColor(lightColors[0]));
+                    BtnColorGreen.Background = new SolidColorBrush(StringToColor(lightColors[1]));
+                    BtnColorBlue.Background = new SolidColorBrush(StringToColor(lightColors[2]));
+                    BtnColorYellow.Background = new SolidColorBrush(StringToColor(lightColors[3]));
+                }
+                catch (Exception) { ShowNotification("读取亮色画笔颜色配置文件时遇到问题"); }
+            }
+            else
+            {
+                BtnColorRed.Background = new SolidColorBrush(StringToColor("#FFFF3333"));
+                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
+                BtnColorBlue.Background = new SolidColorBrush(StringToColor("#FF239AD6"));
+                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
+            }
+        }
+
+        private void SetDarkColors()
+        {
+            if (File.Exists(App.RootPath + "Colors\\Dark.ini"))
+            {
+                try
+                {
+                    string[] darkColors = File.ReadAllLines(App.RootPath + "Colors\\Dark.ini");
+                    BtnColorRed.Background = new SolidColorBrush(StringToColor(darkColors[0]));
+                    BtnColorGreen.Background = new SolidColorBrush(StringToColor(darkColors[1]));
+                    BtnColorBlue.Background = new SolidColorBrush(StringToColor(darkColors[2]));
+                    BtnColorYellow.Background = new SolidColorBrush(StringToColor(darkColors[3]));
+                }
+                catch (Exception) { ShowNotification("读取深色画笔颜色配置文件时遇到问题"); }
+            }
+            else
+            {
+                BtnColorRed.Background = new SolidColorBrush(Colors.Red);
+                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
+                BtnColorBlue.Background = new SolidColorBrush(StringToColor("#FF239AD6"));
+                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
             }
         }
 
@@ -6544,7 +6292,7 @@ namespace Ink_Canvas
                 myrp = (HttpWebResponse)ex.Response;
             }
 
-            if (myrp.StatusCode != HttpStatusCode.OK)
+            if (myrp?.StatusCode != HttpStatusCode.OK)
             {
                 return "null";
             }
@@ -6604,7 +6352,7 @@ namespace Ink_Canvas
 
         #region Auto Theme
 
-        Color toolBarForegroundColor = Color.FromRgb(102, 102, 102);
+        Color FloatBarForegroundColor = Color.FromRgb(102, 102, 102);
         private void SetTheme(string theme)
         {
             if (theme == "Light")
@@ -6623,7 +6371,7 @@ namespace Ink_Canvas
 
                 ThemeManager.SetRequestedTheme(window, ElementTheme.Light);
 
-                toolBarForegroundColor = (Color)Application.Current.FindResource("ToolBarForegroundColor");
+                FloatBarForegroundColor = (Color)Application.Current.FindResource("FloatBarForegroundColor");
             }
             else if (theme == "Dark")
             {
@@ -6641,11 +6389,11 @@ namespace Ink_Canvas
 
                 ThemeManager.SetRequestedTheme(window, ElementTheme.Dark);
 
-                toolBarForegroundColor = (Color)Application.Current.FindResource("ToolBarForegroundColor");
+                FloatBarForegroundColor = (Color)Application.Current.FindResource("FloatBarForegroundColor");
             }
 
-            SymbolIconSelect.Foreground = new SolidColorBrush(toolBarForegroundColor);
-            SymbolIconDelete.Foreground = new SolidColorBrush(toolBarForegroundColor);
+            SymbolIconSelect.Foreground = new SolidColorBrush(FloatBarForegroundColor);
+            SymbolIconDelete.Foreground = new SolidColorBrush(FloatBarForegroundColor);
         }
 
         private void SystemEvents_UserPreferenceChanged(object sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
@@ -6738,9 +6486,9 @@ namespace Ink_Canvas
 
         private void SaveScreenShot(bool isHideNotification, string fileName = null)
         {
-            System.Drawing.Rectangle rc = System.Windows.Forms.SystemInformation.VirtualScreen;
+            var size = System.Windows.Forms.SystemInformation.PrimaryMonitorSize;
+            var rc = new System.Drawing.Rectangle(new System.Drawing.Point(0, 0), new System.Drawing.Size(size.Width, size.Height));
             var bitmap = new System.Drawing.Bitmap(rc.Width, rc.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
             using (System.Drawing.Graphics memoryGrahics = System.Drawing.Graphics.FromImage(bitmap))
             {
                 memoryGrahics.CopyFromScreen(rc.X, rc.Y, 0, 0, rc.Size, System.Drawing.CopyPixelOperation.SourceCopy);
@@ -6875,6 +6623,8 @@ namespace Ink_Canvas
             BorderTools.Visibility = Visibility.Collapsed;
         }
 
+        bool isLastSwitchColorByFloatBar = false;
+
         private void BorderPenColorBlack_MouseUp(object sender, MouseButtonEventArgs e)
         {
             BtnColorBlack_Click(BtnColorBlack, null);
@@ -6883,24 +6633,28 @@ namespace Ink_Canvas
 
         private void BorderPenColorRed_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            isLastSwitchColorByFloatBar = true;
             BtnColorRed_Click(BtnColorRed, null);
             HideSubPanels();
         }
 
         private void BorderPenColorGreen_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            isLastSwitchColorByFloatBar = true;
             BtnColorGreen_Click(BtnColorGreen, null);
             HideSubPanels();
         }
 
         private void BorderPenColorBlue_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            isLastSwitchColorByFloatBar = true;
             BtnColorBlue_Click(BtnColorBlue, null);
             HideSubPanels();
         }
 
         private void BorderPenColorYellow_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            isLastSwitchColorByFloatBar = true;
             BtnColorYellow_Click(BtnColorYellow, null);
             HideSubPanels();
         }
@@ -6944,6 +6698,8 @@ namespace Ink_Canvas
                     }
                 }
             }
+
+            SetDarkColors();
         }
 
         private void SymbolIconDelete_MouseUp(object sender, MouseButtonEventArgs e)
@@ -7034,6 +6790,9 @@ namespace Ink_Canvas
                 {
                     BorderPenColorWhite_MouseUp(BorderPenColorWhite, null);
                 }
+
+                if (Settings.Canvas.UsingWhiteboard) SetDarkColors();   //在白板上用深色墨迹
+                else SetLightColors();  //在黑板上用浅色墨迹
             }
             else
             {
@@ -7060,6 +6819,8 @@ namespace Ink_Canvas
                     })).Start();
                 }
                 BorderPenColorRed_MouseUp(BorderPenColorRed, null);
+
+                SetDarkColors();
             }
 
             BtnSwitch_Click(BtnSwitch, null);
@@ -7277,7 +7038,7 @@ namespace Ink_Canvas
             downPos = e.GetPosition(null);
             GridForFloatingBarDraging.Visibility = Visibility.Visible;
 
-            SymbolIconEmoji.Symbol = ModernWpf.Controls.Symbol.Emoji;
+            SymbolIconEmoji.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Emoji;
         }
 
         void SymbolIconEmoji_MouseUp(object sender, MouseButtonEventArgs e)
@@ -7297,7 +7058,7 @@ namespace Ink_Canvas
             }
 
             GridForFloatingBarDraging.Visibility = Visibility.Collapsed;
-            SymbolIconEmoji.Symbol = ModernWpf.Controls.Symbol.Emoji2;
+            SymbolIconEmoji.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Emoji2;
         }
 
         #endregion

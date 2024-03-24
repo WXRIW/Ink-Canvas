@@ -34,7 +34,7 @@
 						Brush="{x:Null}">
                         <GeometryDrawing.Pen>
                             <Pen
-								Brush="{DynamicResource ToolBarForeground}"
+								Brush="{DynamicResource FloatBarForeground}"
 								Thickness="2"
 								StartLineCap="Flat"
 								EndLineCap="Flat"
@@ -84,7 +84,7 @@
                     <GeometryDrawing>
                         <GeometryDrawing.Brush>
                             <SolidColorBrush
-								Color="{DynamicResource ToolBarForegroundColor}"
+								Color="{DynamicResource FloatBarForegroundColor}"
 								Opacity="1"
 								Transform="-6.12303176911189E-17,1,-1,-6.12303176911189E-17,30,-2" />
                         </GeometryDrawing.Brush>
@@ -133,7 +133,7 @@
 						Brush="{x:Null}">
                         <GeometryDrawing.Pen>
                             <Pen
-								Brush="{DynamicResource ToolBarForeground}"
+								Brush="{DynamicResource FloatBarForeground}"
 								Thickness="2"
 								StartLineCap="Flat"
 								EndLineCap="Flat"
@@ -183,7 +183,7 @@
                     <GeometryDrawing>
                         <GeometryDrawing.Brush>
                             <SolidColorBrush
-								Color="{DynamicResource ToolBarForegroundColor}"
+								Color="{DynamicResource FloatBarForegroundColor}"
 								Opacity="1"
 								Transform="-6.12303176911189E-17,-1,-1,6.12303176911189E-17,34,34" />
                         </GeometryDrawing.Brush>
@@ -230,7 +230,7 @@
 						Brush="{x:Null}">
                         <GeometryDrawing.Pen>
                             <Pen
-								Brush="{DynamicResource ToolBarForeground}"
+								Brush="{DynamicResource FloatBarForeground}"
 								Thickness="2"
 								StartLineCap="Flat"
 								EndLineCap="Flat"
@@ -273,7 +273,7 @@
                         </GeometryDrawing.Geometry>
                     </GeometryDrawing>
                     <GeometryDrawing
-						Brush="{DynamicResource ToolBarForeground}">
+						Brush="{DynamicResource FloatBarForeground}">
                         <GeometryDrawing.Geometry>
                             <StreamGeometry>M7,15C6.85289858,15.5677816,6.85289858,16.4322348,7,17L22,29C22.7348015,29.3762198,24,28.8227297,24,28L24,4C24,3.1772867,22.7348015,2.62379657,22,3L7,15z</StreamGeometry>
                         </GeometryDrawing.Geometry>
@@ -314,7 +314,7 @@
 						Brush="{x:Null}">
                         <GeometryDrawing.Pen>
                             <Pen
-								Brush="{DynamicResource ToolBarForeground}"
+								Brush="{DynamicResource FloatBarForeground}"
 								Thickness="2"
 								StartLineCap="Flat"
 								EndLineCap="Flat"
@@ -362,7 +362,7 @@
                     <GeometryDrawing>
                         <GeometryDrawing.Brush>
                             <SolidColorBrush
-								Color="{DynamicResource ToolBarForegroundColor}"
+								Color="{DynamicResource FloatBarForegroundColor}"
 								Opacity="1"
 								Transform="-1,0,0,1,33,0" />
                         </GeometryDrawing.Brush>
@@ -414,7 +414,7 @@
 								Brush="{x:Null}">
                                 <GeometryDrawing.Pen>
                                     <Pen
-										Brush="{DynamicResource ToolBarForeground}"
+										Brush="{DynamicResource FloatBarForeground}"
 										Thickness="2"
 										StartLineCap="Flat"
 										EndLineCap="Flat"
@@ -428,7 +428,7 @@
                                 </GeometryDrawing.Geometry>
                             </GeometryDrawing>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <PathGeometry
 										FillRule="EvenOdd"
@@ -436,7 +436,7 @@
                                 </GeometryDrawing.Geometry>
                             </GeometryDrawing>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <RectangleGeometry
 										RadiusX="0"
@@ -445,7 +445,7 @@
                                 </GeometryDrawing.Geometry>
                             </GeometryDrawing>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <RectangleGeometry
 										RadiusX="0"
@@ -454,7 +454,7 @@
                                 </GeometryDrawing.Geometry>
                             </GeometryDrawing>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <RectangleGeometry
 										RadiusX="0"
@@ -463,7 +463,7 @@
                                 </GeometryDrawing.Geometry>
                             </GeometryDrawing>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <RectangleGeometry
 										RadiusX="0"
@@ -511,7 +511,7 @@
 						Transform="1,0,0,1,1,2">
                         <DrawingGroup.Children>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <PathGeometry
 										FillRule="EvenOdd"
@@ -519,7 +519,7 @@
                                 </GeometryDrawing.Geometry>
                             </GeometryDrawing>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <RectangleGeometry
 										RadiusX="0"
@@ -528,7 +528,7 @@
                                 </GeometryDrawing.Geometry>
                             </GeometryDrawing>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <RectangleGeometry
 										RadiusX="0"
@@ -537,7 +537,7 @@
                                 </GeometryDrawing.Geometry>
                             </GeometryDrawing>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <RectangleGeometry
 										RadiusX="0"
@@ -546,7 +546,7 @@
                                 </GeometryDrawing.Geometry>
                             </GeometryDrawing>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <RectangleGeometry
 										RadiusX="0"
@@ -597,7 +597,7 @@
 								Brush="{x:Null}">
                                 <GeometryDrawing.Pen>
                                     <Pen
-										Brush="{DynamicResource ToolBarForeground}"
+										Brush="{DynamicResource FloatBarForeground}"
 										Thickness="2"
 										StartLineCap="Flat"
 										EndLineCap="Flat"
@@ -614,7 +614,7 @@
 								Brush="{x:Null}">
                                 <GeometryDrawing.Pen>
                                     <Pen
-										Brush="{DynamicResource ToolBarForeground}"
+										Brush="{DynamicResource FloatBarForeground}"
 										Thickness="2"
 										StartLineCap="Flat"
 										EndLineCap="Flat"
@@ -666,7 +666,7 @@
 						Transform="-0.707106781186548,-0.707106781186547,-0.707106781186547,0.707106781186548,31.4055917955108,13.0208154846605">
                         <DrawingGroup.Children>
                             <GeometryDrawing
-								Brush="{DynamicResource ToolBarForeground}">
+								Brush="{DynamicResource FloatBarForeground}">
                                 <GeometryDrawing.Geometry>
                                     <PathGeometry
 										FillRule="EvenOdd"

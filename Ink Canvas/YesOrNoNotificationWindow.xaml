@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
         mc:Ignorable="d" Topmost="True" WindowStartupLocation="CenterScreen" ui:WindowHelper.UseModernWindowStyle="True"
         ResizeMode="NoResize" Closed="Window_Closed" ui:ThemeManager.RequestedTheme="Light"
         Title="演示文档设置 - Ink Canvas 画板" Height="160" Width="450" FontFamily="Microsoft YaHei UI">
