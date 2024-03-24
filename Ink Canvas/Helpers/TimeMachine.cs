@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Ink;
+using System.Windows.Media;
 
 namespace Ink_Canvas.Helpers
 {
@@ -42,16 +44,16 @@ namespace Ink_Canvas.Helpers
             NotifyUndoRedoState();
         }
 
-        public void CommitStrokeManipulationHistory(StrokeCollection strokeToBeReplaced, StrokeCollection generatedStroke)
+        public void CommitStrokeManipulationHistory(StrokeCollection manipulatedStrokes, Matrix matrix)
         {
             if (_currentIndex + 1 < _currentStrokeHistory.Count)
             {
                 _currentStrokeHistory.RemoveRange(_currentIndex + 1, (_currentStrokeHistory.Count - 1) - _currentIndex);
             }
-            _currentStrokeHistory.Add(new TimeMachineHistory(generatedStroke,
-                TimeMachineHistoryType.Manipulation,
-                false,
-                strokeToBeReplaced));
+            _currentStrokeHistory.Add(
+                new TimeMachineHistory(manipulatedStrokes,
+                    TimeMachineHistoryType.Manipulation,
+                    matrix));
             _currentIndex = _currentStrokeHistory.Count - 1;
             NotifyUndoRedoState();
         }
@@ -122,6 +124,7 @@ namespace Ink_Canvas.Helpers
         public bool StrokeHasBeenCleared;
         public StrokeCollection CurrentStroke;
         public StrokeCollection ReplacedStroke;
+        public Matrix ManipulationHistory;
         public TimeMachineHistory(StrokeCollection currentStroke, TimeMachineHistoryType commitType, bool strokeHasBeenCleared)
         {
             CommitType = commitType;
@@ -135,6 +138,12 @@ namespace Ink_Canvas.Helpers
             CurrentStroke = currentStroke;
             StrokeHasBeenCleared = strokeHasBeenCleared;
             ReplacedStroke = replacedStroke;
+        }
+        public TimeMachineHistory(StrokeCollection currentStroke, TimeMachineHistoryType commitType, Matrix matrix)
+        {
+            CommitType=commitType;
+            CurrentStroke = currentStroke;
+            ManipulationHistory = matrix;
         }
     }
 

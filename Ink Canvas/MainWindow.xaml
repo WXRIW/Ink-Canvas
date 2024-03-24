@@ -98,7 +98,6 @@
                    ManipulationDelta="Main_Grid_ManipulationDelta"
                    ManipulationCompleted="Main_Grid_ManipulationCompleted"
                    ManipulationInertiaStarting="inkCanvas_ManipulationInertiaStarting"
-                   ManipulationStarted="inkCanvas_ManipulationStarted"
                    IsManipulationEnabled="True"
                    EditingModeChanged="inkCanvas_EditingModeChanged"
                    PreviewTouchDown="inkCanvas_PreviewTouchDown"
