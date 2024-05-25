@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Ink;
-using System.Windows.Media;
+using System.Windows.Input;
 
 namespace Ink_Canvas.Helpers
 {
@@ -44,20 +44,30 @@ namespace Ink_Canvas.Helpers
             NotifyUndoRedoState();
         }
 
-        public void CommitStrokeManipulationHistory(StrokeCollection manipulatedStrokes, Matrix matrix)
+        public void CommitStrokeManipulationHistory(Dictionary<Stroke, Tuple<StylusPointCollection, StylusPointCollection>> stylusPointDictionary)
         {
             if (_currentIndex + 1 < _currentStrokeHistory.Count)
             {
                 _currentStrokeHistory.RemoveRange(_currentIndex + 1, (_currentStrokeHistory.Count - 1) - _currentIndex);
             }
             _currentStrokeHistory.Add(
-                new TimeMachineHistory(manipulatedStrokes,
-                    TimeMachineHistoryType.Manipulation,
-                    matrix));
+                new TimeMachineHistory(stylusPointDictionary,
+                    TimeMachineHistoryType.Manipulation));
             _currentIndex = _currentStrokeHistory.Count - 1;
             NotifyUndoRedoState();
         }
-
+        public void CommitStrokeDrawingAttributesHistory(Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>> drawingAttributes)
+        {
+            if (_currentIndex + 1 < _currentStrokeHistory.Count)
+            {
+                _currentStrokeHistory.RemoveRange(_currentIndex + 1, (_currentStrokeHistory.Count - 1) - _currentIndex);
+            }
+            _currentStrokeHistory.Add(
+                new TimeMachineHistory(drawingAttributes,
+                    TimeMachineHistoryType.DrawingAttributes));
+            _currentIndex = _currentStrokeHistory.Count - 1;
+            NotifyUndoRedoState();
+        }
         public void CommitStrokeEraseHistory(StrokeCollection stroke, StrokeCollection sourceStroke = null)
         {
             if (_currentIndex + 1 < _currentStrokeHistory.Count)
@@ -124,7 +134,9 @@ namespace Ink_Canvas.Helpers
         public bool StrokeHasBeenCleared;
         public StrokeCollection CurrentStroke;
         public StrokeCollection ReplacedStroke;
-        public Matrix ManipulationHistory;
+        //这里说一下 Tuple的 Value1 是初始值 ; Value 2 是改变值
+        public Dictionary<Stroke, Tuple<StylusPointCollection, StylusPointCollection>> StylusPointDictionary;
+        public Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>> DrawingAttributes;
         public TimeMachineHistory(StrokeCollection currentStroke, TimeMachineHistoryType commitType, bool strokeHasBeenCleared)
         {
             CommitType = commitType;
@@ -139,11 +151,15 @@ namespace Ink_Canvas.Helpers
             StrokeHasBeenCleared = strokeHasBeenCleared;
             ReplacedStroke = replacedStroke;
         }
-        public TimeMachineHistory(StrokeCollection currentStroke, TimeMachineHistoryType commitType, Matrix matrix)
+        public TimeMachineHistory(Dictionary<Stroke, Tuple<StylusPointCollection,StylusPointCollection>> stylusPointDictionary, TimeMachineHistoryType commitType)
         {
             CommitType=commitType;
-            CurrentStroke = currentStroke;
-            ManipulationHistory = matrix;
+            StylusPointDictionary = stylusPointDictionary;
+        }
+        public TimeMachineHistory(Dictionary<Stroke, Tuple<DrawingAttributes,DrawingAttributes>> drawingAttributes, TimeMachineHistoryType commitType)
+        {
+            CommitType = commitType;
+            DrawingAttributes = drawingAttributes;
         }
     }
 
@@ -152,6 +168,7 @@ namespace Ink_Canvas.Helpers
         UserInput,
         ShapeRecognition,
         Clear,
-        Manipulation
+        Manipulation,
+        DrawingAttributes
     }
 }

@@ -349,6 +349,9 @@ namespace Ink_Canvas
         private StrokeCollection ReplacedStroke;
         private StrokeCollection AddedStroke;
         private StrokeCollection CuboidStrokeCollection;
+        private Dictionary<Stroke,Tuple<StylusPointCollection,StylusPointCollection>> StrokeManipulationHistory;
+        private Dictionary<Stroke, StylusPointCollection> StrokeInitialHistory = new Dictionary<Stroke, StylusPointCollection>();
+        private Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>> DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
         private TimeMachine timeMachine = new TimeMachine();
 
         private void ApplyHistoryToCanvas(TimeMachineHistory item)
@@ -405,12 +408,49 @@ namespace Ink_Canvas
             }
             else if (item.CommitType == TimeMachineHistoryType.Manipulation)
             {
-                    item.ManipulationHistory.Invert();
-                    foreach (var strokes in item.CurrentStroke)
+                if (!item.StrokeHasBeenCleared)
+                {
+                    foreach (var currentStroke in item.StylusPointDictionary)
                     {
-                        strokes.Transform(item.ManipulationHistory, false);
+                        if (inkCanvas.Strokes.Contains(currentStroke.Key))
+                        {
+                            currentStroke.Key.StylusPoints = currentStroke.Value.Item2;
+                        }
                     }
-
+                }
+                else
+                {
+                    foreach (var currentStroke in item.StylusPointDictionary)
+                    {
+                        if (inkCanvas.Strokes.Contains(currentStroke.Key))
+                        {
+                            currentStroke.Key.StylusPoints = currentStroke.Value.Item1;
+                        }
+                    }
+                }
+            }
+            else if (item.CommitType == TimeMachineHistoryType.DrawingAttributes)
+            {
+                if (!item.StrokeHasBeenCleared)
+                {
+                    foreach (var currentStroke in item.DrawingAttributes)
+                    {
+                        if (inkCanvas.Strokes.Contains(currentStroke.Key))
+                        {
+                            currentStroke.Key.DrawingAttributes = currentStroke.Value.Item2;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var currentStroke in item.DrawingAttributes)
+                    {
+                        if (inkCanvas.Strokes.Contains(currentStroke.Key))
+                        {
+                            currentStroke.Key.DrawingAttributes = currentStroke.Value.Item1;
+                        }
+                    }
+                }
             }
             else if (item.CommitType == TimeMachineHistoryType.Clear)
             {
@@ -470,6 +510,20 @@ namespace Ink_Canvas
 
         private void StrokesOnStrokesChanged(object sender, StrokeCollectionChangedEventArgs e)
         {
+            foreach (var stroke in e?.Removed)
+            {
+                stroke.StylusPointsChanged -= Stroke_StylusPointsChanged;
+                stroke.StylusPointsReplaced -= Stroke_StylusPointsReplaced;
+                stroke.DrawingAttributesChanged -= Stroke_DrawingAttributesChanged;
+                StrokeInitialHistory.Remove(stroke);
+            }
+            foreach (var stroke in e?.Added)
+            {
+                stroke.StylusPointsChanged += Stroke_StylusPointsChanged;
+                stroke.StylusPointsReplaced += Stroke_StylusPointsReplaced;
+                stroke.DrawingAttributesChanged += Stroke_DrawingAttributesChanged;
+                StrokeInitialHistory[stroke] = stroke.StylusPoints.Clone();
+            }
             if (_currentCommitType == CommitReason.CodeInput || _currentCommitType == CommitReason.ShapeDrawing) return;
             if ((e.Added.Count != 0 || e.Removed.Count != 0) && IsEraseByPoint)
             {
@@ -509,6 +563,68 @@ namespace Ink_Canvas
             }
         }
 
+        private void Stroke_DrawingAttributesChanged(object sender, PropertyDataChangedEventArgs e)
+        {
+            var key = sender as Stroke;
+            var currentValue = key.DrawingAttributes.Clone();
+            var previousValue = key.DrawingAttributes.Clone();
+            if(e.PropertyGuid == DrawingAttributeIds.Color)
+            {
+                previousValue.Color = (Color)e.PreviousValue;
+            }
+            if (e.PropertyGuid == DrawingAttributeIds.IsHighlighter)
+            {
+                previousValue.IsHighlighter = (bool)e.PreviousValue;
+            }
+            if (e.PropertyGuid == DrawingAttributeIds.StylusHeight)
+            {
+                previousValue.Height = (int)e.PreviousValue;
+            }
+            if (e.PropertyGuid == DrawingAttributeIds.StylusWidth)
+            {
+                previousValue.Width = (int)e.PreviousValue;
+            }
+            if (e.PropertyGuid == DrawingAttributeIds.StylusTip)
+            {
+                previousValue.StylusTip = (StylusTip)e.PreviousValue;
+            }
+            if (e.PropertyGuid == DrawingAttributeIds.StylusTipTransform)
+            {
+                previousValue.StylusTipTransform = (Matrix)e.PreviousValue;
+            }
+            if (e.PropertyGuid == DrawingAttributeIds.DrawingFlags)
+            {
+                previousValue.IgnorePressure = (bool)e.PreviousValue;
+            }
+            DrawingAttributesHistory[key] = new Tuple<DrawingAttributes, DrawingAttributes>(previousValue, currentValue);
+        }
+
+        private void Stroke_StylusPointsReplaced(object sender, StylusPointsReplacedEventArgs e)
+        {
+            StrokeInitialHistory[sender as Stroke] = e.NewStylusPoints.Clone();
+        }
+
+        private void Stroke_StylusPointsChanged(object sender, EventArgs e)
+        {
+            var selectedStrokes = inkCanvas.GetSelectedStrokes();
+            var count = selectedStrokes.Count;
+            if (count == 0) count = inkCanvas.Strokes.Count;
+            if(StrokeManipulationHistory == null)
+            {
+                StrokeManipulationHistory = new Dictionary<Stroke, Tuple<StylusPointCollection, StylusPointCollection>>();
+            }
+            StrokeManipulationHistory[sender as Stroke] = 
+                new Tuple<StylusPointCollection, StylusPointCollection>(StrokeInitialHistory[sender as Stroke], (sender as Stroke).StylusPoints.Clone()); 
+            if ((StrokeManipulationHistory.Count == count || sender == null) && dec.Count == 0 )
+            {
+                timeMachine.CommitStrokeManipulationHistory(StrokeManipulationHistory);
+                foreach (var item in  StrokeManipulationHistory)
+                {
+                    StrokeInitialHistory[item.Key] = item.Value.Item2;
+                }
+                StrokeManipulationHistory = null;
+            }
+        }
         #endregion
 
         #region Definations and Loading
@@ -1622,6 +1738,11 @@ namespace Ink_Canvas
                     catch { }
                 }
             }
+            if (DrawingAttributesHistory.Count > 0)
+            {
+                timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
+                DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+            }
             else
             {
                 inkCanvas.IsManipulationEnabled = true;
@@ -2156,15 +2277,6 @@ namespace Ink_Canvas
                             catch { }
                         }
                     }
-                    if(lastTempManiputlaionMatrix == null)
-                    {
-                        lastTempManiputlaionMatrix = m;
-                        lastTempStrokeCollection = strokes;
-                    }
-                    else
-                    {
-                        lastTempManiputlaionMatrix?.Append(m);
-                    }
                 }
                 else
                 {
@@ -2187,15 +2299,6 @@ namespace Ink_Canvas
                         circle.R = GetDistance(circle.Stroke.StylusPoints[0].ToPoint(), circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].ToPoint()) / 2;
                         circle.Centroid = new Point((circle.Stroke.StylusPoints[0].X + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].X) / 2,
                                                     (circle.Stroke.StylusPoints[0].Y + circle.Stroke.StylusPoints[circle.Stroke.StylusPoints.Count / 2].Y) / 2);
-                    }
-                    if (lastTempManiputlaionMatrix == null)
-                    {
-                        lastTempManiputlaionMatrix = m;
-                        lastTempStrokeCollection = inkCanvas.Strokes;
-                    }
-                    else
-                    {
-                        lastTempManiputlaionMatrix?.Append(m);
                     }
                 }
             }
@@ -3592,6 +3695,12 @@ namespace Ink_Canvas
                     stroke.DrawingAttributes.Height = newHeight;
                 }
             }
+            if (DrawingAttributesHistory.Count > 0)
+            {
+
+                timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
+                DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+            }
         }
 
         private void GridPenWidthRestore_MouseUp(object sender, MouseButtonEventArgs e)
@@ -3626,8 +3735,16 @@ namespace Ink_Canvas
             {
                 stroke.Transform(m, false);
             }
-            timeMachine.CommitStrokeManipulationHistory(targetStrokes, m);
-
+            if (DrawingAttributesHistory.Count > 0)
+            {
+                var collecion = new StrokeCollection();
+                foreach (var item in DrawingAttributesHistory)
+                {
+                    collecion.Add(item.Key);
+                }
+                timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
+                DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+            }
             //updateBorderStrokeSelectionControlLocation();
         }
 
@@ -3652,7 +3769,11 @@ namespace Ink_Canvas
             {
                 stroke.Transform(m, false);
             }
-            timeMachine.CommitStrokeManipulationHistory(targetStrokes, m);
+            if (DrawingAttributesHistory.Count > 0)
+            {
+                timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
+                DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+            }
         }
 
         private void ImageRotate45_MouseUp(object sender, MouseButtonEventArgs e)
@@ -3676,7 +3797,11 @@ namespace Ink_Canvas
             {
                 stroke.Transform(m, false);
             }
-            timeMachine.CommitStrokeManipulationHistory(targetStrokes, m);
+            if (DrawingAttributesHistory.Count > 0)
+            {
+                timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
+                DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+            }
         }
 
         private void ImageRotate90_MouseUp(object sender, MouseButtonEventArgs e)
@@ -3700,7 +3825,16 @@ namespace Ink_Canvas
             {
                 stroke.Transform(m, false);
             }
-            timeMachine.CommitStrokeManipulationHistory(targetStrokes, m);
+            if (DrawingAttributesHistory.Count > 0)
+            {
+                var collecion = new StrokeCollection();
+                foreach (var item in DrawingAttributesHistory)
+                {
+                    collecion.Add(item.Key);
+                }
+                timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
+                DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+            }
         }
 
         #endregion
@@ -3771,7 +3905,7 @@ namespace Ink_Canvas
                 GridInkCanvasSelectionCover.Visibility = Visibility.Visible;
                 BorderStrokeSelectionClone.Background = Brushes.Transparent;
                 isStrokeSelectionCloneOn = false;
-                updateBorderStrokeSelectionControlLocation();
+                updateBorderStrokeSelectionControlLocation(); 
             }
         }
 
@@ -3839,15 +3973,6 @@ namespace Ink_Canvas
                             stroke.DrawingAttributes.Height *= md.Scale.Y;
                         }
                         catch { }
-                    }
-                    if (lastTempManiputlaionMatrix == null)
-                    {
-                        lastTempManiputlaionMatrix = m;
-                        lastTempStrokeCollection = strokes;
-                    }
-                    else
-                    {
-                        lastTempManiputlaionMatrix?.Append(m);
                     }
                     updateBorderStrokeSelectionControlLocation();
                 }
@@ -5109,7 +5234,6 @@ namespace Ink_Canvas
                 isWaitUntilNextTouchDown = false;
             }
         }
-        Matrix? lastTempManiputlaionMatrix = null;
         Stroke lastTempStroke = null;
         StrokeCollection lastTempStrokeCollection = new StrokeCollection();
         bool isWaitUntilNextTouchDown = false;
@@ -5404,15 +5528,17 @@ namespace Ink_Canvas
                     timeMachine.CommitStrokeUserInputHistory(collection);
                 }
             }
-            if(lastTempManiputlaionMatrix != null)
-            {
-                timeMachine.CommitStrokeManipulationHistory(lastTempStrokeCollection, lastTempManiputlaionMatrix.Value);
-                lastTempStrokeCollection = null;
-                lastTempManiputlaionMatrix = null;
-            }
             lastTempStroke = null;
             lastTempStrokeCollection = null;
-            lastTempManiputlaionMatrix = null;
+            if(StrokeManipulationHistory?.Count > 0)
+            {
+                timeMachine.CommitStrokeManipulationHistory(StrokeManipulationHistory);
+                foreach (var item in StrokeManipulationHistory)
+                {
+                    StrokeInitialHistory[item.Key] = item.Value.Item2;
+                }
+                StrokeManipulationHistory = null;
+            }
         }
 
         private bool NeedUpdateIniP()
@@ -6980,6 +7106,7 @@ namespace Ink_Canvas
                 BorderTools.Visibility = Visibility.Visible;
             }
         }
+
 
         #region Drag
 
