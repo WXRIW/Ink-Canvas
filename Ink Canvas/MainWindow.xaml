@@ -392,19 +392,6 @@
                         </GroupBox>
                         <GroupBox Header="画板">
                             <ui:SimpleStackPanel Spacing="12">
-                                <StackPanel Orientation="Horizontal">
-                                    <Slider x:Name="InkWidthSlider"
-                                            HorizontalAlignment="Left"
-                                            Minimum="1" Maximum="20"
-                                            Width="330" FontFamily="Microsoft YaHei UI" 
-                                            ui:ControlHelper.Header="画笔粗细"
-                                            IsSnapToTickEnabled="True" Value="5"
-                                            TickFrequency="1" TickPlacement="Both"
-                                            ValueChanged="InkWidthSlider_ValueChanged"/>
-                                    <TextBlock Text="{Binding Value, ElementName=InkWidthSlider, Mode=OneWay}"
-                                               VerticalAlignment="Bottom" Margin="10,0,0,8"
-                                               FontSize="14"/>
-                                </StackPanel>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowCursor" Header="显示画笔光标" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCursor_Toggled"/>
                                 <TextBlock Text="画笔样式" FontFamily="Microsoft YaHei UI" FontSize="14"/>
                                 <ComboBox Name="ComboBoxPenStyle" FontFamily="Microsoft YaHei UI" SelectedIndex="0" SelectionChanged="ComboBoxPenStyle_SelectionChanged">
@@ -1196,10 +1183,27 @@
                                 <ui:SymbolIcon Margin="0,0,0,0" Symbol="Camera" Foreground="{DynamicResource ToolBarForeground}" MouseDown="Border_MouseDown" MouseUp="SymbolIconScreenshot_MouseUp"/>
                                 <Grid Height="24" Width="20">
                                     <ui:SymbolIcon Symbol="Repair" Foreground="{DynamicResource ToolBarForeground}" MouseDown="Border_MouseDown" MouseUp="SymbolIconTools_MouseUp"/>
-                                    <Border Name="BorderTools" Margin="37,-157,-140,-6" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
+                                    <Border Name="BorderTools" Margin="37,-195,-140,-6" CornerRadius="5" Background="{DynamicResource ToolBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource ToolBarBorderBrush}">
                                         <ui:SimpleStackPanel>
                                             <Label Content="快捷设置" FontSize="14" Foreground="{DynamicResource ToolBarForeground}"
                                                    HorizontalAlignment="Left" Margin="8,8"/>
+                                            <Viewbox Margin="12,0,0,0" Height="38" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                <ui:SimpleStackPanel>
+                                                    <Label Margin="0,0,0,-2" Content="画笔粗细" Foreground="{DynamicResource ToolBarForeground}" FontSize="13" VerticalAlignment="Center"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Slider x:Name="InkWidthSlider"
+                                                                HorizontalAlignment="Left"
+                                                                Minimum="1" Maximum="20"
+                                                                Width="100"
+                                                                IsSnapToTickEnabled="True" Value="5"
+                                                                TickFrequency="1" TickPlacement="Both"
+                                                                ValueChanged="InkWidthSlider_ValueChanged"/>
+                                                        <TextBlock Text="{Binding Value, ElementName=InkWidthSlider, Mode=OneWay}"
+                                                                   VerticalAlignment="Bottom" Margin="10,0,0,8"
+                                                                   Width="15" FontSize="13"/>
+                                                    </StackPanel>
+                                                </ui:SimpleStackPanel>
+                                            </Viewbox>
                                             <Viewbox Margin="12,0,0,0" Height="32" Width="50" HorizontalAlignment="Left" VerticalAlignment="Top">
                                                 <ui:SimpleStackPanel>
                                                     <Label Margin="0,0,0,-2" Content="墨迹识别" Foreground="{DynamicResource ToolBarForeground}" FontSize="13" VerticalAlignment="Center"/>
