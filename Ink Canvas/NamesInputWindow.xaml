@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Ink_Canvas"
         mc:Ignorable="d" FontFamily="Microsoft YaHei UI" ui:WindowHelper.UseModernWindowStyle="True"
         ui:ThemeManager.RequestedTheme="Light" WindowStartupLocation="CenterScreen"
-        xmlns:ui="http://schemas.modernwpf.com/2019" Topmost="True"
+        xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern" Topmost="True"
         Title="Ink Canvas 画板 - 名单导入" Height="500" Width="400"
         Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
