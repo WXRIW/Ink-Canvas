@@ -392,6 +392,19 @@
                         </GroupBox>
                         <GroupBox Header="画板">
                             <ui:SimpleStackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal">
+                                    <Slider x:Name="InkWidthSlider" 
+                                            HorizontalAlignment="Left"
+                                            Minimum="1" Maximum="20"
+                                            Width="330" FontFamily="Microsoft YaHei UI" 
+                                            ui:ControlHelper.Header="画笔粗细"
+                                            IsSnapToTickEnabled="True" Value="5"
+                                            TickFrequency="1" TickPlacement="Both"
+                                            ValueChanged="InkWidthSlider_ValueChanged"/>
+                                    <TextBlock Text="{Binding Value, ElementName=InkWidthSlider, Mode=OneWay}"
+                                               VerticalAlignment="Bottom" Margin="10,0,0,8"
+                                               FontSize="14"/>
+                                </StackPanel>
                                 <ui:ToggleSwitch Name="ToggleSwitchShowCursor" Header="显示画笔光标" IsOn="False" FontFamily="Microsoft YaHei UI" OnContent="开" OffContent="关" Toggled="ToggleSwitchShowCursor_Toggled"/>
                                 <TextBlock Text="画笔样式" FontFamily="Microsoft YaHei UI" FontSize="14"/>
                                 <ComboBox Name="ComboBoxPenStyle" FontFamily="Microsoft YaHei UI" SelectedIndex="0" SelectionChanged="ComboBoxPenStyle_SelectionChanged">
@@ -1191,13 +1204,11 @@
                                                 <ui:SimpleStackPanel>
                                                     <Label Margin="0,0,0,-2" Content="画笔粗细" Foreground="{DynamicResource ToolBarForeground}" FontSize="13" VerticalAlignment="Center"/>
                                                     <StackPanel Orientation="Horizontal">
-                                                        <Slider x:Name="InkWidthSlider"
-                                                                HorizontalAlignment="Left"
+                                                        <Slider HorizontalAlignment="Left"
                                                                 Minimum="1" Maximum="20"
                                                                 Width="100"
-                                                                IsSnapToTickEnabled="True" Value="5"
-                                                                TickFrequency="1" TickPlacement="Both"
-                                                                ValueChanged="InkWidthSlider_ValueChanged"/>
+                                                                IsSnapToTickEnabled="True" Value="{Binding ElementName=InkWidthSlider, Path=Value, Mode=TwoWay}"
+                                                                TickFrequency="1" TickPlacement="Both"/>
                                                         <TextBlock Text="{Binding Value, ElementName=InkWidthSlider, Mode=OneWay}"
                                                                    VerticalAlignment="Bottom" Margin="10,0,0,8"
                                                                    Width="15" FontSize="13"/>
