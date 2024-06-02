@@ -6932,15 +6932,14 @@ namespace Ink_Canvas
             }
             BtnSwitch_Click(BtnSwitch, null);
 
-            if (currentMode == 0 && inkCanvas.Strokes.Count == 0 && BtnPPTSlideShowEnd.Visibility != Visibility.Visible)
-            {
-                BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
-            }
-
             BtnExit.Foreground = Brushes.White;
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
             SetColors();
             SetColorByIndex();
+            if (currentMode == 0 && inkCanvas.Strokes.Count == 0 && BtnPPTSlideShowEnd.Visibility != Visibility.Visible)
+            {
+                BtnHideInkCanvas_Click(BtnHideInkCanvas, null);
+            }
         }
 
         private void ImageEraser_MouseUp(object sender, MouseButtonEventArgs e)
