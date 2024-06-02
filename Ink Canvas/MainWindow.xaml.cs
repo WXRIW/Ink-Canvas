@@ -2008,6 +2008,7 @@ namespace Ink_Canvas
         Point iniP = new Point(0, 0);
         bool isLastTouchEraser = false;
         private bool forcePointEraser = true;
+        private bool _lockSmith = false; //临时停用双指手势
 
         private void Main_Grid_TouchDown(object sender, TouchEventArgs e)
         {
@@ -2172,7 +2173,7 @@ namespace Ink_Canvas
 
         private void Main_Grid_ManipulationDelta(object sender, ManipulationDeltaEventArgs e)
         {
-            if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerGesture) return;
+            if (isInMultiTouchMode || !Settings.Gesture.IsEnableTwoFingerGesture || _lockSmith) return;
             if ((dec.Count >= 2 && (Settings.PowerPointSettings.IsEnableTwoFingerGestureInPresentationMode || StackPanelPPTControls.Visibility != Visibility.Visible || StackPanelPPTButtons.Visibility == Visibility.Collapsed)) || isSingleFingerDragMode)
             {
                 ManipulationDelta md = e.DeltaManipulation;
@@ -7232,6 +7233,13 @@ namespace Ink_Canvas
             {
                 ShowNotification("墨迹保存失败");
             }
+        }
+
+        private void SymbolIconPin_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _lockSmith = !_lockSmith;
+            if (_lockSmith) LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Pin;
+            else LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.UnPin;
         }
 
         private void SymbolIconOpenStrokes_MouseUp(object sender, MouseButtonEventArgs e)
