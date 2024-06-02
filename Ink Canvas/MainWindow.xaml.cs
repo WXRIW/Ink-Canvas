@@ -1483,26 +1483,7 @@ namespace Ink_Canvas
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
                 if (currentMode %2 == 0) SetDarkColors();    //在浅色背景上使用深色墨迹
-                if (inkColor == 0)
-                {
-                    inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
-                }
-                else if (inkColor == 1)
-                {
-                    BtnColorRed_Click(null, null);
-                }
-                else if (inkColor == 2)
-                {
-                    BtnColorGreen_Click(null, null);
-                }
-                else if (inkColor == 3)
-                {
-                    BtnColorBlue_Click(null, null);
-                }
-                else if (inkColor == 4)
-                {
-                    BtnColorYellow_Click(null, null);
-                }
+                SetColorByIndex();
             }
             else
             {
@@ -1515,30 +1496,34 @@ namespace Ink_Canvas
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
                 if (currentMode % 2 == 0) SetLightColors();   //在深色背景上使用浅色墨迹
-                if (inkColor == 0)
-                {
-                    inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
-                }
-                else if (inkColor == 1)
-                {
-                    BtnColorRed_Click(null, null);
-                }
-                else if (inkColor == 2)
-                {
-                    BtnColorGreen_Click(null, null);
-                }
-                else if (inkColor == 3)
-                {
-                    BtnColorBlue_Click(null, null);
-                }
-                else if (inkColor == 4)
-                {
-                    BtnColorYellow_Click(null, null);
-                }
+                SetColorByIndex();
             }
             if (!Settings.Appearance.IsTransparentButtonBackground)
             {
                 ToggleSwitchTransparentButtonBackground_Toggled(ToggleSwitchTransparentButtonBackground, null);
+            }
+        }
+        private void SetColorByIndex()
+        {
+            if (inkColor == 0)
+            {
+                inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
+            }
+            else if (inkColor == 1)
+            {
+                BtnColorRed_Click(null, null);
+            }
+            else if (inkColor == 2)
+            {
+                BtnColorGreen_Click(null, null);
+            }
+            else if (inkColor == 3)
+            {
+                BtnColorBlue_Click(null, null);
+            }
+            else if (inkColor == 4)
+            {
+                BtnColorYellow_Click(null, null);
             }
         }
 
@@ -7024,6 +7009,7 @@ namespace Ink_Canvas
 
             BtnExit.Foreground = Brushes.White;
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+            SetColorByIndex();
         }
 
         private void ImageEraser_MouseUp(object sender, MouseButtonEventArgs e)
