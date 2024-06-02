@@ -1494,7 +1494,6 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.Black;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-                SetColorByIndex();
             }
             SetColorByIndex();
             if (!Settings.Appearance.IsTransparentButtonBackground)
