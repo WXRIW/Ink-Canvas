@@ -322,6 +322,7 @@ namespace Ink_Canvas
 
         private void KeyDrawLine(object sender, ExecutedRoutedEventArgs e)
         {
+            SetColorByIndex();
             BtnDrawLine_Click(lastMouseDownSender, e);
         }
 
