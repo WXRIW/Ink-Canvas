@@ -157,7 +157,7 @@ namespace Ink_Canvas
         DrawingAttributes drawingAttributes;
         private void loadPenCanvas()
         {
-            SetDarkColors();
+            SetColors();
             try
             {
                 //drawingAttributes = new DrawingAttributes();
@@ -1482,8 +1482,6 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.White;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
-                if (currentMode %2 == 0) SetDarkColors();    //在浅色背景上使用深色墨迹
-                SetColorByIndex();
             }
             else
             {
@@ -1495,9 +1493,9 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.Black;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-                if (currentMode % 2 == 0) SetLightColors();   //在深色背景上使用浅色墨迹
                 SetColorByIndex();
             }
+            SetColorByIndex();
             if (!Settings.Appearance.IsTransparentButtonBackground)
             {
                 ToggleSwitchTransparentButtonBackground_Toggled(ToggleSwitchTransparentButtonBackground, null);
@@ -1507,7 +1505,7 @@ namespace Ink_Canvas
         {
             if (inkColor == 0)
             {
-                inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
+                BtnColorBlack_Click(null,null);
             }
             else if (inkColor == 1)
             {
@@ -1524,6 +1522,10 @@ namespace Ink_Canvas
             else if (inkColor == 4)
             {
                 BtnColorYellow_Click(null, null);
+            }
+            else if (inkColor == 5)
+            {
+                BorderPenColorWhite_MouseUp(null, null);
             }
         }
 
@@ -1804,23 +1806,7 @@ namespace Ink_Canvas
         {
             inkColor = 1;
             forceEraser = false;
-            if (!isLastSwitchColorByFloatBar)
-            {
-                if (BtnSwitchTheme.Content.ToString() == "浅色")
-                {
-                    SetDarkColors();    //在浅色背景上使用深色墨迹
-                }
-                else
-                {
-                    SetLightColors();    //在深色背景上使用浅色墨迹
-                }
-            }
-            else
-            {
-                isLastSwitchColorByFloatBar = false;
-            }
             inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorRed.Background).Color;
-
             ColorSwitchCheck();
         }
 
@@ -1828,23 +1814,7 @@ namespace Ink_Canvas
         {
             inkColor = 2;
             forceEraser = false;
-            if (!isLastSwitchColorByFloatBar)
-            {
-                if (BtnSwitchTheme.Content.ToString() == "浅色")
-                {
-                    SetDarkColors();    //在浅色背景上使用深色墨迹
-                }
-                else
-                {
-                    SetLightColors();    //在深色背景上使用浅色墨迹
-                }
-            }
-            else
-            {
-                isLastSwitchColorByFloatBar = false;
-            }
             inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorGreen.Background).Color;
-
             ColorSwitchCheck();
         }
 
@@ -1852,23 +1822,7 @@ namespace Ink_Canvas
         {
             inkColor = 3;
             forceEraser = false;
-            if (!isLastSwitchColorByFloatBar)
-            {
-                if (BtnSwitchTheme.Content.ToString() == "浅色")
-                {
-                    SetDarkColors();    //在浅色背景上使用深色墨迹
-                }
-                else
-                {
-                    SetLightColors();    //在深色背景上使用浅色墨迹
-                }
-            }
-            else
-            {
-                isLastSwitchColorByFloatBar = false;
-            }
             inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorBlue.Background).Color;
-
             ColorSwitchCheck();
         }
 
@@ -1876,23 +1830,7 @@ namespace Ink_Canvas
         {
             inkColor = 4;
             forceEraser = false;
-            if (!isLastSwitchColorByFloatBar)
-            {
-                if (BtnSwitchTheme.Content.ToString() == "浅色")
-                {
-                    SetDarkColors();    //在浅色背景上使用深色墨迹
-                }
-                else
-                {
-                    SetLightColors();    //在深色背景上使用浅色墨迹
-                }
-            }
-            else
-            {
-                isLastSwitchColorByFloatBar = false;
-            }
             inkCanvas.DefaultDrawingAttributes.Color = ((SolidColorBrush)BtnColorYellow.Background).Color;
-
             ColorSwitchCheck();
         }
 
@@ -5787,49 +5725,51 @@ namespace Ink_Canvas
             }
         }
 
-        private void SetLightColors()
+        private void SetColors()
         {
-            if (File.Exists(App.RootPath + "Colors\\Light.ini"))
+            if (currentMode % 2 != 0 && !Settings.Canvas.UsingWhiteboard)
             {
-                try
+                if (File.Exists(App.RootPath + "Colors\\Light.ini"))
                 {
-                    string[] lightColors = File.ReadAllLines(App.RootPath + "Colors\\Light.ini");
-                    BtnColorRed.Background = new SolidColorBrush(StringToColor(lightColors[0]));
-                    BtnColorGreen.Background = new SolidColorBrush(StringToColor(lightColors[1]));
-                    BtnColorBlue.Background = new SolidColorBrush(StringToColor(lightColors[2]));
-                    BtnColorYellow.Background = new SolidColorBrush(StringToColor(lightColors[3]));
+                    try
+                    {
+                        string[] lightColors = File.ReadAllLines(App.RootPath + "Colors\\Light.ini");
+                        BtnColorRed.Background = new SolidColorBrush(StringToColor(lightColors[0]));
+                        BtnColorGreen.Background = new SolidColorBrush(StringToColor(lightColors[1]));
+                        BtnColorBlue.Background = new SolidColorBrush(StringToColor(lightColors[2]));
+                        BtnColorYellow.Background = new SolidColorBrush(StringToColor(lightColors[3]));
+                    }
+                    catch (Exception) { ShowNotification("读取亮色画笔颜色配置文件时遇到问题"); }
                 }
-                catch (Exception) { ShowNotification("读取亮色画笔颜色配置文件时遇到问题"); }
+                else
+                {
+                    BtnColorRed.Background = new SolidColorBrush(StringToColor("#FFFF3333"));
+                    BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
+                    BtnColorBlue.Background = new SolidColorBrush(StringToColor("#FF239AD6"));
+                    BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
+                }
             }
             else
             {
-                BtnColorRed.Background = new SolidColorBrush(StringToColor("#FFFF3333"));
-                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF1ED760"));
-                BtnColorBlue.Background = new SolidColorBrush(StringToColor("#FF239AD6"));
-                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFFFC000"));
-            }
-        }
-
-        private void SetDarkColors()
-        {
-            if (File.Exists(App.RootPath + "Colors\\Dark.ini"))
-            {
-                try
+                if (File.Exists(App.RootPath + "Colors\\Dark.ini"))
                 {
-                    string[] darkColors = File.ReadAllLines(App.RootPath + "Colors\\Dark.ini");
-                    BtnColorRed.Background = new SolidColorBrush(StringToColor(darkColors[0]));
-                    BtnColorGreen.Background = new SolidColorBrush(StringToColor(darkColors[1]));
-                    BtnColorBlue.Background = new SolidColorBrush(StringToColor(darkColors[2]));
-                    BtnColorYellow.Background = new SolidColorBrush(StringToColor(darkColors[3]));
+                    try
+                    {
+                        string[] darkColors = File.ReadAllLines(App.RootPath + "Colors\\Dark.ini");
+                        BtnColorRed.Background = new SolidColorBrush(StringToColor(darkColors[0]));
+                        BtnColorGreen.Background = new SolidColorBrush(StringToColor(darkColors[1]));
+                        BtnColorBlue.Background = new SolidColorBrush(StringToColor(darkColors[2]));
+                        BtnColorYellow.Background = new SolidColorBrush(StringToColor(darkColors[3]));
+                    }
+                    catch (Exception) { ShowNotification("读取深色画笔颜色配置文件时遇到问题"); }
                 }
-                catch (Exception) { ShowNotification("读取深色画笔颜色配置文件时遇到问题"); }
-            }
-            else
-            {
-                BtnColorRed.Background = new SolidColorBrush(Colors.Red);
-                BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
-                BtnColorBlue.Background = new SolidColorBrush(StringToColor("#FF239AD6"));
-                BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
+                else
+                {
+                    BtnColorRed.Background = new SolidColorBrush(Colors.Red);
+                    BtnColorGreen.Background = new SolidColorBrush(StringToColor("#FF169141"));
+                    BtnColorBlue.Background = new SolidColorBrush(StringToColor("#FF239AD6"));
+                    BtnColorYellow.Background = new SolidColorBrush(StringToColor("#FFF38B00"));
+                }
             }
         }
 
@@ -6800,7 +6740,6 @@ namespace Ink_Canvas
             BorderTools.Visibility = Visibility.Collapsed;
         }
 
-        bool isLastSwitchColorByFloatBar = false;
 
         private void BorderPenColorBlack_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -6810,28 +6749,24 @@ namespace Ink_Canvas
 
         private void BorderPenColorRed_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            isLastSwitchColorByFloatBar = true;
             BtnColorRed_Click(BtnColorRed, null);
             HideSubPanels();
         }
 
         private void BorderPenColorGreen_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            isLastSwitchColorByFloatBar = true;
             BtnColorGreen_Click(BtnColorGreen, null);
             HideSubPanels();
         }
 
         private void BorderPenColorBlue_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            isLastSwitchColorByFloatBar = true;
             BtnColorBlue_Click(BtnColorBlue, null);
             HideSubPanels();
         }
 
         private void BorderPenColorYellow_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            isLastSwitchColorByFloatBar = true;
             BtnColorYellow_Click(BtnColorYellow, null);
             HideSubPanels();
         }
@@ -6876,7 +6811,7 @@ namespace Ink_Canvas
                 }
             }
 
-            SetDarkColors();
+            SetColors();
         }
 
         private void SymbolIconDelete_MouseUp(object sender, MouseButtonEventArgs e)
@@ -6967,9 +6902,6 @@ namespace Ink_Canvas
                 {
                     BorderPenColorWhite_MouseUp(BorderPenColorWhite, null);
                 }
-
-                if (Settings.Canvas.UsingWhiteboard) SetDarkColors();   //在白板上用深色墨迹
-                else SetLightColors();  //在黑板上用浅色墨迹
             }
             else
             {
@@ -6995,11 +6927,8 @@ namespace Ink_Canvas
                         });
                     })).Start();
                 }
-                BorderPenColorRed_MouseUp(BorderPenColorRed, null);
-
-                SetDarkColors();
+                BorderPenColorRed_MouseUp(BorderPenColorRed, null);  
             }
-
             BtnSwitch_Click(BtnSwitch, null);
 
             if (currentMode == 0 && inkCanvas.Strokes.Count == 0 && BtnPPTSlideShowEnd.Visibility != Visibility.Visible)
@@ -7009,6 +6938,7 @@ namespace Ink_Canvas
 
             BtnExit.Foreground = Brushes.White;
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
+            SetColors();
             SetColorByIndex();
         }
 
