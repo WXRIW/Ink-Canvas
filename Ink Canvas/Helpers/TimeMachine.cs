@@ -131,7 +131,7 @@ namespace Ink_Canvas.Helpers
     public class TimeMachineHistory
     {
         public TimeMachineHistoryType CommitType;
-        public bool StrokeHasBeenCleared;
+        public bool StrokeHasBeenCleared = false;
         public StrokeCollection CurrentStroke;
         public StrokeCollection ReplacedStroke;
         //这里说一下 Tuple的 Value1 是初始值 ; Value 2 是改变值

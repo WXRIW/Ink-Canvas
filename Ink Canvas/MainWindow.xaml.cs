@@ -352,6 +352,16 @@ namespace Ink_Canvas
         private Dictionary<Stroke,Tuple<StylusPointCollection,StylusPointCollection>> StrokeManipulationHistory;
         private Dictionary<Stroke, StylusPointCollection> StrokeInitialHistory = new Dictionary<Stroke, StylusPointCollection>();
         private Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>> DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+        private Dictionary<Guid, List<Stroke>> DrawingAttributesHistoryFlag = new Dictionary<Guid, List<Stroke>>()
+        {
+            { DrawingAttributeIds.Color, new List<Stroke>() },
+            { DrawingAttributeIds.DrawingFlags, new List<Stroke>() },
+            { DrawingAttributeIds.IsHighlighter, new List<Stroke>() },
+            { DrawingAttributeIds.StylusHeight, new List<Stroke>() },
+            { DrawingAttributeIds.StylusTip, new List<Stroke>() },
+            { DrawingAttributeIds.StylusTipTransform, new List<Stroke>() },
+            { DrawingAttributeIds.StylusWidth, new List<Stroke>() }
+        };
         private TimeMachine timeMachine = new TimeMachine();
 
         private void ApplyHistoryToCanvas(TimeMachineHistory item)
@@ -567,38 +577,46 @@ namespace Ink_Canvas
         {
             var key = sender as Stroke;
             var currentValue = key.DrawingAttributes.Clone();
-            var previousValue = key.DrawingAttributes.Clone();
-            if(e.PropertyGuid == DrawingAttributeIds.Color)
+            DrawingAttributesHistory.TryGetValue(key, out var previousTuple);
+            var previousValue = previousTuple?.Item1 ?? currentValue.Clone();
+            var needUpdateValue = !DrawingAttributesHistoryFlag[e.PropertyGuid].Contains(key);
+            if (needUpdateValue)
+            {
+                DrawingAttributesHistoryFlag[e.PropertyGuid].Add(key);
+                Debug.Write(e.PreviousValue.ToString());
+            }
+            if(e.PropertyGuid == DrawingAttributeIds.Color && needUpdateValue)
             {
                 previousValue.Color = (Color)e.PreviousValue;
             }
-            if (e.PropertyGuid == DrawingAttributeIds.IsHighlighter)
+            if (e.PropertyGuid == DrawingAttributeIds.IsHighlighter && needUpdateValue)
             {
                 previousValue.IsHighlighter = (bool)e.PreviousValue;
+                
             }
-            if (e.PropertyGuid == DrawingAttributeIds.StylusHeight)
+            if (e.PropertyGuid == DrawingAttributeIds.StylusHeight && needUpdateValue)
             {
-                previousValue.Height = (int)e.PreviousValue;
+                previousValue.Height = (double)e.PreviousValue;
             }
-            if (e.PropertyGuid == DrawingAttributeIds.StylusWidth)
+            if (e.PropertyGuid == DrawingAttributeIds.StylusWidth && needUpdateValue)
             {
-                previousValue.Width = (int)e.PreviousValue;
+                previousValue.Width = (double)e.PreviousValue;
             }
-            if (e.PropertyGuid == DrawingAttributeIds.StylusTip)
+            if (e.PropertyGuid == DrawingAttributeIds.StylusTip && needUpdateValue)
             {
                 previousValue.StylusTip = (StylusTip)e.PreviousValue;
             }
-            if (e.PropertyGuid == DrawingAttributeIds.StylusTipTransform)
+            if (e.PropertyGuid == DrawingAttributeIds.StylusTipTransform && needUpdateValue)
             {
                 previousValue.StylusTipTransform = (Matrix)e.PreviousValue;
             }
-            if (e.PropertyGuid == DrawingAttributeIds.DrawingFlags)
+            if (e.PropertyGuid == DrawingAttributeIds.DrawingFlags && needUpdateValue)
             {
                 previousValue.IgnorePressure = (bool)e.PreviousValue;
             }
             DrawingAttributesHistory[key] = new Tuple<DrawingAttributes, DrawingAttributes>(previousValue, currentValue);
         }
-
+        
         private void Stroke_StylusPointsReplaced(object sender, StylusPointsReplacedEventArgs e)
         {
             StrokeInitialHistory[sender as Stroke] = e.NewStylusPoints.Clone();
@@ -1464,7 +1482,7 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.White;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FFF2F2F2"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
-                SetDarkColors();    //在浅色背景上使用深色墨迹
+                if (currentMode %2 == 0) SetDarkColors();    //在浅色背景上使用深色墨迹
                 if (inkColor == 0)
                 {
                     inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
@@ -1496,7 +1514,7 @@ namespace Ink_Canvas
                 BtnExit.Foreground = Brushes.Black;
                 GridBackgroundCover.Background = new SolidColorBrush(StringToColor("#FF1A1A1A"));
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-                SetLightColors();   //在深色背景上使用浅色墨迹
+                if (currentMode % 2 == 0) SetLightColors();   //在深色背景上使用浅色墨迹
                 if (inkColor == 0)
                 {
                     inkCanvas.DefaultDrawingAttributes.Color = Colors.White;
@@ -1742,6 +1760,10 @@ namespace Ink_Canvas
             {
                 timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
                 DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+                foreach (var item in DrawingAttributesHistoryFlag)
+                {
+                    item.Value.Clear();
+                }
             }
             else
             {
@@ -1908,7 +1930,7 @@ namespace Ink_Canvas
             byte b = (byte)"0123456789ABCDEF".IndexOf(c);
             return b;
         }
-
+        
         #endregion
 
         #region Touch Events
@@ -3700,6 +3722,10 @@ namespace Ink_Canvas
 
                 timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
                 DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+                foreach (var item in DrawingAttributesHistoryFlag)
+                {
+                    item.Value.Clear();
+                }
             }
         }
 
@@ -3744,6 +3770,10 @@ namespace Ink_Canvas
                 }
                 timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
                 DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+                foreach (var item in DrawingAttributesHistoryFlag)
+                {
+                    item.Value.Clear();
+                }
             }
             //updateBorderStrokeSelectionControlLocation();
         }
@@ -3773,6 +3803,10 @@ namespace Ink_Canvas
             {
                 timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
                 DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+                foreach (var item in DrawingAttributesHistoryFlag)
+                {
+                    item.Value.Clear();
+                }
             }
         }
 
@@ -3801,6 +3835,10 @@ namespace Ink_Canvas
             {
                 timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
                 DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+                foreach (var item in DrawingAttributesHistoryFlag)
+                {
+                    item.Value.Clear();
+                }
             }
         }
 
@@ -3834,6 +3872,10 @@ namespace Ink_Canvas
                 }
                 timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
                 DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+                foreach (var item in DrawingAttributesHistoryFlag)
+                {
+                    item.Value.Clear();
+                }
             }
         }
 
@@ -3935,6 +3977,15 @@ namespace Ink_Canvas
                     StrokeInitialHistory[item.Key] = item.Value.Item2;
                 }
                 StrokeManipulationHistory = null;
+            }
+            if (DrawingAttributesHistory.Count > 0)
+            {
+                timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
+                DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+                foreach (var item in DrawingAttributesHistoryFlag)
+                {
+                    item.Value.Clear();
+                }
             }
         }
 
@@ -5547,6 +5598,15 @@ namespace Ink_Canvas
                 }
                 StrokeManipulationHistory = null;
             }
+            if (DrawingAttributesHistory.Count > 0)
+            {
+                timeMachine.CommitStrokeDrawingAttributesHistory(DrawingAttributesHistory);
+                DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
+                foreach (var item in DrawingAttributesHistoryFlag)
+                {
+                    item.Value.Clear();
+                }
+            }
         }
 
         private bool NeedUpdateIniP()
@@ -5603,7 +5663,6 @@ namespace Ink_Canvas
                 if (TimeMachineHistories[CurrentWhiteboardIndex] == null) return; //防止白板打开后不居中
                 if (isBackupMain)
                 {
-                    _currentCommitType = CommitReason.CodeInput;
                     timeMachine.ImportTimeMachineHistory(TimeMachineHistories[0]);
                     foreach (var item in TimeMachineHistories[0])
                     {
@@ -5612,7 +5671,6 @@ namespace Ink_Canvas
                 }
                 else
                 {
-                    _currentCommitType = CommitReason.CodeInput;
                     timeMachine.ImportTimeMachineHistory(TimeMachineHistories[CurrentWhiteboardIndex]);
                     foreach (var item in TimeMachineHistories[CurrentWhiteboardIndex])
                     {
