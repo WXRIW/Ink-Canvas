@@ -6586,7 +6586,7 @@ namespace Ink_Canvas
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        if (inkCanvas.Visibility != Visibility.Visible || inkCanvas.Strokes.Count == 0) return;
+                        if (inkCanvas.Visibility != Visibility.Visible || inkCanvas.Strokes.Count == 0 || !Settings.Automation.IsAutoSaveStrokesAtScreenshot) return;
                         SaveInkCanvasStrokes(false);
                     });
                 }
