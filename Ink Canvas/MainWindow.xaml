@@ -1173,7 +1173,7 @@
                                            IsEnabled="{Binding ElementName=BtnRedo, Path=IsEnabled}"
                                            MouseUp="SymbolIconRedo_MouseUp" MouseDown="Border_MouseDown"/>
                             <ui:SymbolIcon x:Name="LockSmithSymbol" 
-                                           Symbol="UnPin" Foreground="{DynamicResource FloatBarForeground}" Margin="-2,0,0,0"
+                                           Symbol="Pin" Foreground="{DynamicResource FloatBarForeground}" Margin="-2,0,0,0"
                                            MouseUp="SymbolIconPin_MouseUp" MouseDown="Border_MouseDown"/>
                         </ui:SimpleStackPanel>
                         <ui:SimpleStackPanel Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
