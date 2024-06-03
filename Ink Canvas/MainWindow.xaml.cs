@@ -7236,8 +7236,8 @@ namespace Ink_Canvas
         private void SymbolIconPin_MouseUp(object sender, MouseButtonEventArgs e)
         {
             _lockSmith = !_lockSmith;
-            if (_lockSmith) LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Pin;
-            else LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.UnPin;
+            if (_lockSmith) LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.UnPin;
+            else LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Pin;
         }
 
         private void SymbolIconOpenStrokes_MouseUp(object sender, MouseButtonEventArgs e)
