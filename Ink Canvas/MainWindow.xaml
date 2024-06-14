@@ -916,7 +916,7 @@
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
-                        <Border x:Name="PptNavigationBtn" Width="auto" Height="36" CornerRadius="5" Background="{DynamicResource FloatBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
+                        <Border x:Name="PptNavigationBtn" Width="Auto" MinWidth="36" Height="36" CornerRadius="5" Background="{DynamicResource FloatBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
                             <Grid MouseUp="PPTNavigationBtn_Click">
                                 <TextBlock Name="PptNavigationTextBlock" FontSize="10" Foreground="{DynamicResource FloatBarForeground}" HorizontalAlignment="Center" VerticalAlignment="Center" Text="0/0" Margin="2"/>
                             </Grid>
@@ -936,7 +936,7 @@
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
                             </Grid>
                         </Border>
-                        <Border Width="auto" Visibility="{Binding ElementName=PptNavigationBtn, Path=Visibility}" Height="36" CornerRadius="5" Background="{DynamicResource FloatBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
+                        <Border Width="Auto" MinWidth="36" Visibility="{Binding ElementName=PptNavigationBtn, Path=Visibility}" Height="36" CornerRadius="5" Background="{DynamicResource FloatBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
                             <Grid MouseUp="PPTNavigationBtn_Click">
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=PptNavigationTextBlock, Path=Foreground}" FontSize="{Binding ElementName=PptNavigationTextBlock, Path=FontSize}" Text="{Binding ElementName=PptNavigationTextBlock, Path=Text}" Margin="2"/>
                             </Grid>
