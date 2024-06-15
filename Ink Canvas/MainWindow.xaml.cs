@@ -2314,6 +2314,8 @@ namespace Ink_Canvas
 
         public static bool IsShowingRestoreHiddenSlidesWindow = false;
 
+        public static bool IsNotifyPreviousPageWindowShown = false;
+
         private void TimerCheckPPT_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (IsShowingRestoreHiddenSlidesWindow) return;
@@ -2369,30 +2371,31 @@ namespace Ink_Canvas
                 // 跳转到上次播放页
                 if (Settings.PowerPointSettings.IsNotifyPreviousPage)
                     Application.Current.Dispatcher.BeginInvoke(() =>
-                    {
-                        string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                                                   @"\Ink Canvas Strokes\Auto Saved\Presentations\";
-                        string folderPath = defaultFolderPath + presentation.Name + "_" + presentation.Slides.Count;
-                        if (File.Exists(folderPath + "/Position"))
                         {
-                            if (int.TryParse(File.ReadAllText(folderPath + "/Position"), out var page))
+                            string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
+                                                       @"\Ink Canvas Strokes\Auto Saved\Presentations\";
+                            string folderPath = defaultFolderPath + presentation.Name + "_" + presentation.Slides.Count;
+                            if (File.Exists(folderPath + "/Position") & !IsNotifyPreviousPageWindowShown) //判断是否已存在NotifyPreviousPage窗口
                             {
-                                if (page <= 0) return;
-                                new YesOrNoNotificationWindow($"上次播放到了第 {page} 页, 是否立即跳转", () =>
+                                if (int.TryParse(File.ReadAllText(folderPath + "/Position"), out var page))
                                 {
-                                    if (pptApplication.SlideShowWindows.Count >= 1)
+                                    IsNotifyPreviousPageWindowShown= true;
+                                    if (page <= 0) return;
+                                    new YesOrNoNotificationWindow($"上次播放到了第 {page} 页, 是否立即跳转", () =>
                                     {
-                                        // 如果已经播放了的话, 跳转
-                                        presentation.SlideShowWindow.View.GotoSlide(page);
-                                    }
-                                    else
-                                    {
-                                        presentation.Windows[1].View.GotoSlide(page);
-                                    }
-                                }).ShowDialog();
+                                        if (pptApplication.SlideShowWindows.Count >= 1)
+                                        {
+                                            // 如果已经播放了的话, 跳转
+                                            presentation.SlideShowWindow.View.GotoSlide(page);
+                                        }
+                                        else
+                                        {
+                                            presentation.Windows[1].View.GotoSlide(page);
+                                        }
+                                    }).ShowDialog();
+                                }
                             }
-                        }
-                    }, DispatcherPriority.Normal);
+                        }, DispatcherPriority.Normal);
 
 
                 //检查是否有隐藏幻灯片
@@ -2413,7 +2416,7 @@ namespace Ink_Canvas
                         if (isHaveHiddenSlide && !IsShowingRestoreHiddenSlidesWindow)
                         {
                             IsShowingRestoreHiddenSlidesWindow = true;
-                            new YesOrNoNotificationWindow("检测到此演示文档中包含隐藏的幻灯片，是否取消隐藏？",
+                            new YesOrNoNotificationWindow("检测到此演示文稿包含隐藏的幻灯片，是否取消隐藏？",
                                 () =>
                                 {
                                     foreach (Slide slide in slides)
@@ -2871,6 +2874,7 @@ namespace Ink_Canvas
                     ms.Position = 0;
                     memoryStreams[pptApplication.SlideShowWindows[1].View.CurrentShowPosition] = ms;
                     timeMachine.ClearStrokeHistory();
+                    IsNotifyPreviousPageWindowShown = false;
                 }
                 catch { }
             });

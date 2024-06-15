@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Ink_Canvas" xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
         mc:Ignorable="d" Topmost="True" WindowStartupLocation="CenterScreen" ui:WindowHelper.UseModernWindowStyle="True"
         ResizeMode="NoResize" Closed="Window_Closed" ui:ThemeManager.RequestedTheme="Light"
-        Title="演示文档设置 - Ink Canvas 画板" Height="160" Width="450" FontFamily="Microsoft YaHei UI">
+        Title="提示 - Ink Canvas 画板" Height="160" Width="450" FontFamily="Microsoft YaHei UI">
     <Grid>
         <Grid Margin="10">
             <Grid.RowDefinitions>
