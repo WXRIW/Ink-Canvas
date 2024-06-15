@@ -925,20 +925,20 @@ namespace Ink_Canvas
             if (Settings.Gesture == null)
             {
                 Settings.Gesture = new Gesture();
-			}
-			if (Settings.Gesture.IsDisableLockSmithByDefault)
+            }
+            if (Settings.Gesture.IsDisableLockSmithByDefault)
             {
-				ToggleSwitchDisableLockSmithByDefault.IsOn = true;
+                ToggleSwitchDisableLockSmithByDefault.IsOn = true;
                 _lockSmith = false;
-				LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Pin;
-			}
+                LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Pin;
+            }
             else
             {
-				ToggleSwitchDisableLockSmithByDefault.IsOn = false;
+                ToggleSwitchDisableLockSmithByDefault.IsOn = false;
                 _lockSmith = true;
-				LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.UnPin;
-			}
-			if (Settings.Gesture.IsEnableTwoFingerZoom)
+                LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.UnPin;
+            }
+            if (Settings.Gesture.IsEnableTwoFingerZoom)
             {
                 ToggleSwitchEnableTwoFingerZoom.IsOn = true;
             }
@@ -3307,25 +3307,25 @@ namespace Ink_Canvas
             Settings.PowerPointSettings.IsEnableFingerGestureSlideShowControl = ToggleSwitchEnableFingerGestureSlideShowControl.IsOn;
 
             SaveSettingsToFile();
-		}
+        }
 
-		private void ToggleSwitchDisableLockSmithByDefault_Toggled(object sender, RoutedEventArgs e) {
-			if (!isLoaded) return;
+        private void ToggleSwitchDisableLockSmithByDefault_Toggled(object sender, RoutedEventArgs e) {
+            if (!isLoaded) return;
 
-			Settings.Gesture.IsDisableLockSmithByDefault = ToggleSwitchDisableLockSmithByDefault.IsOn;
+            Settings.Gesture.IsDisableLockSmithByDefault = ToggleSwitchDisableLockSmithByDefault.IsOn;
 
-			SaveSettingsToFile();
-		}
+            SaveSettingsToFile();
+        }
 
-		private void ToggleSwitchEnableTwoFingerZoom_Toggled(object sender, RoutedEventArgs e) {
-			if (!isLoaded) return;
+        private void ToggleSwitchEnableTwoFingerZoom_Toggled(object sender, RoutedEventArgs e) {
+            if (!isLoaded) return;
 
-			Settings.Gesture.IsEnableTwoFingerZoom = ToggleSwitchEnableTwoFingerZoom.IsOn;
+            Settings.Gesture.IsEnableTwoFingerZoom = ToggleSwitchEnableTwoFingerZoom.IsOn;
 
-			SaveSettingsToFile();
-		}
+            SaveSettingsToFile();
+        }
 
-		private void ToggleSwitchEnableTwoFingerTranslate_Toggled(object sender, RoutedEventArgs e)
+        private void ToggleSwitchEnableTwoFingerTranslate_Toggled(object sender, RoutedEventArgs e)
         {
             if (!isLoaded) return;
 
