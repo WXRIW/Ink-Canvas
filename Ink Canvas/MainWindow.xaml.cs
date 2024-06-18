@@ -1503,6 +1503,7 @@ namespace Ink_Canvas
         }
         private void SetColorByIndex()
         {
+            if(currentMode != 0 || GridInkCanvasSelectionCover.Visibility != Visibility.Collapsed)
             if (inkColor == 0)
             {
                 BtnColorBlack_Click(null,null);
@@ -5728,7 +5729,7 @@ namespace Ink_Canvas
 
         private void SetColors()
         {
-            if (currentMode % 2 != 0 && !Settings.Canvas.UsingWhiteboard)
+            if (currentMode != 0 && !Settings.Canvas.UsingWhiteboard)
             {
                 if (File.Exists(App.RootPath + "Colors\\Light.ini"))
                 {
