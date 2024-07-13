@@ -1,10 +1,10 @@
 using Ink_Canvas.Helpers;
+using iNKORE.UI.WPF.Modern;
+using iNKORE.UI.WPF.Modern.Helpers;
 using IWshRuntimeLibrary;
 using Microsoft.Office.Interop.PowerPoint;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
-using iNKORE.UI.WPF.Modern;
-using iNKORE.UI.WPF.Modern.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -350,7 +350,7 @@ namespace Ink_Canvas
         private StrokeCollection ReplacedStroke;
         private StrokeCollection AddedStroke;
         private StrokeCollection CuboidStrokeCollection;
-        private Dictionary<Stroke,Tuple<StylusPointCollection,StylusPointCollection>> StrokeManipulationHistory;
+        private Dictionary<Stroke, Tuple<StylusPointCollection, StylusPointCollection>> StrokeManipulationHistory;
         private Dictionary<Stroke, StylusPointCollection> StrokeInitialHistory = new Dictionary<Stroke, StylusPointCollection>();
         private Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>> DrawingAttributesHistory = new Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>>();
         private Dictionary<Guid, List<Stroke>> DrawingAttributesHistoryFlag = new Dictionary<Guid, List<Stroke>>()
@@ -586,14 +586,14 @@ namespace Ink_Canvas
                 DrawingAttributesHistoryFlag[e.PropertyGuid].Add(key);
                 Debug.Write(e.PreviousValue.ToString());
             }
-            if(e.PropertyGuid == DrawingAttributeIds.Color && needUpdateValue)
+            if (e.PropertyGuid == DrawingAttributeIds.Color && needUpdateValue)
             {
                 previousValue.Color = (Color)e.PreviousValue;
             }
             if (e.PropertyGuid == DrawingAttributeIds.IsHighlighter && needUpdateValue)
             {
                 previousValue.IsHighlighter = (bool)e.PreviousValue;
-                
+
             }
             if (e.PropertyGuid == DrawingAttributeIds.StylusHeight && needUpdateValue)
             {
@@ -617,7 +617,7 @@ namespace Ink_Canvas
             }
             DrawingAttributesHistory[key] = new Tuple<DrawingAttributes, DrawingAttributes>(previousValue, currentValue);
         }
-        
+
         private void Stroke_StylusPointsReplaced(object sender, StylusPointsReplacedEventArgs e)
         {
             StrokeInitialHistory[sender as Stroke] = e.NewStylusPoints.Clone();
@@ -628,16 +628,16 @@ namespace Ink_Canvas
             var selectedStrokes = inkCanvas.GetSelectedStrokes();
             var count = selectedStrokes.Count;
             if (count == 0) count = inkCanvas.Strokes.Count;
-            if(StrokeManipulationHistory == null)
+            if (StrokeManipulationHistory == null)
             {
                 StrokeManipulationHistory = new Dictionary<Stroke, Tuple<StylusPointCollection, StylusPointCollection>>();
             }
-            StrokeManipulationHistory[sender as Stroke] = 
-                new Tuple<StylusPointCollection, StylusPointCollection>(StrokeInitialHistory[sender as Stroke], (sender as Stroke).StylusPoints.Clone()); 
-            if ((StrokeManipulationHistory.Count == count || sender == null) && dec.Count == 0 )
+            StrokeManipulationHistory[sender as Stroke] =
+                new Tuple<StylusPointCollection, StylusPointCollection>(StrokeInitialHistory[sender as Stroke], (sender as Stroke).StylusPoints.Clone());
+            if ((StrokeManipulationHistory.Count == count || sender == null) && dec.Count == 0)
             {
                 timeMachine.CommitStrokeManipulationHistory(StrokeManipulationHistory);
-                foreach (var item in  StrokeManipulationHistory)
+                foreach (var item in StrokeManipulationHistory)
                 {
                     StrokeInitialHistory[item.Key] = item.Value.Item2;
                 }
@@ -1304,12 +1304,18 @@ namespace Ink_Canvas
             forceEraser = false;
             BorderClearInDelete.Visibility = Visibility.Collapsed;
 
-            if (currentMode == 0) {
+            if (currentMode == 0)
+            {
                 BorderPenColorRed_MouseUp(BorderPenColorRed, null);
-            } else {
-                if (Settings.Canvas.UsingWhiteboard) {
+            }
+            else
+            {
+                if (Settings.Canvas.UsingWhiteboard)
+                {
                     BorderPenColorBlack_MouseUp(BorderPenColorBlack, null);
-                } else {
+                }
+                else
+                {
                     BorderPenColorWhite_MouseUp(BorderPenColorWhite, null);
                 }
             }
@@ -1503,31 +1509,31 @@ namespace Ink_Canvas
         }
         private void SetColorByIndex()
         {
-            if(currentMode != 0 || GridInkCanvasSelectionCover.Visibility != Visibility.Collapsed)
-            if (inkColor == 0)
-            {
-                BtnColorBlack_Click(null,null);
-            }
-            else if (inkColor == 1)
-            {
-                BtnColorRed_Click(null, null);
-            }
-            else if (inkColor == 2)
-            {
-                BtnColorGreen_Click(null, null);
-            }
-            else if (inkColor == 3)
-            {
-                BtnColorBlue_Click(null, null);
-            }
-            else if (inkColor == 4)
-            {
-                BtnColorYellow_Click(null, null);
-            }
-            else if (inkColor == 5)
-            {
-                BorderPenColorWhite_MouseUp(null, null);
-            }
+            if (currentMode != 0 || GridInkCanvasSelectionCover.Visibility != Visibility.Collapsed)
+                if (inkColor == 0)
+                {
+                    BtnColorBlack_Click(null, null);
+                }
+                else if (inkColor == 1)
+                {
+                    BtnColorRed_Click(null, null);
+                }
+                else if (inkColor == 2)
+                {
+                    BtnColorGreen_Click(null, null);
+                }
+                else if (inkColor == 3)
+                {
+                    BtnColorBlue_Click(null, null);
+                }
+                else if (inkColor == 4)
+                {
+                    BtnColorYellow_Click(null, null);
+                }
+                else if (inkColor == 5)
+                {
+                    BorderPenColorWhite_MouseUp(null, null);
+                }
         }
 
         int BoundsWidth = 5;
@@ -1854,7 +1860,7 @@ namespace Ink_Canvas
             byte b = (byte)"0123456789ABCDEF".IndexOf(c);
             return b;
         }
-        
+
         #endregion
 
         #region Touch Events
@@ -2477,7 +2483,8 @@ namespace Ink_Canvas
             LogHelper.WriteLogToFile("PowerPoint Application Slide Show Begin", LogHelper.LogType.Event);
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (currentMode == 1) {
+                if (currentMode == 1)
+                {
                     // 退出画板模式
                     BtnSwitch_Click(null, null);
                 }
@@ -3102,7 +3109,7 @@ namespace Ink_Canvas
         #endregion
 
         #region Canvas
-        
+
         private void ComboBoxPenStyle_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!isLoaded) return;
@@ -3635,7 +3642,7 @@ namespace Ink_Canvas
                 var newWidth = stroke.DrawingAttributes.Width * multipler;
                 var newHeight = stroke.DrawingAttributes.Height * multipler;
 
-                if(newWidth >= DrawingAttributes.MinWidth && newWidth <= DrawingAttributes.MaxWidth
+                if (newWidth >= DrawingAttributes.MinWidth && newWidth <= DrawingAttributes.MaxWidth
                     && newHeight >= DrawingAttributes.MinHeight && newHeight <= DrawingAttributes.MaxHeight)
                 {
                     stroke.DrawingAttributes.Width = newWidth;
@@ -3841,8 +3848,10 @@ namespace Ink_Canvas
                     //inkCanvas.Select(inkCanvas.Strokes);
                     // Fixed bug: 当通过如鼠标点击等某些方式创建没有高度或长度的笔画时，全选功能不能使用克隆、旋转、翻转、调整笔画粗细、删除功能
                     StrokeCollection selectedStrokes = new StrokeCollection();
-                    foreach (Stroke stroke in inkCanvas.Strokes) {
-                        if (stroke.GetBounds().Width > 0 && stroke.GetBounds().Height > 0) {
+                    foreach (Stroke stroke in inkCanvas.Strokes)
+                    {
+                        if (stroke.GetBounds().Width > 0 && stroke.GetBounds().Height > 0)
+                        {
                             selectedStrokes.Add(stroke);
                         }
                     }
@@ -3872,7 +3881,7 @@ namespace Ink_Canvas
                 GridInkCanvasSelectionCover.Visibility = Visibility.Visible;
                 BorderStrokeSelectionClone.Background = Brushes.Transparent;
                 isStrokeSelectionCloneOn = false;
-                updateBorderStrokeSelectionControlLocation(); 
+                updateBorderStrokeSelectionControlLocation();
             }
         }
 
@@ -4842,7 +4851,8 @@ namespace Ink_Canvas
                         //第二笔：画双曲线
                         double k = drawMultiStepShapeSpecialParameter3;
                         bool isHyperbolaFocalPointOnXAxis = Math.Abs((endP.Y - iniP.Y) / (endP.X - iniP.X)) < k;
-                        if (isHyperbolaFocalPointOnXAxis) { // 焦点在 x 轴上
+                        if (isHyperbolaFocalPointOnXAxis)
+                        { // 焦点在 x 轴上
                             a = Math.Sqrt(Math.Abs((endP.X - iniP.X) * (endP.X - iniP.X) - (endP.Y - iniP.Y) * (endP.Y - iniP.Y) / (k * k)));
                             b = a * k;
                             pointList = new List<Point>();
@@ -4854,7 +4864,9 @@ namespace Ink_Canvas
                                 pointList3.Add(new Point(iniP.X - i, iniP.Y - rY));
                                 pointList4.Add(new Point(iniP.X - i, iniP.Y + rY));
                             }
-                        } else { // 焦点在 y 轴上
+                        }
+                        else
+                        { // 焦点在 y 轴上
                             a = Math.Sqrt(Math.Abs((endP.Y - iniP.Y) * (endP.Y - iniP.Y) - (endP.X - iniP.X) * (endP.X - iniP.X) * (k * k)));
                             b = a / k;
                             pointList = new List<Point>();
@@ -5503,7 +5515,7 @@ namespace Ink_Canvas
                 {
                     collection = lastTempStrokeCollection;
                 }
-                else if(lastTempStroke != null)
+                else if (lastTempStroke != null)
                 {
                     collection = new StrokeCollection() { lastTempStroke };
                 }
@@ -5514,7 +5526,7 @@ namespace Ink_Canvas
             }
             lastTempStroke = null;
             lastTempStrokeCollection = null;
-            if(StrokeManipulationHistory?.Count > 0)
+            if (StrokeManipulationHistory?.Count > 0)
             {
                 timeMachine.CommitStrokeManipulationHistory(StrokeManipulationHistory);
                 foreach (var item in StrokeManipulationHistory)
@@ -6929,7 +6941,7 @@ namespace Ink_Canvas
                         });
                     })).Start();
                 }
-                BorderPenColorRed_MouseUp(BorderPenColorRed, null);  
+                BorderPenColorRed_MouseUp(BorderPenColorRed, null);
             }
             BtnSwitch_Click(BtnSwitch, null);
 

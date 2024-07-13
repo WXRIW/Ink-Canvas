@@ -151,12 +151,12 @@ namespace Ink_Canvas.Helpers
             StrokeHasBeenCleared = strokeHasBeenCleared;
             ReplacedStroke = replacedStroke;
         }
-        public TimeMachineHistory(Dictionary<Stroke, Tuple<StylusPointCollection,StylusPointCollection>> stylusPointDictionary, TimeMachineHistoryType commitType)
+        public TimeMachineHistory(Dictionary<Stroke, Tuple<StylusPointCollection, StylusPointCollection>> stylusPointDictionary, TimeMachineHistoryType commitType)
         {
-            CommitType=commitType;
+            CommitType = commitType;
             StylusPointDictionary = stylusPointDictionary;
         }
-        public TimeMachineHistory(Dictionary<Stroke, Tuple<DrawingAttributes,DrawingAttributes>> drawingAttributes, TimeMachineHistoryType commitType)
+        public TimeMachineHistory(Dictionary<Stroke, Tuple<DrawingAttributes, DrawingAttributes>> drawingAttributes, TimeMachineHistoryType commitType)
         {
             CommitType = commitType;
             DrawingAttributes = drawingAttributes;

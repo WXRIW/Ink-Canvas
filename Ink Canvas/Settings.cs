@@ -32,7 +32,7 @@ namespace Ink_Canvas
         public int InkStyle { get; set; } = 0;
         [JsonProperty("eraserSize")]
         public int EraserSize { get; set; } = 2;
-        [JsonProperty("eraserType")] 
+        [JsonProperty("eraserType")]
         public int EraserType { get; set; } = 0; // 0 - 图标切换模式      1 - 面积擦     2 - 线条擦
         [JsonProperty("hideStrokeWhenSelecting")]
         public bool HideStrokeWhenSelecting { get; set; } = true;
@@ -89,7 +89,7 @@ namespace Ink_Canvas
         [JsonProperty("isShowModeFingerToggleSwitch")]
         public bool IsShowModeFingerToggleSwitch { get; set; } = true;
         [JsonProperty("theme")]
-        public int Theme { get; set; } = 0;            
+        public int Theme { get; set; } = 0;
     }
 
     public class PowerPointSettings
