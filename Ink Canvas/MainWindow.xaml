@@ -701,7 +701,7 @@
                                 Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
                                 Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
                                 Click="BtnColorBlack_Click">
-                            <Viewbox Name="ViewboxBtnColorBlackContent" Visibility="Collapsed">
+                            <Viewbox Name="ViewboxBtnColorBlackContent" Opacity="0">
                                 <ui:SymbolIcon Symbol="Accept" Name="SymbolIconBtnColorBlackContent" Foreground="White"/>
                             </Viewbox>
                         </Button>
@@ -717,7 +717,7 @@
                                 Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
                                 Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
                                 Click="BtnColorGreen_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
-                            <Viewbox Name="ViewboxBtnColorGreenContent" Visibility="Collapsed">
+                            <Viewbox Name="ViewboxBtnColorGreenContent" Opacity="0">
                                 <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
                             </Viewbox>
                         </Button>
@@ -725,7 +725,7 @@
                                 Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
                                 Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
                                 Click="BtnColorBlue_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
-                            <Viewbox Name="ViewboxBtnColorBlueContent" Visibility="Collapsed">
+                            <Viewbox Name="ViewboxBtnColorBlueContent" Opacity="0">
                                 <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
                             </Viewbox>
                         </Button>
@@ -733,7 +733,7 @@
                                 Margin="0,10,0,0" Width="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
                                 Height="{Binding ElementName=StackPanelColors, Path=ActualWidth}"
                                 Click="BtnColorYellow_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}">
-                            <Viewbox Name="ViewboxBtnColorYellowContent" Visibility="Collapsed">
+                            <Viewbox Name="ViewboxBtnColorYellowContent" Opacity="0">
                                 <ui:SymbolIcon Symbol="Accept" Foreground="{Binding ElementName=SymbolIconBtnColorBlackContent, Path=Foreground}"/>
                             </Viewbox>
                         </Button>
@@ -964,6 +964,9 @@
                     </ui:SimpleStackPanel>
                 </Border>
                 <Border Margin="5,0,0,0" Visibility="Visible" Height="36" Name="BorderFloatingBarMainControls" Background="{DynamicResource FloatBarBackground}" CornerRadius="5" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
+                    <Border.RenderTransform>
+                        <ScaleTransform />
+                    </Border.RenderTransform>
                     <ui:SimpleStackPanel Name="StackPanelFloatingBar" Spacing="10" Orientation="Horizontal">
                         <ui:SimpleStackPanel Name="StackPanelCanvacMain" Margin="10,5,0,5" Spacing="10" Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
                             <Grid Height="24" Width="0">
@@ -980,37 +983,37 @@
                             <ui:SimpleStackPanel Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}" Spacing="8" Margin="0,1">
                                 <Border Name="BorderPenColorBlack" Background="{Binding ElementName=BtnColorBlack, Path=Background}" MouseUp="BorderPenColorBlack_MouseUp" CornerRadius="100"
                                     Width="{Binding ElementName=BorderPenColorBlack, Path=ActualHeight}">
-                                    <Viewbox Visibility="{Binding ElementName=ViewboxBtnColorBlackContent, Path=Visibility}" Margin="6">
+                                    <Viewbox Opacity="{Binding ElementName=ViewboxBtnColorBlackContent, Path=Opacity}" Margin="6">
                                         <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
                                     </Viewbox>
                                 </Border>
                                 <Border Name="BorderPenColorRed" Background="{Binding ElementName=BtnColorRed, Path=Background}" MouseUp="BorderPenColorRed_MouseUp" CornerRadius="100"
                                     Width="{Binding ElementName=BorderPenColorRed, Path=ActualHeight}">
-                                    <Viewbox Visibility="{Binding ElementName=ViewboxBtnColorRedContent, Path=Visibility}" Margin="6">
+                                    <Viewbox Opacity="{Binding ElementName=ViewboxBtnColorRedContent, Path=Opacity}" Margin="6">
                                         <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
                                     </Viewbox>
                                 </Border>
                                 <Border Name="BorderPenColorGreen" Background="{Binding ElementName=BtnColorGreen, Path=Background}" MouseUp="BorderPenColorGreen_MouseUp" CornerRadius="100"
                                     Width="{Binding ElementName=BorderPenColorGreen, Path=ActualHeight}">
-                                    <Viewbox Visibility="{Binding ElementName=ViewboxBtnColorGreenContent, Path=Visibility}" Margin="6">
+                                    <Viewbox Opacity="{Binding ElementName=ViewboxBtnColorGreenContent, Path=Opacity}" Margin="6">
                                         <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
                                     </Viewbox>
                                 </Border>
                                 <Border Name="BorderPenColorBlue" Background="{Binding ElementName=BtnColorBlue, Path=Background}" MouseUp="BorderPenColorBlue_MouseUp" CornerRadius="100"
                                     Width="{Binding ElementName=BorderPenColorBlue, Path=ActualHeight}">
-                                    <Viewbox Visibility="{Binding ElementName=ViewboxBtnColorBlueContent, Path=Visibility}" Margin="6">
+                                    <Viewbox Opacity="{Binding ElementName=ViewboxBtnColorBlueContent, Path=Opacity}" Margin="6">
                                         <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
                                     </Viewbox>
                                 </Border>
                                 <Border Name="BorderPenColorYellow" Background="{Binding ElementName=BtnColorYellow, Path=Background}" MouseUp="BorderPenColorYellow_MouseUp" CornerRadius="100"
                                     Width="{Binding ElementName=BorderPenColorYellow, Path=ActualHeight}">
-                                    <Viewbox Visibility="{Binding ElementName=ViewboxBtnColorYellowContent, Path=Visibility}" Margin="6">
+                                    <Viewbox Opacity="{Binding ElementName=ViewboxBtnColorYellowContent, Path=Opacity}" Margin="6">
                                         <ui:SymbolIcon Symbol="Accept" Foreground="White"/>
                                     </Viewbox>
                                 </Border>
                                 <Border Name="BorderPenColorWhite" Background="White" CornerRadius="100" MouseUp="BorderPenColorWhite_MouseUp"
                                     Width="{Binding ElementName=BorderPenColorYellow, Path=ActualHeight}">
-                                    <Viewbox Name="ViewboxBtnColorWhiteContent" Visibility="Collapsed" Margin="6">
+                                    <Viewbox Name="ViewboxBtnColorWhiteContent" Opacity="0" Margin="6">
                                         <ui:SymbolIcon Symbol="Accept" Foreground="Black"/>
                                     </Viewbox>
                                 </Border>

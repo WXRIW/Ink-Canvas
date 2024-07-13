@@ -47,6 +47,7 @@ namespace Ink_Canvas
         {
             InitializeComponent();
 
+            BorderSettings.Opacity = 0;
             BorderSettings.Visibility = Visibility.Collapsed;
             StackPanelToolButtons.Visibility = Visibility.Collapsed;
             BorderDrawShape.Visibility = Visibility.Collapsed;
@@ -1255,14 +1256,23 @@ namespace Ink_Canvas
             Application.Current.Shutdown();
         }
 
-        private void BtnSettings_Click(object sender, RoutedEventArgs e)
+        private async void BtnSettings_Click(object sender, RoutedEventArgs e)
         {
-            if (BorderSettings.Visibility == Visibility.Visible)
+            if (BorderSettings.Tag as Visibility? == Visibility.Visible)
             {
+                BorderSettings.Tag = Visibility.Collapsed;
+                BorderSettings.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(50)));
+                await Task.Delay(60);
                 BorderSettings.Visibility = Visibility.Collapsed;
             }
             else
             {
+                BorderSettings.Tag = Visibility.Visible;
+                BorderSettings.Visibility = Visibility.Visible;
+                BorderSettings.BeginAnimation(OpacityProperty, new DoubleAnimation(1, TimeSpan.FromMilliseconds(150)));
+
+                // 不要问为什么
+                await Task.Delay(160);
                 BorderSettings.Visibility = Visibility.Visible;
             }
         }
@@ -1724,6 +1734,8 @@ namespace Ink_Canvas
 
         int inkColor = 1;
 
+        const int ColorSwiftOpacityDurationOn = 150;
+        const int ColorSwiftOpacityDurationOff = 50;
         private void ColorSwitchCheck()
         {
             //EraserContainer.Background = null;
@@ -1768,31 +1780,31 @@ namespace Ink_Canvas
                 forceEraser = false;
 
                 // 改变选中提示
-                ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
-                ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
-                ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
-                ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
-                ViewboxBtnColorYellowContent.Visibility = Visibility.Collapsed;
-                ViewboxBtnColorWhiteContent.Visibility = Visibility.Collapsed;
+                ViewboxBtnColorBlackContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+                ViewboxBtnColorBlueContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+                ViewboxBtnColorGreenContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+                ViewboxBtnColorRedContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+                ViewboxBtnColorYellowContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+                ViewboxBtnColorWhiteContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
                 switch (inkColor)
                 {
                     case 0:
-                        ViewboxBtnColorBlackContent.Visibility = Visibility.Visible;
+                        ViewboxBtnColorBlackContent.BeginAnimation(OpacityProperty, new DoubleAnimation(1, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOn)));
                         break;
                     case 1:
-                        ViewboxBtnColorRedContent.Visibility = Visibility.Visible;
+                        ViewboxBtnColorRedContent.BeginAnimation(OpacityProperty, new DoubleAnimation(1, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOn)));
                         break;
                     case 2:
-                        ViewboxBtnColorGreenContent.Visibility = Visibility.Visible;
+                        ViewboxBtnColorGreenContent.BeginAnimation(OpacityProperty, new DoubleAnimation(1, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOn)));
                         break;
                     case 3:
-                        ViewboxBtnColorBlueContent.Visibility = Visibility.Visible;
+                        ViewboxBtnColorBlueContent.BeginAnimation(OpacityProperty, new DoubleAnimation(1, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOn)));
                         break;
                     case 4:
-                        ViewboxBtnColorYellowContent.Visibility = Visibility.Visible;
+                        ViewboxBtnColorYellowContent.BeginAnimation(OpacityProperty, new DoubleAnimation(1, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOn)));
                         break;
                     case 5:
-                        ViewboxBtnColorWhiteContent.Visibility = Visibility.Visible;
+                        ViewboxBtnColorWhiteContent.BeginAnimation(OpacityProperty, new DoubleAnimation(1, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOn)));
                         break;
                 }
             }
@@ -2597,7 +2609,7 @@ namespace Ink_Canvas
 
                 ClearStrokes(true);
 
-                BorderFloatingBarMainControls.Visibility = Visibility.Visible;
+                SetBorderFloatingBarMainControlsVisibility(true, false);
                 BorderPenColorRed_MouseUp(BorderPenColorRed, null);
 
                 if (Settings.PowerPointSettings.IsShowCanvasAtNewSlideShow == false)
@@ -6867,12 +6879,12 @@ namespace Ink_Canvas
             BtnSelect_Click(BtnSelect, null);
 
             ImageEraser.Visibility = Visibility.Visible;
-            ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorYellowContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorWhiteContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorBlackContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+            ViewboxBtnColorBlueContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+            ViewboxBtnColorGreenContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+            ViewboxBtnColorRedContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+            ViewboxBtnColorYellowContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+            ViewboxBtnColorWhiteContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
 
             HideSubPanels();
         }
@@ -6959,12 +6971,12 @@ namespace Ink_Canvas
         {
             BtnErase_Click(BtnErase, e);
 
-            ViewboxBtnColorBlackContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorBlueContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorGreenContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorRedContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorYellowContent.Visibility = Visibility.Collapsed;
-            ViewboxBtnColorWhiteContent.Visibility = Visibility.Collapsed;
+            ViewboxBtnColorBlackContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+            ViewboxBtnColorBlueContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+            ViewboxBtnColorGreenContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+            ViewboxBtnColorRedContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+            ViewboxBtnColorYellowContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
+            ViewboxBtnColorWhiteContent.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(ColorSwiftOpacityDurationOff)));
 
             HideSubPanels();
         }
@@ -7169,18 +7181,33 @@ namespace Ink_Canvas
 
             if (e is null || (downPos.X == e.GetPosition(null).X && downPos.Y == e.GetPosition(null).Y))
             {
-                if (BorderFloatingBarMainControls.Visibility == Visibility.Visible)
-                {
-                    BorderFloatingBarMainControls.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    BorderFloatingBarMainControls.Visibility = Visibility.Visible;
-                }
+                SetBorderFloatingBarMainControlsVisibility(!borderFloatingBarMainControlsVisibility);
             }
 
             GridForFloatingBarDraging.Visibility = Visibility.Collapsed;
             SymbolIconEmoji.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Emoji2;
+        }
+
+        bool borderFloatingBarMainControlsVisibility = true;
+        void SetBorderFloatingBarMainControlsVisibility(bool isVisible, bool isAnimated = true)
+        {
+            borderFloatingBarMainControlsVisibility = isVisible;
+            if (!isVisible)
+            {
+                BorderFloatingBarMainControls.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(isAnimated ? 100 : 0))
+                {
+                    EasingFunction = new PowerEase() { Power = 4, EasingMode = EasingMode.EaseOut },
+                });
+                BorderFloatingBarMainControls.BeginAnimation(OpacityProperty, new DoubleAnimation(0, TimeSpan.FromMilliseconds(isAnimated ? 100 : 0)));
+            }
+            else
+            {
+                BorderFloatingBarMainControls.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, new DoubleAnimation(1, TimeSpan.FromMilliseconds(isAnimated ? 160 : 0))
+                {
+                    EasingFunction = new PowerEase() { Power = 4, EasingMode = EasingMode.EaseOut },
+                });
+                BorderFloatingBarMainControls.BeginAnimation(OpacityProperty, new DoubleAnimation(1, TimeSpan.FromMilliseconds(isAnimated ? 160 : 0)));
+            }
         }
 
         #endregion
