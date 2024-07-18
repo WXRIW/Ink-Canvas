@@ -927,6 +927,18 @@ namespace Ink_Canvas
             {
                 Settings.Gesture = new Gesture();
             }
+            if (Settings.Gesture.IsDisableLockSmithByDefault)
+            {
+                ToggleSwitchDisableLockSmithByDefault.IsOn = true;
+                _lockSmith = false;
+                LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.Pin;
+            }
+            else
+            {
+                ToggleSwitchDisableLockSmithByDefault.IsOn = false;
+                _lockSmith = true;
+                LockSmithSymbol.Symbol = iNKORE.UI.WPF.Modern.Controls.Symbol.UnPin;
+            }
             if (Settings.Gesture.IsEnableTwoFingerZoom)
             {
                 ToggleSwitchEnableTwoFingerZoom.IsOn = true;
@@ -3317,8 +3329,15 @@ namespace Ink_Canvas
             SaveSettingsToFile();
         }
 
-        private void ToggleSwitchEnableTwoFingerZoom_Toggled(object sender, RoutedEventArgs e)
-        {
+        private void ToggleSwitchDisableLockSmithByDefault_Toggled(object sender, RoutedEventArgs e) {
+            if (!isLoaded) return;
+
+            Settings.Gesture.IsDisableLockSmithByDefault = ToggleSwitchDisableLockSmithByDefault.IsOn;
+
+            SaveSettingsToFile();
+        }
+
+        private void ToggleSwitchEnableTwoFingerZoom_Toggled(object sender, RoutedEventArgs e) {
             if (!isLoaded) return;
 
             Settings.Gesture.IsEnableTwoFingerZoom = ToggleSwitchEnableTwoFingerZoom.IsOn;
