@@ -9,7 +9,7 @@
   <Identity
     Name="63265WXRIW.9875F4656CA2"
     Publisher="CN=FD2EEB64-9B3F-4B12-B833-80497D4F956C"
-    Version="3.7.2.0" />
+    Version="4.0.0.0" />
 
   <Properties>
     <DisplayName>Ink Canvas</DisplayName>

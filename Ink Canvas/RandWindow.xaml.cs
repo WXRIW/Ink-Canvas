@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualBasic;
-using iNKORE.UI.WPF.Modern.Controls;
+﻿using iNKORE.UI.WPF.Modern.Controls;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.IO;
