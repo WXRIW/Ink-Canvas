@@ -760,6 +760,9 @@ namespace Ink_Canvas
 
             TextBlockVersion.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             LogHelper.WriteLogToFile("Ink Canvas Loaded", LogHelper.LogType.Event);
+
+            PreloadIALibrary();
+
             isLoaded = true;
         }
 
@@ -789,6 +792,23 @@ namespace Ink_Canvas
         private void Window_Closed(object sender, EventArgs e)
         {
             LogHelper.WriteLogToFile("Ink Canvas closed", LogHelper.LogType.Event);
+        }
+
+        private static void PreloadIALibrary()
+        {
+            GC.KeepAlive(typeof(InkAnalyzer));
+            GC.KeepAlive(typeof(AnalysisAlternate));
+            GC.KeepAlive(typeof(InkDrawingNode));
+            var analyzer = new InkAnalyzer();
+            analyzer.AddStrokes(new StrokeCollection() {
+                new Stroke(new StylusPointCollection() {
+                    new StylusPoint(114,514),
+                    new StylusPoint(191,9810),
+                    new StylusPoint(7,21),
+                    new StylusPoint(123,789),
+                })
+            });
+            analyzer.Analyze();
         }
 
         private void LoadSettings(bool isStartup = true)
