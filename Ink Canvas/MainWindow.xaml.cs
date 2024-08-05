@@ -2365,6 +2365,8 @@ namespace Ink_Canvas
 
         public static bool IsShowingRestoreHiddenSlidesWindow = false;
 
+        public static bool IsNotifyPreviousPageWindowShown = false;
+
         private void TimerCheckPPT_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (IsShowingRestoreHiddenSlidesWindow) return;
@@ -2420,30 +2422,31 @@ namespace Ink_Canvas
                 // 跳转到上次播放页
                 if (Settings.PowerPointSettings.IsNotifyPreviousPage)
                     Application.Current.Dispatcher.BeginInvoke(() =>
-                    {
-                        string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
-                                                   @"\Ink Canvas Strokes\Auto Saved\Presentations\";
-                        string folderPath = defaultFolderPath + presentation.Name + "_" + presentation.Slides.Count;
-                        if (File.Exists(folderPath + "/Position"))
                         {
-                            if (int.TryParse(File.ReadAllText(folderPath + "/Position"), out var page))
+                            string defaultFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) +
+                                                       @"\Ink Canvas Strokes\Auto Saved\Presentations\";
+                            string folderPath = defaultFolderPath + presentation.Name + "_" + presentation.Slides.Count;
+                            if (File.Exists(folderPath + "/Position") & !IsNotifyPreviousPageWindowShown) //判断是否已存在NotifyPreviousPage窗口
                             {
-                                if (page <= 0) return;
-                                new YesOrNoNotificationWindow($"上次播放到了第 {page} 页, 是否立即跳转", () =>
+                                if (int.TryParse(File.ReadAllText(folderPath + "/Position"), out var page))
                                 {
-                                    if (pptApplication.SlideShowWindows.Count >= 1)
+                                    IsNotifyPreviousPageWindowShown= true;
+                                    if (page <= 0) return;
+                                    new YesOrNoNotificationWindow($"上次播放到了第 {page} 页, 是否立即跳转", () =>
                                     {
-                                        // 如果已经播放了的话, 跳转
-                                        presentation.SlideShowWindow.View.GotoSlide(page);
-                                    }
-                                    else
-                                    {
-                                        presentation.Windows[1].View.GotoSlide(page);
-                                    }
-                                }).ShowDialog();
+                                        if (pptApplication.SlideShowWindows.Count >= 1)
+                                        {
+                                            // 如果已经播放了的话, 跳转
+                                            presentation.SlideShowWindow.View.GotoSlide(page);
+                                        }
+                                        else
+                                        {
+                                            presentation.Windows[1].View.GotoSlide(page);
+                                        }
+                                    }).ShowDialog();
+                                }
                             }
-                        }
-                    }, DispatcherPriority.Normal);
+                        }, DispatcherPriority.Normal);
 
 
                 //检查是否有隐藏幻灯片
@@ -2464,7 +2467,7 @@ namespace Ink_Canvas
                         if (isHaveHiddenSlide && !IsShowingRestoreHiddenSlidesWindow)
                         {
                             IsShowingRestoreHiddenSlidesWindow = true;
-                            new YesOrNoNotificationWindow("检测到此演示文档中包含隐藏的幻灯片，是否取消隐藏？",
+                            new YesOrNoNotificationWindow("检测到此演示文稿包含隐藏的幻灯片，是否取消隐藏？",
                                 () =>
                                 {
                                     foreach (Slide slide in slides)
@@ -2512,7 +2515,7 @@ namespace Ink_Canvas
             timerCheckPPT.Start();
             Application.Current.Dispatcher.Invoke(() =>
             {
-                BtnPPTSlideShow.Visibility = Visibility.Collapsed;
+                //BtnPPTSlideShow.Visibility = Visibility.Collapsed;
                 BtnPPTSlideShowEnd.Visibility = Visibility.Collapsed;
             });
         }
@@ -2521,6 +2524,7 @@ namespace Ink_Canvas
 
 
         private string pptName = null;
+        int currentShowPosition = -1;
         //bool isButtonBackgroundTransparent = true; //此变量仅用于保存用于幻灯片放映时的优化
         private void PptApplication_SlideShowBegin(SlideShowWindow Wn)
         {
@@ -2581,21 +2585,24 @@ namespace Ink_Canvas
                         int count = 0;
                         foreach (FileInfo file in files)
                         {
-                            int i = -1;
-                            try
+                            if (file.Name != "Position")
                             {
-                                i = int.Parse(System.IO.Path.GetFileNameWithoutExtension(file.Name));
-                                //var fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read);
-                                //MemoryStream ms = new MemoryStream(File.ReadAllBytes(file.FullName));
-                                //new StrokeCollection(fs).Save(ms);
-                                //ms.Position = 0;
-                                memoryStreams[i] = new MemoryStream(File.ReadAllBytes(file.FullName));
-                                memoryStreams[i].Position = 0;
-                                count++;
-                            }
-                            catch (Exception ex)
-                            {
-                                LogHelper.WriteLogToFile(string.Format("Failed to load strokes on Slide {0}\n{1}", i, ex.ToString()), LogHelper.LogType.Error);
+                                int i = -1;
+                                try
+                                {
+                                    i = int.Parse(System.IO.Path.GetFileNameWithoutExtension(file.Name));
+                                    //var fs = new FileStream(file.FullName, FileMode.Open, FileAccess.Read);
+                                    //MemoryStream ms = new MemoryStream(File.ReadAllBytes(file.FullName));
+                                    //new StrokeCollection(fs).Save(ms);
+                                    //ms.Position = 0;
+                                    memoryStreams[i] = new MemoryStream(File.ReadAllBytes(file.FullName));
+                                    memoryStreams[i].Position = 0;
+                                    count++;
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogHelper.WriteLogToFile(string.Format("Failed to load strokes on Slide {0}\n{1}", i, ex.ToString()), LogHelper.LogType.Error);
+                                }
                             }
                         }
                         LogHelper.WriteLogToFile(string.Format("Loaded {0} saved strokes", count.ToString()));
@@ -2686,6 +2693,7 @@ namespace Ink_Canvas
         bool isEnteredSlideShowEndEvent = false; //防止重复调用本函数导致墨迹保存失效
         private void PptApplication_SlideShowEnd(Presentation Pres)
         {
+            IsNotifyPreviousPageWindowShown = false;
             LogHelper.WriteLogToFile(string.Format("PowerPoint Slide Show End"), LogHelper.LogType.Event);
             if (isEnteredSlideShowEndEvent)
             {
@@ -2701,7 +2709,22 @@ namespace Ink_Canvas
                 {
                     Directory.CreateDirectory(folderPath);
                 }
-                File.WriteAllText(folderPath + "/Position", previousSlideID.ToString());
+                try
+                {
+                    File.WriteAllText(folderPath + "/Position", previousSlideID.ToString());
+                }
+                catch { }
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        MemoryStream ms = new MemoryStream();
+                        inkCanvas.Strokes.Save(ms);
+                        ms.Position = 0;
+                        memoryStreams[currentShowPosition] = ms;
+                    }
+                    catch { }
+                });
                 for (int i = 1; i <= Pres.Slides.Count; i++)
                 {
                     if (memoryStreams[i] != null)
@@ -2818,6 +2841,7 @@ namespace Ink_Canvas
                         {
                             inkCanvas.Strokes.Add(new StrokeCollection(memoryStreams[Wn.View.CurrentShowPosition]));
                         }
+                        currentShowPosition = Wn.View.CurrentShowPosition;
                     }
                     catch
                     { }
@@ -2923,6 +2947,7 @@ namespace Ink_Canvas
                     ms.Position = 0;
                     memoryStreams[pptApplication.SlideShowWindows[1].View.CurrentShowPosition] = ms;
                     timeMachine.ClearStrokeHistory();
+                    IsNotifyPreviousPageWindowShown = false;
                 }
                 catch { }
             });
