@@ -5710,15 +5710,15 @@ namespace Ink_Canvas
 
         private void BtnWhiteBoardSwitchNext_Click(object sender, EventArgs e)
         {
-            if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
-            {
-                SaveScreenShot(true);
-                if (Settings.Automation.IsAutoSaveStrokesAtScreenshot) SaveInkCanvasStrokes(false);
-            }
             if (CurrentWhiteboardIndex >= WhiteboardTotalCount)
             {
                 BtnWhiteBoardAdd_Click(sender, e);
                 return;
+            }
+            if (Settings.Automation.IsAutoSaveStrokesAtClear && inkCanvas.Strokes.Count > Settings.Automation.MinimumAutomationStrokeNumber)
+            {
+                SaveScreenShot(true);
+                if (Settings.Automation.IsAutoSaveStrokesAtScreenshot) SaveInkCanvasStrokes(false);
             }
             SaveStrokes();
 
@@ -7331,9 +7331,9 @@ namespace Ink_Canvas
                         @"\Ink Canvas Strokes\User Saved\" + DateTime.Now.ToString("u").Replace(':', '-') + ".icstk");
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                ShowNotification("墨迹保存失败");
+                ShowNotification($"墨迹保存失败：{ex.Message}");
             }
         }
 
