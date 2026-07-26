@@ -132,11 +132,11 @@
                   Background="#01FFFFFF" Opacity="0.01" Visibility="Visible"/>
             <Border Name="BorderStrokeSelectionControl"
                     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,900,0,0"
-                    CornerRadius="5" Height="80"
+                    CornerRadius="5" Width="80"
                     Background="{DynamicResource FloatBarBackground}" Visibility="{Binding ElementName=GridInkCanvasSelectionCover, Path=Visibility}"
                     BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
                 <Viewbox Margin="0,-2.5">
-                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="10" Height="60">
+                    <ui:SimpleStackPanel Orientation="Vertical" Spacing="10" Width="60">
                         <Border Name="BorderStrokeSelectionClone" Margin="0,2,-9,2" Background="Transparent" CornerRadius="{Binding ElementName=BorderStrokeSelectionControl, Path=CornerRadius}"
                                 Width="40" MouseDown="Border_MouseDown" MouseUp="BorderStrokeSelectionClone_MouseUp">
                             <ui:SimpleStackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="5">
@@ -151,20 +151,20 @@
                                 <TextBlock Text="克隆至新页" FontSize="8" Foreground="{DynamicResource FloatBarForeground}"/>
                             </ui:SimpleStackPanel>
                         </Border>
-                        <Border Width="1" Height="45" BorderBrush="{DynamicResource FloatBarForeground}" Background="{DynamicResource FloatBarForeground}"/>
-                        <Border CornerRadius="{Binding ElementName=BorderStrokeSelectionControl, Path=CornerRadius}" Height="40">
+                        <Border Width="45" Height="1" BorderBrush="{DynamicResource FloatBarForeground}" Background="{DynamicResource FloatBarForeground}"/>
+                        <Border CornerRadius="{Binding ElementName=BorderStrokeSelectionControl, Path=CornerRadius}" Width="40">
                             <ui:SimpleStackPanel VerticalAlignment="Center" Spacing="5" Margin="0,-10">
-                                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="15">
+                                <ui:SimpleStackPanel Orientation="Vertical" Spacing="15">
                                     <Image Source="{DynamicResource Rotate45DrawingImage}" Height="22" MouseDown="Border_MouseDown" MouseUp="ImageRotate45_MouseUp"/>
                                     <Image Source="{DynamicResource Rotate90DrawingImage}" Height="22" MouseDown="Border_MouseDown" MouseUp="ImageRotate90_MouseUp"/>
                                 </ui:SimpleStackPanel>
                                 <TextBlock Text="旋转" FontSize="10" HorizontalAlignment="Center" Foreground="{DynamicResource FloatBarForeground}"/>
                             </ui:SimpleStackPanel>
                         </Border>
-                        <Border Width="1" Height="45" BorderBrush="{DynamicResource FloatBarForeground}" Background="{DynamicResource FloatBarForeground}"/>
-                        <Border Margin="0,0,-6,0" CornerRadius="{Binding ElementName=BorderStrokeSelectionControl, Path=CornerRadius}" Height="40">
+                        <Border Width="45" Height="1" BorderBrush="{DynamicResource FloatBarForeground}" Background="{DynamicResource FloatBarForeground}"/>
+                        <Border Margin="0,0,-6,0" CornerRadius="{Binding ElementName=BorderStrokeSelectionControl, Path=CornerRadius}" Width="40">
                             <ui:SimpleStackPanel VerticalAlignment="Center" Spacing="5" Margin="0,-10">
-                                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="15">
+                                <ui:SimpleStackPanel Orientation="Vertical" Spacing="15">
                                     <Image Source="{DynamicResource FlipDrawingImage}" Width="19" Height="22" MouseDown="Border_MouseDown" MouseUp="ImageFlipHorizontal_MouseUp"/>
                                     <Image Source="{DynamicResource FlipDrawingImage}" Width="19" Height="22" MouseDown="Border_MouseDown" MouseUp="ImageFlipVertical_MouseUp"
                                            Margin="0,0,8,0" RenderTransformOrigin="0.5,0.5">
@@ -181,10 +181,10 @@
                                 <TextBlock Text="翻转" FontSize="10" Margin="-8,0,0,0" HorizontalAlignment="Center" Foreground="{DynamicResource FloatBarForeground}"/>
                             </ui:SimpleStackPanel>
                         </Border>
-                        <Border Width="1" Height="45" BorderBrush="{DynamicResource FloatBarForeground}" Background="{DynamicResource FloatBarForeground}"/>
-                        <Border CornerRadius="{Binding ElementName=BorderStrokeSelectionControl, Path=CornerRadius}" Height="40">
+                        <Border Width="45" Height="1" BorderBrush="{DynamicResource FloatBarForeground}" Background="{DynamicResource FloatBarForeground}"/>
+                        <Border CornerRadius="{Binding ElementName=BorderStrokeSelectionControl, Path=CornerRadius}" Width="40">
                             <ui:SimpleStackPanel VerticalAlignment="Center" Spacing="5" Margin="0,-10">
-                                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="13">
+                                <ui:SimpleStackPanel Orientation="Vertical" Spacing="13">
                                     <Grid MouseDown="Border_MouseDown" MouseUp="GridPenWidthDecrease_MouseUp">
                                         <ui:SymbolIcon Symbol="Edit" Foreground="{DynamicResource FloatBarForeground}"/>
                                         <TextBlock Text="-"  Foreground="{DynamicResource FloatBarForeground}"
@@ -207,7 +207,7 @@
                                 <TextBlock Text="画笔粗细" FontSize="10" HorizontalAlignment="Center" Foreground="{DynamicResource FloatBarForeground}"/>
                             </ui:SimpleStackPanel>
                         </Border>
-                        <Border Width="1" Height="45" BorderBrush="{DynamicResource FloatBarForeground}" Background="{DynamicResource FloatBarForeground}"/>
+                        <Border Width="45" Height="1" BorderBrush="{DynamicResource FloatBarForeground}" Background="{DynamicResource FloatBarForeground}"/>
                         <Border Margin="-8,0,0,0" CornerRadius="{Binding ElementName=BorderStrokeSelectionControl, Path=CornerRadius}" Width="40" MouseDown="Border_MouseDown" MouseUp="BorderStrokeSelectionDelete_MouseUp">
                             <ui:SimpleStackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="5">
                                 <ui:SymbolIcon Symbol="Delete" Foreground="{DynamicResource FloatBarForeground}"/>
@@ -222,7 +222,7 @@
         <Grid Visibility="Collapsed">
             <Grid Visibility="{Binding ElementName=GridBackgroundCoverHolder, Path=Visibility}">
                 <Viewbox Margin="10" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+                    <ui:SimpleStackPanel Orientation="Vertical" Spacing="5">
                         <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource FloatBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
                             <Grid Margin="6" MouseUp="GridPPTControlPrevious_MouseUp">
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
@@ -244,7 +244,7 @@
         </Grid>
         <Grid Visibility="{Binding ElementName=GridBackgroundCoverHolder, Path=Visibility}">
             <Viewbox Visibility="{Binding ElementName=GridBackgroundCover, Path=Visibility}" Opacity="0.7" Margin="10" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+                <ui:SimpleStackPanel Orientation="Vertical" Spacing="5">
                     <Border Width="36" Height="36" MouseUp="BtnWhiteBoardAdd_Click" CornerRadius="5" Background="{DynamicResource FloatBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
                         <Viewbox Margin="8">
                             <ui:SymbolIcon Symbol="Add" Foreground="{DynamicResource FloatBarForeground}" />
@@ -271,7 +271,7 @@
                 </ui:SimpleStackPanel>
             </Viewbox>
             <Viewbox Visibility="{Binding ElementName=GridBackgroundCover, Path=Visibility}" Opacity="0.7" Margin="10" Height="50" HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+                <ui:SimpleStackPanel Orientation="Vertical" Spacing="5">
                     <Border Width="36" Height="36" MouseUp="BorderMultiTouchMode_MouseUp" CornerRadius="5" Background="{DynamicResource FloatBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
                         <Viewbox Margin="8">
                             <ui:SymbolIcon Name="SymbolIconMultiTouchMode" Symbol="People" Foreground="{DynamicResource FloatBarForeground}" />
@@ -279,10 +279,10 @@
                     </Border>
                 </ui:SimpleStackPanel>
             </Viewbox>
-            <ui:SimpleStackPanel Spacing="10" Orientation="Horizontal"
+            <ui:SimpleStackPanel Spacing="10" Orientation="Vertical"
                              VerticalAlignment="Bottom"
                              HorizontalAlignment="Right"
-                             Height="50" Margin="10"
+                             Width="50" Margin="10"
                              Visibility="Collapsed">
                 <Button Name="BtnWhiteBoardAdd" FontFamily="Microsoft YaHei UI"
                     Width="50" Height="48" FontSize="26" Click="BtnWhiteBoardAdd_Click"
@@ -748,11 +748,11 @@
                     <Button x:Name="BtnTools" Content="工具" FontFamily="Microsoft YaHei UI"
                             Margin="0,10,0,0" Width="{Binding ElementName=StackPanelMain, Path=ActualWidth}"
                             Click="BtnTools_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
-                    <Grid Name="StackPanelToolButtons" Margin="-127,-30.5,56,0">
+                    <Grid Name="StackPanelToolButtons" Margin="-127,30.5,56,0">
                         <Border CornerRadius="5" Margin="-7"
                                 Background="White" Visibility="Collapsed"
                                 BorderBrush="#0066BF" BorderThickness="1"/>
-                        <ui:SimpleStackPanel  Orientation="Horizontal" Spacing="10">
+                        <ui:SimpleStackPanel Orientation="Vertical" Spacing="10">
                             <Button x:Name="BtnCountdownTimer" Content="计时器" FontFamily="Microsoft YaHei UI"
                                     Margin="0,0,0,0"
                                     Click="BtnCountdownTimer_Click" Foreground="{Binding ElementName=BtnExit, Path=Foreground}" Background="{Binding ElementName=BtnExit, Path=Background}"/>
@@ -910,7 +910,7 @@
         <Grid Name="GridForRecoverOldUI">
             <Grid Visibility="{Binding ElementName=StackPanelPPTControls, Path=Visibility}">
                 <Viewbox Name="ViewboxPPTSidesControl" Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}" Opacity="0.7" Margin="10" Height="50" HorizontalAlignment="Left" VerticalAlignment="Bottom">
-                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+                    <ui:SimpleStackPanel Orientation="Vertical" Spacing="5">
                         <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource FloatBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
                             <Grid Margin="6">
                                 <Image Name="ImagePPTControlPreviousPressed" Visibility="Collapsed" Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideSelected}"/>
@@ -931,7 +931,7 @@
                     </ui:SimpleStackPanel>
                 </Viewbox>
                 <Viewbox Visibility="{Binding ElementName=StackPanelPPTButtons, Path=Visibility}" Opacity="{Binding ElementName=ViewboxPPTSidesControl, Path=Opacity}" Margin="10" Height="50" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                    <ui:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+                    <ui:SimpleStackPanel Orientation="Vertical" Spacing="5">
                         <Border Width="36" MouseUp="GridPPTControlPrevious_MouseUp" Height="36" CornerRadius="5" Background="{DynamicResource FloatBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}">
                             <Grid Margin="6">
                                 <Image Source="{DynamicResource ResourceKey=SeewoImageSource.HorizontalPreviousSlideNormal}"/>
@@ -953,11 +953,11 @@
         </Grid>
 
         <Viewbox Name="ViewboxFloatingBar" Margin="100,10,-2000,-200" 
-                 HorizontalAlignment="Left" Height="50" VerticalAlignment="Top">
+                 HorizontalAlignment="Left" Width="50" VerticalAlignment="Top">
             <Viewbox.LayoutTransform>
                 <ScaleTransform x:Name="ViewboxFloatingBarScaleTransform" ScaleX="1" ScaleY="1"/>
             </Viewbox.LayoutTransform>
-            <ui:SimpleStackPanel Orientation="Horizontal">
+            <ui:SimpleStackPanel Orientation="Vertical">
                 <Border Width="36" Height="36" CornerRadius="5" Background="{DynamicResource FloatBarBackground}" BorderThickness="1" BorderBrush="{DynamicResource FloatBarBorderBrush}" MouseDown="SymbolIconEmoji_MouseDown" MouseUp="SymbolIconEmoji_MouseUp">
                     <ui:SimpleStackPanel Margin="0,5,0,5" Spacing="10" Orientation="Horizontal"
                                          HorizontalAlignment="Center">
@@ -968,7 +968,7 @@
                     <Border.RenderTransform>
                         <ScaleTransform />
                     </Border.RenderTransform>
-                    <ui:SimpleStackPanel Name="StackPanelFloatingBar" Spacing="10" Orientation="Horizontal">
+                    <ui:SimpleStackPanel Name="StackPanelFloatingBar" Spacing="10" Orientation="Vertical">
                         <ui:SimpleStackPanel Name="StackPanelCanvacMain" Margin="10,5,0,5" Spacing="10" Orientation="{Binding ElementName=StackPanelFloatingBar, Path=Orientation}">
                             <Grid Height="24" Width="0">
                             </Grid>
